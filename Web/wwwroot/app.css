@@ -1,0 +1,37 @@
+/* A teljes képernyõs keret */
+.page {
+    display: flex; /* Egymás mellé teszi a nav-ot és a main-t */
+    height: 100vh; /* Pontosan kitölti a képernyõt */
+    width: 100vw;
+    overflow: hidden; /* Megakadályozza, hogy az egész oldal görögjön */
+}
+
+/* SideNav tárolója */
+.sidenav-container {
+    flex-shrink: 0; /* Nem engedi, hogy a tartalom összenyomja a menüt */
+    height: 100%;
+    background-color: #1a1a1a; /* Opcionális: háttérszín a hézagok ellen */
+}
+
+/* A fõ tartalom zónája */
+.main-content {
+    flex-grow: 1; /* Elfogyasztja a maradék vízszintes helyet */
+    height: 100%; /* Kitölti a függõleges helyet */
+    overflow-y: auto; /* <--- EZ A TITOK: Csak ez a rész fog görgetni! */
+    background-color: #f4f4f4;
+}
+
+.content {
+    padding: 20px; /* Távolság a szélektõl a szövegnek */
+}
+
+/* Alapértelmezett margók eltüntetése */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Rubik", sans-serif;
+}
+
+h1, h2, h3 {
+    font-weight: 800;
+}

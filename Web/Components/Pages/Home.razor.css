@@ -1,0 +1,18 @@
+﻿body {
+    flex-grow: 1; /* Ez mondja meg, hogy töltse ki a maradék helyet */
+    overflow-y: auto; /* Ha hosszú a tartalom, csak ez a rész görgethető */
+    background-color: #f4f4f4;
+    display: flex;
+    flex-direction: column;
+    /* GÖRGETÉS BEÁLLÍTÁSA */
+    overflow-y: auto;
+}
+
+#contact {
+    width: 100vh;
+    height: 450px;
+    background-color: burlywood;
+    margin: 50px;
+    border-radius: 25px;
+    padding: 15px;
+}

@@ -1,0 +1,15 @@
+﻿@inherits LayoutComponentBase
+
+<div class="page">
+    @* A SideNav fix szélességű és nem görög el *@
+    <aside class="sidenav-container">
+        <SideNav />
+    </aside>
+
+    @* A main tölti ki a maradék helyet és ez lesz görgethető *@
+    <main class="main-content">
+        <article class="content">
+            @Body
+        </article>
+    </main>
+</div>

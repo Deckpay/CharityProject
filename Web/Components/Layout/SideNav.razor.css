@@ -1,0 +1,121 @@
+﻿/* --- 1. ALAPOK --- */
+.sidebar {
+    position: relative;
+    background-color: #152b41;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    transition: width 0.3s ease;
+    flex-shrink: 0;
+    /* overflow: visible !important; - A nyíl miatt hagyni kell */
+}
+
+.sidebar-opened {
+    width: 240px;
+}
+
+.sidebar-closed {
+    width: 75px;
+}
+
+/* --- 2. NYÍL GOMB (Fixen a határon) --- */
+.toggle-btn {
+    position: absolute;
+    top: 40px;
+    right: -20px;
+    width: 40px;
+    height: 40px;
+    background-color: #565656;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 1001;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    border: 2px solid #152b41;
+}
+
+.toggle-icon {
+    transition: transform 0.3s ease;
+    font-size: 28px !important;
+}
+
+.rotate-180 {
+    transform: rotate(180deg);
+}
+
+/* --- 3. LOGÓ ÉS MENÜPONTOK KÖZÖS JAVÍTÁSA --- */
+.logo-section, .nav-menu a, .auth-btn {
+    display: flex;
+    align-items: center;
+    padding: 12px 22px;
+    gap: 15px;
+    white-space: nowrap;
+    overflow: hidden; /* Ez vágja le a szöveget a soron belül! */
+    text-decoration: none;
+    color: white;
+    transition: background-color 0.2s;
+    width: 100%; /* Mindig töltse ki a szülőt (75px vagy 240px) */
+    box-sizing: border-box; /* Fontos, hogy a padding ne növelje a szélességet */
+}
+
+.logo-section {
+    height: 60px;
+    background-color: #3b5998;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* --- 4. HOVER JAVÍTÁSA (Hogy ne menjen túl) --- */
+.nav-menu a:hover, .auth-btn:hover {
+    background-color: #34495E;
+    /* Itt a lényeg: a hover háttér sem nyúlhat túl a sidebar szélén */
+}
+
+/* --- 5. IKONOK ÉS SZÖVEGEK --- */
+.material-symbols-outlined {
+    min-width: 30px;
+    text-align: center;
+    font-size: 1.6rem !important;
+    flex-shrink: 0;
+}
+
+/* CSAK IKON MÓD: Szöveg elrejtése */
+.sidebar-closed span:not(.material-symbols-outlined) {
+    display: none;
+}
+
+/* --- 6. ALSÓ GOMBOK --- */
+.bottom-actions {
+    margin-top: auto;
+    padding-bottom: 20px;
+}
+
+.register {
+    background-color: #d27100 !important;
+    border-radius: 25px;
+    margin: 5px 10px;
+    width: calc(100% - 20px) !important;
+    justify-content: flex-start;
+    border: none;
+}
+
+.login {
+    background-color: #27AE60 !important;
+    border-radius: 25px;
+    margin: 5px 10px;
+    width: calc(100% - 20px) !important;
+    justify-content: flex-start;
+    border: none;
+}
+
+/* Ha összecsukva is kerek gombokat akarsz (nem kötelező, de szebb) */
+.sidebar-closed .register, .sidebar-closed .login {
+    margin: 5px auto;
+    width: 50px !important;
+    padding: 12px 0;
+    justify-content: center;
+    border-radius: 50%;
+}

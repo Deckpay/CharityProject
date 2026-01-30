@@ -1,0 +1,53 @@
+﻿@* <--- Ez engedélyezi a C# kód futását kattintásra *@
+@rendermode InteractiveServer
+
+<div class="sidebar @(isOpened ? "sidebar-opened" : "sidebar-closed")">
+    @* ÁTFORDULÓ NYÍL *@
+    <div class="toggle-btn" @onclick="ToggleSidebar">
+        <span class="material-symbols-outlined toggle-icon @(isOpened ? "rotate-180" : "")">
+            chevron_left
+        </span>
+    </div>
+
+    @* LOGÓ *@
+    <div class="logo-section">
+        <span class="material-symbols-outlined">volunteer_activism</span>
+        @if (isOpened)
+        {
+            <span>Charity App</span>
+        }
+    </div>
+
+    @* MENÜ *@
+    <div class="nav-menu">
+        <a href="#"><span class="material-symbols-outlined">home</span><span>Főoldal</span></a>
+        <a href="#"><span class="material-symbols-outlined">group</span><span>Rólunk</span></a>
+        <a href="#"><span class="material-symbols-outlined">store</span><span>Termékek</span></a>
+        <a href="#"><span class="material-symbols-outlined">leaderboard</span><span>Eredmények</span></a>
+        <a href="#"><span class="material-symbols-outlined">help</span><span>Gyik</span></a>
+        <a href="#"><span class="material-symbols-outlined">contact_page</span><span>Kapcsolat</span></a>
+    </div>
+
+    @* ALSÓ GOMBOK *@
+    <div class="bottom-actions">
+        <button class="auth-btn login">
+            <span class="material-symbols-outlined">login</span>
+            @if (isOpened)
+            {
+                <span>Bejelentkezés</span>
+            }
+        </button>
+        <button class="auth-btn register">
+            <span class="material-symbols-outlined">person_add</span>
+            @if (isOpened)
+            {
+                <span>Regisztráció</span>
+            }
+        </button>
+    </div>
+</div>
+
+@code {
+    private bool isOpened = true;
+    private void ToggleSidebar() => isOpened = !isOpened;
+}
