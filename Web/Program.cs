@@ -1,3 +1,4 @@
+using Application.Interfaces;
 using Web.Components;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -5,6 +6,19 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+// 1. Kiolvassuk az URL-t az appsettings.json-bõl
+var apiBaseUrl = builder.Configuration.GetValue<string>("ApiSettings:BaseUrl");
+
+// 2. Regisztráljuk a HttpClient-et a kiolvasott URL-lel
+builder.Services.AddScoped(sp => new HttpClient
+{
+    BaseAddress = new Uri(apiBaseUrl ?? "https://localhost:7161/api/")
+});
+
+// 3. Regisztráljuk a Web-es AuthService-t (a postást)
+// Fontos: a Web projektben lévõ AuthService osztályt add meg itt!
+builder.Services.AddScoped<IAuthService, Web.Services.AuthApiService>();
 
 var app = builder.Build();
 

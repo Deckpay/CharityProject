@@ -98,14 +98,6 @@
 
     private async Task HandleRegistration()
     {
-        errorMessage = null;
-
-        if (registerModel.CountyId == 0)
-        {
-            errorMessage = "Kérlek, válassz egy megyét!";
-            return;
-        }
-
         var result = await AuthService.RegisterAsync(registerModel);
 
         if (result)
