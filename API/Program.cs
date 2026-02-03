@@ -1,6 +1,8 @@
 using Application.Interfaces;
+using Application.Services;
 using Infrastructure.Data;
 using Infrastructure.Repositories;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,7 +24,8 @@ builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepositor
 
 // AZ IAuthService REGISZTRÁLÁSA - Ez oldja meg a hibádat!
 // Figyelj rá, hogy az Infrastructure-ben lévõ AuthService-t add meg
-builder.Services.AddScoped<IAuthService, Infrastructure.Services.AuthService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IProductService, ProductService>();
 
 // 3. CORS beállítása (Hogy a Web projekt elérje az API-t)
 builder.Services.AddCors(options =>

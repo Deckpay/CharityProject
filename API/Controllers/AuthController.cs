@@ -17,7 +17,7 @@ namespace API.Controllers
         }
 
         // rész automatikusan behelyettesíti az osztály nevét, levágva a "Controller" szót
-        [HttpPost("register")] // Ez lesz a véhpont: POST api/Auth/register
+        [HttpPost("register")] // Ez lesz a végpont: POST api/Auth/register
         public async Task<IActionResult> Register([FromBody] RegisterDto dto)
         {
             // 1. A kontroller csak továbbpasszolja a labdát a servicenek

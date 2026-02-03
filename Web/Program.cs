@@ -1,5 +1,6 @@
 using Application.Interfaces;
 using Web.Components;
+using Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,7 +19,8 @@ builder.Services.AddScoped(sp => new HttpClient
 
 // 3. Regisztráljuk a Web-es AuthService-t (a postást)
 // Fontos: a Web projektben lévõ AuthService osztályt add meg itt!
-builder.Services.AddScoped<IAuthService, Web.Services.AuthApiService>();
+builder.Services.AddScoped<IAuthService, AuthApiService>();
+builder.Services.AddScoped<IProductService, ProductApiService>();
 
 var app = builder.Build();
 
