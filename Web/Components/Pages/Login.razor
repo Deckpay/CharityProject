@@ -1,7 +1,13 @@
 ﻿@page "/login"
 @using Application.DTOs
 @using Application.Interfaces
+@using Microsoft.AspNetCore.Components.Authorization
+@using Web.Services @* <--- Be kell húzni a mappát, ahol a Provider és a Storage van *@
 @inject NavigationManager Navigation
+@inject LocalStorageService localStorage 
+@* <--- Injektáljuk a raktárost *@
+@inject AuthenticationStateProvider AuthProvider 
+@* <--- Injektáljuk a határőrt *@
 @rendermode InteractiveServer
 
 <div class="login-container">
@@ -59,6 +65,16 @@
 
             if (user != null)
             {
+                // 1. ELMENTJÜK a nevet a böngészőbe (hogy F5 után is ott legyen)
+                // Figyelj: a CustomAuthStateProvider-ben stringet várunk (userName)!
+                await localStorage.SetItemAsync("currentUser", user.UserName);
+
+                // 2. SZÓLUNK az AuthenticationStateProvider-nek, hogy frissítse az UI-t
+                // Itt típuskényszerítést (cast) kell használnunk a saját osztályunkra
+                var customAuth = (CustomAuthStateProvider)AuthProvider;
+                customAuth.NotifyUserLogin(user.UserName);
+
+                // 3. MEHETÜNK a főoldalra
                 Navigation.NavigateTo("/");
             }
             else
@@ -66,8 +82,10 @@
                 errorMessage = "Hibás adatok.";
             }
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            // Így már nem fog panaszkodni, és látsz is valamit a Debug Output-ban
+            Console.WriteLine($"Hiba a bejelentkezés során: {ex.Message}");
             errorMessage = "Hálózati hiba történt.";
         }
         finally

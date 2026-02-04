@@ -1,4 +1,5 @@
 using Application.Interfaces;
+using Microsoft.AspNetCore.Components.Authorization;
 using Web.Components;
 using Web.Services;
 
@@ -21,6 +22,15 @@ builder.Services.AddScoped(sp => new HttpClient
 // Fontos: a Web projektben lévõ AuthService osztályt add meg itt!
 builder.Services.AddScoped<IAuthService, AuthApiService>();
 builder.Services.AddScoped<IProductService, ProductApiService>();
+
+// 1. Regisztráljuk a saját LocalStorage hídunkat.
+builder.Services.AddScoped<LocalStorageService>();
+
+// 2. Fontos: Azt mondjuk, hogy az AuthenticationStateProvider ne az alap legyen, hanem a miénk!
+builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
+
+// 3. Bekapcsoljuk a Blazor belsõ engedélyezési motorját.
+builder.Services.AddAuthorizationCore();
 
 var app = builder.Build();
 

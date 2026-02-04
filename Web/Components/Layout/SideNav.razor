@@ -1,16 +1,19 @@
-﻿@inject NavigationManager Navigation
-@* <--- Ez engedélyezi a C# kód futását kattintásra *@
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@using Web.Services
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthProvider
+@inject LocalStorageService Storage
 @rendermode InteractiveServer
 
 <div class="sidebar @(isOpened ? "sidebar-opened" : "sidebar-closed")">
-    @* ÁTFORDULÓ NYÍL *@
+    @* ÁTFORDULÓ NYÍL (változatlan) *@
     <div class="toggle-btn" @onclick="ToggleSidebar">
         <span class="material-symbols-outlined toggle-icon @(isOpened ? "rotate-180" : "")">
             chevron_left
         </span>
     </div>
 
-    @* LOGÓ *@
+    @* LOGÓ (változatlan) *@
     <div class="logo-section">
         <span class="material-symbols-outlined">volunteer_activism</span>
         @if (isOpened)
@@ -19,32 +22,58 @@
         }
     </div>
 
-    @* MENÜ *@
+    @* MENÜ (változatlan) *@
     <div class="nav-menu">
-        <a href="#"><span class="material-symbols-outlined">home</span><span>Főoldal</span></a>
+        <a href="/"><span class="material-symbols-outlined">home</span><span>Főoldal</span></a>
         <a href="#"><span class="material-symbols-outlined">group</span><span>Rólunk</span></a>
-        <a href="#"><span class="material-symbols-outlined">store</span><span>Termékek</span></a>
+        <a href="/products"><span class="material-symbols-outlined">store</span><span>Termékek</span></a>
         <a href="#"><span class="material-symbols-outlined">leaderboard</span><span>Eredmények</span></a>
         <a href="#"><span class="material-symbols-outlined">help</span><span>Gyik</span></a>
         <a href="#"><span class="material-symbols-outlined">contact_page</span><span>Kapcsolat</span></a>
     </div>
 
-    @* ALSÓ GOMBOK *@
+    @* ALSÓ GOMBOK - Itt történik a varázslat *@
     <div class="bottom-actions">
-        <button @onclick="GoToLogin" class="auth-btn login">
-            <span class="material-symbols-outlined">login</span>
-            @if (isOpened)
-            {
-                <span>Bejelentkezés</span>
-            }
-        </button>
-        <button @onclick="GoToRegister" class="auth-btn register">
-            <span class="material-symbols-outlined">person_add</span>
-            @if (isOpened)
-            {
-                <span>Regisztráció</span>
-            }
-        </button>
+        <AuthorizeView>
+            <Authorized>
+                @* Ez a rész csak akkor látszik, ha a User be van jelentkezve *@
+                <div class="auth-btn user-display">
+                    <span class="material-symbols-outlined">account_circle</span>
+                    @if (isOpened)
+                    {
+                        @* A 'context' változót az AuthorizeView biztosítja, benne a user nevével *@
+                        <span>@context.User.Identity?.Name</span>
+                    }
+                </div>
+
+                <button @onclick="HandleLogout" class="auth-btn logout">
+                    <span class="material-symbols-outlined">logout</span>
+                    @if (isOpened)
+                    {
+                        <span>Kijelentkezés</span>
+                    }
+                </button>
+            </Authorized>
+
+            <NotAuthorized>
+                @* Ez a rész csak akkor látszik, ha nincs érvényes munkamenet *@
+                <button @onclick="GoToLogin" class="auth-btn login">
+                    <span class="material-symbols-outlined">login</span>
+                    @if (isOpened)
+                    {
+                        <span>Bejelentkezés</span>
+                    }
+                </button>
+
+                <button @onclick="GoToRegister" class="auth-btn register">
+                    <span class="material-symbols-outlined">person_add</span>
+                    @if (isOpened)
+                    {
+                        <span>Regisztráció</span>
+                    }
+                </button>
+            </NotAuthorized>
+        </AuthorizeView>
     </div>
 </div>
 
@@ -52,7 +81,19 @@
     private bool isOpened = true;
     private void ToggleSidebar() => isOpened = !isOpened;
 
-    // Navigációs metódusok
     private void GoToLogin() => Navigation.NavigateTo("/login");
     private void GoToRegister() => Navigation.NavigateTo("/register");
+
+    // Kijelentkezés logikája
+    private async Task HandleLogout()
+    {
+        // 1. Töröljük az adatokat a böngészőből, hogy F5 után ne lépjen be újra
+        await Storage.RemoveItemAsync("currentUser");
+
+        // 2. Szólunk az AuthProvidernek, hogy frissítse a globális állapotot
+        ((CustomAuthStateProvider)AuthProvider).NotifyUserLogout();
+
+        // 3. Visszaviszünk a főoldalra
+        Navigation.NavigateTo("/");
+    }
 }
