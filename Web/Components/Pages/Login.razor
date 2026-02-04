@@ -1,15 +1,78 @@
 ﻿@page "/login"
+@using Application.DTOs
+@using Application.Interfaces
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
 
-<h1>Bejelentkezés</h1>
+<div class="login-container">
+    <div class="login-box">
+        <h2 class="login-title">Bejelentkezés</h2>
 
-<form>
-    <label for="email">Email:</label>
-    <input type="email" id="email" name="email" />
-    <label for="password">Jelszó:</label>
-    <input type="password" id="password" name="password" />
-    <input type="submit" value="Bejelentkezés" />
-</form>
+        <EditForm FormName="LoginForm" Model="@loginDto" OnValidSubmit="HandleLogin">
+            <DataAnnotationsValidator />
+
+            <div class="input-group">
+                <label>Email vagy Felhasználónév</label>
+                <InputText @bind-Value="loginDto.EmailOrUserName" placeholder="Add meg az azonosítót" />
+                <div class="error-msg">
+                    <ValidationMessage For="@(() => loginDto.EmailOrUserName)" />
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Jelszó</label>
+                <InputText @bind-Value="loginDto.Password" type="password" placeholder="******" />
+                <div class="error-msg">
+                    <ValidationMessage For="@(() => loginDto.Password)" />
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="server-error">@errorMessage</div>
+            }
+
+            <div class="actions">
+                <button type="submit" disabled="@isSubmitting">
+                    @(isSubmitting ? "Folyamatban..." : "Belépés")
+                </button>
+            </div>
+        </EditForm>
+    </div>
+</div>
 
 @code {
+    private LoginDto loginDto = new();
+    private string? errorMessage;
+    private bool isSubmitting = false;
 
+    [Inject] private IAuthService AuthService { get; set; } = null!;
+
+    private async Task HandleLogin()
+    {
+        isSubmitting = true;
+        errorMessage = null;
+
+        try
+        {
+            var user = await AuthService.LoginAsync(loginDto.EmailOrUserName, loginDto.Password);
+
+            if (user != null)
+            {
+                Navigation.NavigateTo("/");
+            }
+            else
+            {
+                errorMessage = "Hibás adatok.";
+            }
+        }
+        catch (Exception)
+        {
+            errorMessage = "Hálózati hiba történt.";
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
 }

@@ -19,5 +19,31 @@ public class AuthApiService(HttpClient http) : IAuthService
         return await http.GetFromJsonAsync<IEnumerable<County>>("auth/counties") ?? new List<County>();
     }
 
-    public Task<User?> LoginAsync(string e, string p) => throw new NotImplementedException();
+    public async Task<User?> LoginAsync(string emailOrUserName, string password)
+    {
+        var loginDto = new LoginDto { EmailOrUserName = emailOrUserName, Password = password };
+
+        // Ez kiírja a Visual Studio 'Output' ablakába a TELJES címet:
+        Console.WriteLine($"DEBUG: Hívott URL: {http.BaseAddress}auth/login");
+
+        var response = await http.PostAsJsonAsync("auth/login", loginDto);
+
+        if (response.IsSuccessStatusCode)
+        {
+            return await response.Content.ReadFromJsonAsync<User>();
+        }
+        return null;
+    }
+
+    //public async Task<User?> LoginAsync(string emailOrUserName, string password)
+    //{
+    //    var loginDto = new LoginDto { EmailOrUserName = emailOrUserName, Password = password };
+    //    var response = await http.PostAsJsonAsync("api/auth/login", loginDto);
+
+    //    if (response.IsSuccessStatusCode)
+    //    {
+    //        return await response.Content.ReadFromJsonAsync<User>();
+    //    }
+    //    return null;
+    //}
 }

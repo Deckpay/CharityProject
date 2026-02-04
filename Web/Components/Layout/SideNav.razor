@@ -1,4 +1,5 @@
-﻿@* <--- Ez engedélyezi a C# kód futását kattintásra *@
+﻿@inject NavigationManager Navigation
+@* <--- Ez engedélyezi a C# kód futását kattintásra *@
 @rendermode InteractiveServer
 
 <div class="sidebar @(isOpened ? "sidebar-opened" : "sidebar-closed")">
@@ -30,14 +31,14 @@
 
     @* ALSÓ GOMBOK *@
     <div class="bottom-actions">
-        <button class="auth-btn login">
+        <button @onclick="GoToLogin" class="auth-btn login">
             <span class="material-symbols-outlined">login</span>
             @if (isOpened)
             {
                 <span>Bejelentkezés</span>
             }
         </button>
-        <button class="auth-btn register">
+        <button @onclick="GoToRegister" class="auth-btn register">
             <span class="material-symbols-outlined">person_add</span>
             @if (isOpened)
             {
@@ -50,4 +51,8 @@
 @code {
     private bool isOpened = true;
     private void ToggleSidebar() => isOpened = !isOpened;
+
+    // Navigációs metódusok
+    private void GoToLogin() => Navigation.NavigateTo("/login");
+    private void GoToRegister() => Navigation.NavigateTo("/register");
 }

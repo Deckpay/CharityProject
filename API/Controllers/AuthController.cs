@@ -35,5 +35,14 @@ namespace API.Controllers
             return Ok(counties);
         }
 
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
+        {
+            var userLogin = await _authService.LoginAsync(loginDto.EmailOrUserName, loginDto.Password);
+
+            if (userLogin != null) return Ok(userLogin);
+            return Unauthorized("Hibás adatok");
+        }
+
     }
 }
