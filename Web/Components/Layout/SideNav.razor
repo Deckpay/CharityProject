@@ -5,21 +5,23 @@
 @inject LocalStorageService Storage
 @rendermode InteractiveServer
 
-<div class="sidebar @(isOpened ? "sidebar-opened" : "sidebar-closed")">
-    @* ÁTFORDULÓ NYÍL (változatlan) *@
-    <div class="toggle-btn" @onclick="ToggleSidebar">
-        <span class="material-symbols-outlined toggle-icon @(isOpened ? "rotate-180" : "")">
-            chevron_left
-        </span>
-    </div>
 
-    @* LOGÓ (változatlan) *@
+
     <div class="logo-section">
         <span class="material-symbols-outlined">volunteer_activism</span>
         @if (isOpened)
         {
             <span>Charity App</span>
         }
+    </div>
+
+    @* LOGÓ (változatlan) *@
+<div class="sidebar @(isOpened ? "sidebar-opened" : "sidebar-closed")">
+    @* ÁTFORDULÓ NYÍL (változatlan) *@
+    <div class="toggle-btn" @onclick="ToggleSidebar">
+        <span class="material-symbols-outlined toggle-icon @(isOpened ? "rotate-180" : "")">
+            chevron_left
+        </span>
     </div>
 
     @* MENÜ (változatlan) *@

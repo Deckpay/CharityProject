@@ -8,82 +8,85 @@
 @inject NavigationManager NavigationManager
 
 <PageTitle>Regisztráció</PageTitle>
+<body>
+    <div class="container mt-5 registration-card  registration-card form-control ">
+        <div class="row justify-content-center">
+            <div class="col-md-6 border p-4 shadow-sm bg-light">
+                <h3 class="text-center mb-4">Új fiók létrehozása</h3>
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6 border p-4 shadow-sm bg-light">
-            <h3 class="text-center mb-4">Új fiók létrehozása</h3>
+                <EditForm Model="@registerModel" OnValidSubmit="HandleRegistration" FormName="RegistrationForm">
+                    <DataAnnotationsValidator />
 
-            <EditForm Model="@registerModel" OnValidSubmit="HandleRegistration" FormName="RegistrationForm">
-                <DataAnnotationsValidator />
-
-                <div class="mb-3">
-                    <label>Felhasználónév</label>
-                    <InputText @bind-Value="registerModel.UserName" class="form-control" />
-                    <ValidationMessage For="@(() => registerModel.UserName)" />
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label>Vezetéknév</label>
-                        <InputText @bind-Value="registerModel.LastName" class="form-control" />
+                    <div class="mb-3 ">
+                        <label>Felhasználónév</label>
+                        <InputText @bind-Value="registerModel.UserName" class="form-control" />
+                        <ValidationMessage For="@(() => registerModel.UserName)" />
                     </div>
-                    <div class="col-md-6 mb-3">
-                        <label>Keresztnév</label>
-                        <InputText @bind-Value="registerModel.FirstName" class="form-control" />
+
+                    <div class="row   ">
+                        <div class="col-md-6 mb-3">
+                            <label>Vezetéknév</label>
+                            <InputText @bind-Value="registerModel.LastName" class="form-control" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Keresztnév</label>
+                            <InputText @bind-Value="registerModel.FirstName" class="form-control" />
+                        </div>
                     </div>
-                </div>
 
-                <div class="mb-3">
-                    <label>Email cím</label>
-                    <InputText @bind-Value="registerModel.Email" class="form-control" />
-                    <ValidationMessage For="@(() => registerModel.Email)" />
-                </div>
+                    <div class="mb-3">
+                        <label>Email cím</label>
+                        <InputText @bind-Value="registerModel.Email" class="form-control" />
+                        <ValidationMessage For="@(() => registerModel.Email)" />
+                    </div>
 
-                <div class="mb-3">
-                    <label>Megye</label>
-                    <InputSelect @bind-Value="registerModel.CountyId" class="form-control">
-                        <option value="0">-- Válassz megyét --</option>
-                        @foreach (var county in counties)
-                        {
-                            <option value="@county.CountyId">@county.CountyName</option>
-                        }
-                    </InputSelect>
-                    <ValidationMessage For="@(() => registerModel.CountyId)" />
-                </div>
+                    <div class="mb-3 selectForm">
+                        <label>Megye</label>
+                        <InputSelect @bind-Value="registerModel.CountyId" class="form-control">
+                            <option value="0">-- Válassz megyét --</option>
+                            @foreach (var county in counties)
+                            {
+                                <option value="@county.CountyId">@county.CountyName</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="@(() => registerModel.CountyId)" />
+                    </div>
 
-                <div class="mb-3">
-                    <label>Jelszó</label>
-                    <InputText @bind-Value="registerModel.Password" type="password" class="form-control" />
-                    <ValidationMessage For="@(() => registerModel.Password)" />
-                </div>
+                    <div class="mb-3">
+                        <label>Jelszó</label>
+                        <InputText @bind-Value="registerModel.Password" type="password" class="form-control" />
+                        <ValidationMessage For="@(() => registerModel.Password)" />
+                    </div>
 
-                <div class="mb-3">
-                    <label>Jelszó újra</label>
-                    <InputText @bind-Value="registerModel.ConfirmPassword" type="password" class="form-control" />
-                    <ValidationMessage For="@(() => registerModel.ConfirmPassword)" />
-                </div>
+                    <div class="mb-3">
+                        <label>Jelszó újra</label>
+                        <InputText @bind-Value="registerModel.ConfirmPassword" type="password" class="form-control" />
+                        <ValidationMessage For="@(() => registerModel.ConfirmPassword)" />
+                    </div>
 
-                @if (!string.IsNullOrEmpty(errorMessage))
-                {
-                    <div class="alert alert-danger">@errorMessage</div>
-                }
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <div class="alert alert-danger">@errorMessage</div>
+                    }
 
-                <div class="mb-3">
-                    <label class="fw-bold">Regisztráció célja</label>
-                    <InputSelect @bind-Value="registerModel.RoleId" class="form-control">
-                        <option value="0">-- Válassz szerepkört --</option>
-                        <option value="1">Adományozó (Donor)</option>s
-                        <option value="2">Rászoruló (Recipient)</option>
-                    </InputSelect>
-                    <ValidationMessage For="@(() => registerModel.RoleId)" />
-                </div>
+                    <div class="mb-3">
+                        <label class="fw-bold">Regisztráció célja</label>
+                        <InputSelect @bind-Value="registerModel.RoleId" class="form-control">
+                            <option value="0">-- Válassz szerepkört --</option>
+                            <option value="1">Adományozó (Donor)</option>s
+                            <option value="2">Rászoruló (Recipient)</option>
+                        </InputSelect>
+                        <ValidationMessage For="@(() => registerModel.RoleId)" />
+                    </div>
+                    <div class="actions button">
 
-                <button type="submit" class="btn btn-primary w-100">Regisztráció</button>
-            </EditForm>
+                        <button type="submit" class="btn btn-primary w-100 ">Regisztráció</button>
+                    </div>
+                </EditForm>
+            </div>
         </div>
     </div>
-</div>
+</body>
 
 @code {
     private RegisterDto registerModel = new();

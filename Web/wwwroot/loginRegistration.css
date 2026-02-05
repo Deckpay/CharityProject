@@ -1,0 +1,122 @@
+﻿body {
+    /*Háttér vizszintessége*/
+    background: linear-gradient(to right, #007bff, #ff69b4,#ff0000);
+
+    /*Nincs ismétlés beállítása*/
+    background-attachment: fixed;
+    background-size: cover;
+
+    /*Igazítás*/
+    display: flex;
+    justify-content:center;
+   margin-top:0px;
+   margin-bottom:0px;    
+
+    /*Margók eltüntetése */
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;    
+}
+
+/* input mező és select stilusa */
+.form-control {
+    
+    width:80%;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 12px;
+    transition: all 0.3s ease;
+    background-color: #ffffff;
+    
+}
+
+/*egér felette megnagyobbodás*/
+.form-control:hover {
+      border-color: #ced4da !important;
+      transform: translateY(-1px);
+}
+
+/*menübe belépésnel fokszál*/
+.form-control:focus {
+      border-color: #007bff !important;
+      box-shadow: 0 0 8px rgba(0, 123, 255, 0.25) !important;
+      outline: none;
+      transform: translateY(-2px);
+}
+
+/*legördulő menu*/
+.selectForm {
+    cursor: pointer;
+}
+
+/*rgisztrációs kártya formázása*/
+.shadowSm {
+    border-radius: 15px !important;
+    border: none !important;
+
+}
+
+/*gombok formázása*/
+.actions button {
+    padding-top:50px;
+    width:50%;
+    background-color: #007bff;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /*növekedésért felel*/
+    cursor: pointer;
+    width: 100%;
+}
+/*megnagyobbitas ha fölé visszűk az egeret*/
+ .actions button:hover {
+      background-color: #0056b3;
+      transform: scale(1.05); /* 5%-kal nagyobb lesz */
+      box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4);
+ }
+
+/* Kattintáskor kicsit benyomódik */
+.actions button:active {
+       transform: scale(0.98);
+}
+
+/* 3. Kártya és egyéb dolgok*/
+.registration-card {
+    background-color: transparent !important;
+    display: block;
+    width: 50%;
+    text-align: left;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #333;
+    text-align: center;
+    padding: 40px !important;
+    background-color: rgba(255, 255, 255, 0.9) ; /*Kártya kiemelése*/
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1), 0 20px 40px rgba(0,0,0,0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Legördülő menü kurzor */
+.selectForm {
+    cursor: pointer;
+}
+
+/* Hibajelentés animációja (ha van hibaüzenet, picit ússzon be) */
+.validation-message {
+    font-size: 0.85rem;
+    color: #dc3545;
+    margin-top: 4px;
+    display: block;
+}
+
+/* A beviteli mezők stílusa */
+.registration-card .form-control,
+.registration-card .form-select {
+    width: 100% !important; /* A mező vége pont a kártya széléig ér majd */
+    display: block;
+    box-sizing: border-box; /* Beleszámolja a keretet a szélességbe */
+}
+
+
