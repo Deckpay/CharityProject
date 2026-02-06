@@ -12,31 +12,35 @@
     <div class="container mt-5 registration-card  registration-card form-control ">
         <div class="row justify-content-center">
             <div class="col-md-6 border p-4 shadow-sm bg-light">
-                <h3 class="text-center mb-4">Új fiók létrehozása</h3>
+                <h3 class="text-center mb-4 ">Új fiók létrehozása</h3>
 
                 <EditForm Model="@registerModel" OnValidSubmit="HandleRegistration" FormName="RegistrationForm">
                     <DataAnnotationsValidator />
 
                     <div class="mb-3 ">
                         <label>Felhasználónév</label>
-                        <InputText @bind-Value="registerModel.UserName" class="form-control" />
+                        
+                        <InputText  @bind-Value="registerModel.UserName" class="form-control " placeholder="Kérlek add meg a felhasználó neved"  />
                         <ValidationMessage For="@(() => registerModel.UserName)" />
                     </div>
 
                     <div class="row   ">
                         <div class="col-md-6 mb-3">
                             <label>Vezetéknév</label>
-                            <InputText @bind-Value="registerModel.LastName" class="form-control" />
+                            
+                            <InputText @bind-Value="registerModel.LastName" class="form-control" placeholder="Kérlek add meg a vezetékneved" />
                         </div>
                         <div class="col-md-6 mb-3">
                             <label>Keresztnév</label>
-                            <InputText @bind-Value="registerModel.FirstName" class="form-control" />
+                            
+                            <InputText @bind-Value="registerModel.FirstName" class="form-control" placeholder="Kérlek add meg a kereszt  neved" />
                         </div>
                     </div>
 
                     <div class="mb-3">
                         <label>Email cím</label>
-                        <InputText @bind-Value="registerModel.Email" class="form-control" />
+                        
+                        <InputText @bind-Value="registerModel.Email" class="form-control" placeholder="Kérlek add meg az email cíned"  />
                         <ValidationMessage For="@(() => registerModel.Email)" />
                     </div>
 
@@ -54,13 +58,27 @@
 
                     <div class="mb-3">
                         <label>Jelszó</label>
-                        <InputText @bind-Value="registerModel.Password" type="password" class="form-control" />
-                        <ValidationMessage For="@(() => registerModel.Password)" />
+                        <div class="password-wrapper">
+
+                            <InputText @bind-Value="registerModel.Password" type="@(showPassword? "text": "password")" class="form-control" placeholder="Kérlek add meg a jelszavad minimum 6 karakter" />
+                            <button type="button" class="eye-icon-button" @onclick="TogglePassword" tabindex="-1">
+                                <i class="bi @(showPassword ? "bi-eye" : "bi-eye-slash")"></i>
+                            </button>
+                        </div>
+                            <ValidationMessage For="@(() => registerModel.Password)" />
+
+                        
                     </div>
 
                     <div class="mb-3">
                         <label>Jelszó újra</label>
-                        <InputText @bind-Value="registerModel.ConfirmPassword" type="password" class="form-control" />
+                        <div class="password-wrapper">
+
+                        <InputText @bind-Value="registerModel.ConfirmPassword" type="@(showPassword? "text": "password")" class="form-control" placeholder="Kérlek add meg a jelszavad újból" />
+                        <button type="button" class="auth-btn btn-outline-secondary" @onclick="TogglePassword">
+                            <i class="bi @(showPassword ? "bi-eye" : "bi-eye-slash")"></i>                              
+                        </button>
+                        </div>
                         <ValidationMessage For="@(() => registerModel.ConfirmPassword)" />
                     </div>
 
@@ -80,7 +98,7 @@
                     </div>
                     <div class="actions button">
 
-                        <button type="submit" class="btn btn-primary w-100 ">Regisztráció</button>
+                        <button type="submit" class="btn btn-primary w-100 actions ">Regisztráció</button>
                     </div>
                 </EditForm>
             </div>
@@ -112,5 +130,13 @@
         {
             errorMessage = "A regisztráció nem sikerült. Lehet, hogy már létezik ilyen felhasználó.";
         }
+    }
+
+    /*jelszó rejtése vagy megjelanítési állapota*/
+    private bool showPassword = false;
+
+    private void TogglePassword()
+    {
+        showPassword = !showPassword;
     }
 }
