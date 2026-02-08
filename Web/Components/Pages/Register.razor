@@ -9,7 +9,7 @@
 
 <PageTitle>Regisztráció</PageTitle>
 <body>
-    <div class="container mt-5 registration-card  registration-card form-control ">
+    <div class="container mt-5 registration-card  form-control ">
         <div class="row justify-content-center">
             <div class="col-md-6 border p-4 shadow-sm bg-light">
                 <h3 class="text-center mb-4 ">Új fiók létrehozása</h3>
@@ -60,10 +60,11 @@
                         <label>Jelszó</label>
                         <div class="password-wrapper">
 
-                            <InputText @bind-Value="registerModel.Password" type="@(showPassword? "text": "password")" class="form-control" placeholder="Kérlek add meg a jelszavad minimum 6 karakter" />
-                            <button type="button" class="eye-icon-button" @onclick="TogglePassword" tabindex="-1">
-                                <i class="bi @(showPassword ? "bi-eye" : "bi-eye-slash")"></i>
-                            </button>
+                            <InputText @bind-Value="registerModel.Password" type="@(showPassword ? "text" : "password")" class="form-control" placeholder="Kérlek add meg a jelszavad minimum 6 karakter" />
+                                <button type="button" class="password-icon" @onclick="TogglePassword" tabindex="-1">
+                                 <i class="bi @(showPassword ? "bi-eye" : "bi-eye-slash")"></i>
+                                </button>
+                            
                         </div>
                             <ValidationMessage For="@(() => registerModel.Password)" />
 
@@ -75,7 +76,7 @@
                         <div class="password-wrapper">
 
                         <InputText @bind-Value="registerModel.ConfirmPassword" type="@(showPassword? "text": "password")" class="form-control" placeholder="Kérlek add meg a jelszavad újból" />
-                        <button type="button" class="auth-btn btn-outline-secondary" @onclick="TogglePassword">
+                        <button type="button" class="auth-btn btn-outline-secondary password-icon" @onclick="TogglePassword">
                             <i class="bi @(showPassword ? "bi-eye" : "bi-eye-slash")"></i>                              
                         </button>
                         </div>

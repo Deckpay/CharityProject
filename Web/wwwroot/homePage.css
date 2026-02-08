@@ -1,3 +1,55 @@
 ﻿body {
 
 }
+/*felső sáv stilusa*/
+.top-navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100px;
+    background: #1a2a3a;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    z-index: 1200;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/*felső logo és zöveg stilusa*/
+.top-logo {
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-weight:bold;
+    font-size:1.2rem;
+}
+.top-logo span {
+    color:white;
+}
+
+/* ezzelk toljuk lejebb a tartalmat a 60px sáv miatt*/
+.sidebar {
+    position:fixed;
+    top:60px !important;
+    height:calc(100vh-60px) !important;
+    z-index:1000;
+}
+
+/*fő tartalom  letoljuk 60px el*/
+.main-content {
+    margin-top:60px;
+    margin-left:250px;
+    min-height:calc(100vh-60px);
+    padding:20px;
+    transition: margin-left 0.3s ease;
+}
+
+/*ha a sidebar nyitva van*/
+.sidebar ~ .main-content {
+    margin-left:250px;
+}
+/*ha a sidebar zárva van van*/
+.sidebar-closed ~ .main-content {
+    margin-left: 80px;
+}

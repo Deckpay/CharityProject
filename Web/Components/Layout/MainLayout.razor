@@ -1,15 +1,28 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="page">
-    @* A SideNav fix szélességű és nem görög el *@
-    <aside class="sidenav-container">
-        <SideNav />
-    </aside>
+@* 1. Ez az új fő tároló, ami mindent összefog *@
+<div class="app-wrapper">
 
-    @* A main tölti ki a maradék helyet és ez lesz görgethető *@
-    <main class="main-content">
-        <article class="content">
-            @Body
-        </article>
-    </main>
+    @* 2. A felső sáv - Ez lesz a vízszintes szár a T betű tetején *@
+    <header class="top-navbar">
+        <div class="top-logo">
+            <span class="material-symbols-outlined">volunteer_activism</span>
+            <span>Charity App</span>
+        </div>
+    </header>
+
+    @* 3. A page div most már csak a navbar ALATTI részt jelenti *@
+    <div class="page">
+        @* Bal oldali oszlop *@
+        <aside class="sidenav-container">
+            <SideNav />
+        </aside>
+
+        @* Jobb oldali oszlop *@
+        <main class="main-content">
+            <article class="content">
+                @Body
+            </article>
+        </main>
+    </div>
 </div>
