@@ -1,0 +1,31 @@
+﻿<div class="product-card">
+    <div class="image-wrapper">
+        <div class="image-box">
+            <span>IMG</span>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <h3 class="product-title">@Product.ProductName</h3>
+
+        <p class="product-description">
+            @((Product.ProductDescription?.Length > 110)
+                        ? Product.ProductDescription.Substring(0, 107) + "..."
+                        : Product.ProductDescription)
+        </p>
+    </div>
+
+    <div class="card-footer">
+        <div class="tags">
+            <span class="tag category">@CategoryName</span>
+            <span class="tag county">@CountyName</span>
+        </div>
+
+        <button class="details-btn">Részletek</button>
+    </div>
+</div>
+@code {
+    [Parameter] public ProductDto Product { get; set; } = new();
+    [Parameter] public string CategoryName { get; set; } = "Egyéb";
+    [Parameter] public string CountyName { get; set; } = "Ismeretlen";
+}
