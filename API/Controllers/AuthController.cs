@@ -35,6 +35,13 @@ namespace API.Controllers
             return Ok(counties);
         }
 
+        [HttpGet("productcategories")] // Végpont: api/auth/productcategories
+        public async Task<IActionResult> GetCategories()
+        {
+            var categories = await _authService.GetProductCategoriesAsync();
+            return Ok(categories);
+        }
+
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {

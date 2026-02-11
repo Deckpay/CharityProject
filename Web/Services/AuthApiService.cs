@@ -35,6 +35,11 @@ public class AuthApiService(HttpClient http) : IAuthService
         return null;
     }
 
+    public async Task<IEnumerable<ProductCategory>> GetProductCategoriesAsync()
+    {
+        return await http.GetFromJsonAsync<IEnumerable<ProductCategory>>("auth/productcategories") ?? new List<ProductCategory>();
+    }
+
     //public async Task<User?> LoginAsync(string emailOrUserName, string password)
     //{
     //    var loginDto = new LoginDto { EmailOrUserName = emailOrUserName, Password = password };

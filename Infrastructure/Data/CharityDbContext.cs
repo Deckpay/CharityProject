@@ -51,6 +51,10 @@ namespace Infrastructure.Data
 
             // Enum konverzió (Opcionális: Ha szövegként akarnád tárolni az adatbázisban)
             // Itt most hagyjuk alapértelmezett INT-en, ahogy beszéltük.
+
+            // Ha az adatbázisban pl. "ProductCategory" a tábla neve (egyes számban):
+            modelBuilder.Entity<ProductCategory>().ToTable("ProductCategory");
+            modelBuilder.Entity<Product>().ToTable("Products"); // Vagy ami a valódi neve az SQL-ben
         }
     }
 }

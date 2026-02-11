@@ -1,15 +1,128 @@
-﻿@using Application.DTOs
+﻿@page "/product-create"
+@using Application.DTOs
+@using Application.Interfaces
+@using Application.Services
+@using Domain.Entities
+@using Infrastructure.Services
+@inject NavigationManager Navigation
+@inject IAuthService AuthService
+@inject IProductService productService
+@rendermode InteractiveServer
 
 <h3>ProductCreate</h3>
 
-<EditForm Model="@ProductDto" OnValidSubmit="HandleSubmit">
+<EditForm Model="@productDto" OnValidSubmit="HandleSubmit">
+    <div>
+        <label>Termék Neve</label>
+        <InputText @bind-Value="productDto.ProductName" placeholder="Pl.:Mosógép" />
+    </div>
+    <div>
+        <label>Leírás</label>
+        <InputText @bind-Value="productDto.ProductDescription" placeholder="Írd le a termék részleteit..." />
+    </div>
+    <div>
+        @* KATEGÓRIA VÁLASZTÓ *@
+        <div>
+            <label>Kategória</label>
+            <InputSelect @bind-Value="productDto.ProductCategoryId">
+                <option value="0">-- Válassz --</option>
+                @foreach (var cat in categories)
+                {
+                    <option value="@cat.ProductCategoryId">@cat.ProductCategoryName</option>
+                }
+            </InputSelect>
+            <div><ValidationMessage For="@(() => productDto.ProductCategoryId)" /></div>
+        </div>
 
+        @* MEGYE VÁLASZTÓ *@
+        <div>
+            <label>Megye</label>
+            <InputSelect @bind-Value="productDto.CountyId">
+                <option value="0">-- Válassz --</option>
+                @foreach (var county in counties)
+                {
+                    <option value="@county.CountyId">@county.CountyName</option>
+                }
+            </InputSelect>
+            <div><ValidationMessage For="@(() => productDto.CountyId)" /></div>
+        </div>
+    </div>
+    @if (showSuccessMessage)
+    {
+        <div class="alert alert-success" style="background-color: #d4edda; color: #155724; padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px solid #c3e6cb;">
+            <strong>Siker!</strong> A termék hirdetése sikeresen feladva.
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger" style="background-color: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px solid #f5c6cb;">
+            @errorMessage
+        </div>
+    }
+    <div>
+        <button type="submit" disabled="@isSubmitting">@(isSubmitting ? "Mentés..." : "Termék beküldése")</button>
+    </div>
 </EditForm>
 
 @code {
-    private async Task HandleSubmit()
+    private ProductDto productDto = new();
+    private string? errorMessage;
+    private bool isSubmitting = false;
+    private bool showSuccessMessage = false; // Új változó a siker jelzésére
+
+    // Csak egyszer deklaráljuk a listákat.
+    // Használjuk az Entity típusokat, ha a Service azt ad vissza.
+    private List<ProductCategory> categories = new();
+    private List<County> counties = new();
+
+    protected override async Task OnInitializedAsync()
     {
-        
+        try
+        {
+            // Adatok lekérése
+            var catResult = await AuthService.GetProductCategoriesAsync();
+            categories = catResult.ToList();
+
+            var countyResult = await AuthService.GetCountiesAsync();
+            counties = countyResult.ToList();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "Nem sikerült betölteni az alapadatokat: " + ex.Message;
+        }
     }
 
+    private async Task HandleSubmit()
+    {
+        isSubmitting = true;
+        errorMessage = null;
+
+        try
+        {
+            // Itt küldjük be a DTO-t
+            var success = await productService.CreateProductAsync(productDto);
+
+            if (success)
+            {
+                //Navigation.NavigateTo("/"); // Vagy a sikeres oldaladra
+                StateHasChanged(); // Frissítjük a felületet
+                await Task.Delay(5000); // Várunk 5 másodpercet
+                showSuccessMessage = false;
+                StateHasChanged(); // Eltüntetjük az üzenetet
+            }
+            else
+            {
+                errorMessage = "A mentés nem sikerült a szerveren.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "Hiba a mentés során: " + ex.Message;
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
 }

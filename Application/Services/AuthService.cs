@@ -57,5 +57,10 @@ namespace Infrastructure.Services
         {
             return await _unitOfWork.Counties.GetAllAsync();
         }
+
+        public async Task<IEnumerable<ProductCategory>> GetProductCategoriesAsync()
+        {
+            return await _unitOfWork.Categories.GetAllAsync();
+        }
     }
 }
