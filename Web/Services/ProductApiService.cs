@@ -25,10 +25,10 @@ public class ProductApiService(HttpClient http) : IProductService
     }
 
     // "Postás, hozz nekem listát az API-tól!"
-    public async Task<IEnumerable<Product>> GetProductsAsync()
+    public async Task<IEnumerable<ProductDto>> GetProductsAsync()
     {
-        return await http.GetFromJsonAsync<IEnumerable<Product>>("Product")
-               ?? new List<Product>();
+        return await http.GetFromJsonAsync<IEnumerable<ProductDto>>("Product")
+               ?? new List<ProductDto>();
     }
 
     // "Postás, mondd meg az API-nak, hogy törölje a 5-öst!"

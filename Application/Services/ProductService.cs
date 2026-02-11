@@ -33,12 +33,19 @@ namespace Application.Services
             return await _unitOfWork.CompleteAsync() > 0;
         }
 
-        public async Task<IEnumerable<Product>> GetProductsAsync()
+        public async Task<IEnumerable<ProductDto>> GetProductsAsync()
         {
             // softdel miatt csak az aktív termékeket adja vissza
             var allProducts = await _unitOfWork.Products.GetAllAsync();
 
-            return allProducts.Where(p => p.IsActive);
+            return allProducts.Where(p => p.IsActive).Select(p => new ProductDto
+            {
+                ProductId = p.ProductId,
+                ProductName = p.ProductName,
+                ProductDescription = p.ProductDescription,
+                ProductCategoryId = p.ProductCategoryId,
+                CountyId = p.CountyId
+            }).ToList();
         }
         public async Task DeleteProductAsync(int id)
         {

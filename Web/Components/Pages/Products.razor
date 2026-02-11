@@ -1,0 +1,105 @@
+﻿@page "/products"
+@using Application.DTOs
+@using Application.Interfaces
+@using Domain.Entities
+@inject IAuthService AuthService
+@inject IProductService productService
+
+<div class="container mt-4">
+    <h3 class="mb-4">Termékek böngészése</h3>
+
+    <div class="card mb-4 p-3 shadow-sm bg-light">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label font-weight-bold">Keresés névben vagy leírásban</label>
+                <input type="text" class="form-control" @bind="searchQuery" @bind:event="oninput" placeholder="Írd be a keresett szót..." />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label font-weight-bold">Kategória</label>
+                <select class="form-select" @bind="selectedCategoryId">
+                    <option value="0">Összes kategória</option>
+                    @foreach (var cat in categories)
+                    {
+                        <option value="@cat.ProductCategoryId">@cat.ProductCategoryName</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label font-weight-bold">Megye</label>
+                <select class="form-select" @bind="selectedCountyId">
+                    <option value="0">Összes megye</option>
+                    @foreach (var county in counties)
+                    {
+                        <option value="@county.CountyId">@county.CountyName</option>
+                    }
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        @if (FilteredProducts.Any())
+        {
+            @foreach (var product in FilteredProducts)
+            {
+                <div class="col">
+                    <div class="card h-100 shadow-sm hover-shadow">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary">@product.ProductName</h5>
+                            <p class="card-text">@((product.ProductDescription?.Length > 80) ? product.ProductDescription.Substring(0, 77) + "..." : product.ProductDescription)</p>
+                        </div>
+                        <div class="card-footer bg-transparent border-top-0 d-flex justify-content-between">
+                            <span class="badge rounded-pill bg-outline-secondary text-dark border">@GetCategoryName(product.ProductCategoryId)</span>
+                            <span class="badge rounded-pill bg-light text-muted border">@GetCountyName(product.CountyId)</span>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12 text-center py-5">
+                <p class="text-muted">Nincs a feltételeknek megfelelő termék.</p>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private List<ProductDto> allProducts = new();
+    private List<ProductCategory> categories = new();
+    private List<County> counties = new();
+
+    private string searchQuery = "";
+    private int selectedCategoryId = 0;
+    private int selectedCountyId = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Párhuzamosan indítjuk a lekéréseket a gyorsaságért
+        var tasks = new Task[] {
+            LoadProducts(),
+            LoadFilters()
+        };
+        await Task.WhenAll(tasks);
+    }
+
+    private async Task LoadProducts() => allProducts = (await productService.GetProductsAsync()).ToList();
+    private async Task LoadFilters()
+    {
+        categories = (await AuthService.GetProductCategoriesAsync()).ToList();
+        counties = (await AuthService.GetCountiesAsync()).ToList();
+    }
+
+    // A keresési logika
+    private IEnumerable<ProductDto> FilteredProducts => allProducts.Where(p =>
+        (string.IsNullOrWhiteSpace(searchQuery) ||
+         p.ProductName.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) ||
+         (p.ProductDescription?.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) ?? false)) &&
+        (selectedCategoryId == 0 || p.ProductCategoryId == selectedCategoryId) &&
+        (selectedCountyId == 0 || p.CountyId == selectedCountyId)
+    );
+
+    private string GetCategoryName(int id) => categories.FirstOrDefault(c => c.ProductCategoryId == id)?.ProductCategoryName ?? "Egyéb";
+    private string GetCountyName(int id) => counties.FirstOrDefault(c => c.CountyId == id)?.CountyName ?? "Ismeretlen";
+}
