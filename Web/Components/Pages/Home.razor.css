@@ -1,18 +1,12 @@
-﻿body {
-    flex-grow: 1; /* Ez mondja meg, hogy töltse ki a maradék helyet */
-    overflow-y: auto; /* Ha hosszú a tartalom, csak ez a rész görgethető */
-    background-color: #f4f4f4;
+﻿section {
+    /* Képernyő magassága mínusz a felső sáv */
+    height: calc(100vh - 60px);
+    width: 100%;
+    scroll-snap-align: start;
     display: flex;
-    flex-direction: column;
-    /* GÖRGETÉS BEÁLLÍTÁSA */
-    overflow-y: auto;
+    border-bottom: 2px solid black;
 }
 
-#contact {
-    width: 100vh;
-    height: 450px;
-    background-color: burlywood;
-    margin: 50px;
-    border-radius: 25px;
-    padding: 15px;
+#home {
+    background-color: aquamarine;
 }

@@ -1,15 +1,23 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="page">
-    @* A SideNav fix szélességű és nem görög el *@
-    <aside class="sidenav-container">
-        <SideNav />
-    </aside>
+<div class="page-wrapper">
+    @* 1. FELSŐ LOGÓ SÁV *@
+    <header class="top-bar">
+        <div class="logo-section-top">
+            <span class="material-symbols-outlined">volunteer_activism</span>
+            <span>Charity App</span>
+        </div>
+    </header>
 
-    @* A main tölti ki a maradék helyet és ez lesz görgethető *@
-    <main class="main-content">
-        <article class="content">
+    <div class="content-wrapper">
+        @* 2. OLDALSÁV *@
+        <aside class="sidenav-container">
+            <SideNav />
+        </aside>
+
+        @* 3. FŐ TARTALOM *@
+        <main class="main-content">
             @Body
-        </article>
-    </main>
+        </main>
+    </div>
 </div>

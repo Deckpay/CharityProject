@@ -5,10 +5,8 @@
     color: white;
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    height: 100%; /* 100vh helyett 100%, hogy a content-wrapper-hez igazodjon */
     transition: width 0.3s ease;
-    flex-shrink: 0;
-    /* overflow: visible !important; - A nyíl miatt hagyni kell */
 }
 
 .sidebar-opened {

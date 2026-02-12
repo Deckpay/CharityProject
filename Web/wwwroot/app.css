@@ -1,37 +1,45 @@
-/* A teljes képernyõs keret */
-.page {
-    display: flex; /* Egymás mellé teszi a nav-ot és a main-t */
-    height: 100vh; /* Pontosan kitölti a képernyõt */
-    width: 100vw;
-    overflow: hidden; /* Megakadályozza, hogy az egész oldal görögjön */
-}
-
-/* SideNav tárolója */
-.sidenav-container {
-    flex-shrink: 0; /* Nem engedi, hogy a tartalom összenyomja a menüt */
-    height: 100%;
-    background-color: #1a1a1a; /* Opcionális: háttérszín a hézagok ellen */
-}
-
-/* A fõ tartalom zónája */
-.main-content {
-    flex-grow: 1; /* Elfogyasztja a maradék vízszintes helyet */
-    height: 100%; /* Kitölti a függõleges helyet */
-    overflow-y: auto; /* <--- EZ A TITOK: Csak ez a rész fog görgetni! */
-    background-color: #f4f4f4;
-}
-
-.content {
-    padding: 20px; /* Távolság a szélektõl a szövegnek */
-}
-
-/* Alapértelmezett margók eltüntetése */
-body {
+/* Alap reset, hogy ne legyen felesleges margó */
+html, body {
     margin: 0;
     padding: 0;
-    font-family: "Rubik", sans-serif;
+    height: 100%;
+    overflow: hidden; /* Tiltjuk a teljes oldal görgetését */
 }
 
-h1, h2, h3 {
-    font-weight: 800;
+.page-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.top-bar {
+    height: 60px;
+    width: 100%;
+    background: #3b5998; /* A logó sáv színe */
+    color: white;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    z-index: 1001;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.content-wrapper {
+    display: flex;
+    flex: 1; /* Kitölti a maradék helyet a TopBar alatt */
+    overflow: hidden;
+}
+
+.sidenav-container {
+    height: 100%;
+    flex-shrink: 0;
+}
+
+/* Ez a rész felel a szekciók görgetéséért */
+.main-content {
+    flex: 1;
+    overflow-y: scroll;
+    scroll-snap-type: y proximity;
+    scroll-behavior: smooth;
+    background-color: #f4f4f4;
 }
