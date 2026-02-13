@@ -1,39 +1,38 @@
-﻿namespace Web.Services;
-
+﻿using Application.DTOs;
 using Application.Interfaces;
-using Application.DTOs;
-using Domain.Entities;
-using System.Net.Http.Json;
 
-public class ProductApiService(HttpClient http) : IProductService
+namespace Web.Services
 {
-    // Itt csak egy sor az egész: "Postás, vidd ezt az API-nak!"
-    public async Task<bool> CreateProductAsync(ProductDto productDto)
+    public class ProductApiService(HttpClient http) : IProductService
     {
-        var response = await http.PostAsJsonAsync("Product", productDto);
-
-        if (!response.IsSuccessStatusCode)
+        // Itt csak egy sor az egész: "Postás, vidd ezt az API-nak!"
+        public async Task<bool> CreateProductAsync(ProductDto productDto)
         {
-            // Ez kiírja, hogy 400 (Rossz kérés) vagy 500 (Szerver hiba)
-            Console.WriteLine($"Státusz kód: {response.StatusCode}");
+            var response = await http.PostAsJsonAsync("Product", productDto);
 
-            var errorContent = await response.Content.ReadAsStringAsync();
-            Console.WriteLine($"Részletes hiba: {errorContent}");
+            if (!response.IsSuccessStatusCode)
+            {
+                // Ez kiírja, hogy 400 (Rossz kérés) vagy 500 (Szerver hiba)
+                Console.WriteLine($"Státusz kód: {response.StatusCode}");
+
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Részletes hiba: {errorContent}");
+            }
+
+            return response.IsSuccessStatusCode;
         }
 
-        return response.IsSuccessStatusCode;
-    }
+        // "Postás, hozz nekem listát az API-tól!"
+        public async Task<IEnumerable<ProductDto>> GetProductsAsync()
+        {
+            return await http.GetFromJsonAsync<IEnumerable<ProductDto>>("Product")
+                   ?? new List<ProductDto>();
+        }
 
-    // "Postás, hozz nekem listát az API-tól!"
-    public async Task<IEnumerable<ProductDto>> GetProductsAsync()
-    {
-        return await http.GetFromJsonAsync<IEnumerable<ProductDto>>("Product")
-               ?? new List<ProductDto>();
-    }
-
-    // "Postás, mondd meg az API-nak, hogy törölje a 5-öst!"
-    public async Task DeleteProductAsync(int id)
-    {
-        await http.DeleteAsync($"Product/{id}");
+        // "Postás, mondd meg az API-nak, hogy törölje a 5-öst!"
+        public async Task DeleteProductAsync(int id)
+        {
+            await http.DeleteAsync($"Product/{id}");
+        }
     }
 }

@@ -62,37 +62,37 @@ h1 {
     transition: all 0.3s ease;
 }
 
-    .cta-box:hover {
-        border-color: #3b5998;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-    }
+.cta-box:hover {
+    border-color: #3b5998;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+}
 
-    .cta-box .material-symbols-outlined {
-        font-size: 40px !important;
-        color: #3b5998;
-        margin-bottom: 15px;
-    }
+.cta-box .material-symbols-outlined {
+    font-size: 40px !important;
+    color: #3b5998;
+    margin-bottom: 15px;
+}
 
-    .cta-box h3 {
-        font-size: 1.5rem;
-        color: #1e293b;
-        margin-bottom: 10px;
-    }
+.cta-box h3 {
+    font-size: 1.5rem;
+    color: #1e293b;
+    margin-bottom: 10px;
+}
 
-    .cta-box p {
-        color: #64748b;
-        margin-bottom: 20px;
-        font-size: 0.95rem;
-    }
+.cta-box p {
+    color: #64748b;
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+}
 
-    .cta-box button {
-        width: 100%;
-        padding: 12px;
-        border-radius: 6px;
-        border: none;
-        font-weight: 600;
-        cursor: pointer;
-    }
+.cta-box button {
+    width: 100%;
+    padding: 12px;
+    border-radius: 6px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+} 
 
 .give button {
     background-color: #27AE60;
@@ -142,18 +142,18 @@ h1 {
     margin-top: 25px;
 }
 
-    .feature-list li {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        margin-bottom: 15px;
-        font-weight: 500;
-        color: #1e293b;
-    }
+.feature-list li {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+    font-weight: 500;
+    color: #1e293b;
+}
 
-    .feature-list .material-symbols-outlined {
-        color: #27AE60; /* Zöld pipa */
-    }
+.feature-list .material-symbols-outlined {
+    color: #27AE60; /* Zöld pipa */
+}
 
 .placeholder-img {
     width: 100%;
@@ -166,10 +166,10 @@ h1 {
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 }
 
-    .placeholder-img span {
-        font-size: 100px;
-        color: #cbd5e1;
-    }
+.placeholder-img span {
+    font-size: 100px;
+    color: #cbd5e1;
+}
 
 /* --- EREDMÉNYEK SZEKCIÓ --- */
 #eredmenyek {
@@ -191,31 +191,31 @@ h1 {
     transition: transform 0.3s ease;
 }
 
-    .stat-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    }
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
 
-    .stat-card .material-symbols-outlined {
-        font-size: 36px;
-        color: #3b5998;
-        margin-bottom: 10px;
-    }
+.stat-card .material-symbols-outlined {
+    font-size: 36px;
+    color: #3b5998;
+    margin-bottom: 10px;
+}
 
-    .stat-card .number {
-        display: block;
-        font-size: 2.5rem;
-        font-weight: 800;
-        color: #1e293b;
-        margin-bottom: 5px;
-    }
+.stat-card .number {
+    display: block;
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin-bottom: 5px;
+}
 
-    .stat-card .label {
-        color: #64748b;
-        font-size: 0.9rem;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
+.stat-card .label {
+    color: #64748b;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
 
 /* --- GYIK SZEKCIÓ --- */
 #gyik {
@@ -235,10 +235,10 @@ details {
     overflow: hidden;
 }
 
-    details[open] {
-        border-color: #3b5998;
-        background: white;
-    }
+details[open] {
+    border-color: #3b5998;
+    background: white;
+}
 
 summary {
     padding: 20px;
@@ -250,16 +250,16 @@ summary {
     color: #1e293b;
 }
 
-    /* Egyedi nyíl készítése CSS-sel */
-    summary::after {
-        content: '+';
-        position: absolute;
-        right: 20px;
-        top: 50%;
-        transform: translateY(-50%);
-        font-size: 1.5rem;
-        color: #3b5998;
-    }
+/* Egyedi nyíl készítése CSS-sel */
+summary::after {
+    content: '+';
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.5rem;
+    color: #3b5998;
+}
 
 details[open] summary::after {
     content: '-';
@@ -280,13 +280,13 @@ details p {
     color: white;
 }
 
-    #kapcsolat h2 {
-        color: white;
-    }
+#kapcsolat h2 {
+    color: white;
+}
 
-    #kapcsolat p {
-        color: #94a3b8;
-    }
+#kapcsolat p {
+    color: #94a3b8;
+}
 
 .contact-layout {
     align-items: flex-start;
@@ -299,27 +299,27 @@ details p {
     margin-bottom: 30px;
 }
 
-    .info-item .material-symbols-outlined {
-        background: rgba(255,255,255,0.1);
-        padding: 15px;
-        border-radius: 50%;
-        color: #3b5998; /* Esetleg világosabb kék itt: #60a5fa */
-        color: #60a5fa;
-    }
+info-item .material-symbols-outlined {
+    background: rgba(255,255,255,0.1);
+    padding: 15px;
+    border-radius: 50%;
+    color: #3b5998; /* Esetleg világosabb kék itt: #60a5fa */
+    color: #60a5fa;
+}
 
-    .info-item strong {
-        display: block;
-        font-size: 0.9rem;
-        color: #94a3b8;
-        margin-bottom: 2px;
-    }
+.info-item strong {
+    display: block;
+    font-size: 0.9rem;
+    color: #94a3b8;
+    margin-bottom: 2px;
+}
 
-    .info-item a, .info-item span {
-        color: white;
-        text-decoration: none;
-        font-size: 1.1rem;
-        font-weight: 500;
-    }
+.info-item a, .info-item span {
+    color: white;
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
 
 /* Űrlap */
 .contact-form-wrapper {
@@ -333,34 +333,34 @@ details p {
     margin-bottom: 20px;
 }
 
-    .form-group label {
-        display: block;
-        margin-bottom: 8px;
-        font-weight: 600;
-        font-size: 0.9rem;
-    }
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
 
-    .form-group input,
-    .form-group textarea {
-        width: 100%;
-        padding: 12px;
-        border: 1px solid #cbd5e1;
-        border-radius: 6px;
-        font-family: inherit;
-        font-size: 1rem;
-        transition: border-color 0.3s;
-    }
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
 
-        .form-group input:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #3b5998;
-        }
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #3b5998;
+}
 
-    .form-group textarea {
-        height: 120px;
-        resize: none;
-    }
+.form-group textarea {
+    height: 120px;
+    resize: none;
+}
 
 .contact-form button {
     width: 100%;
@@ -374,6 +374,6 @@ details p {
     font-size: 1rem;
 }
 
-    .contact-form button:hover {
-        background-color: #2c4275;
-    }
+.contact-form button:hover {
+    background-color: #2c4275;
+}

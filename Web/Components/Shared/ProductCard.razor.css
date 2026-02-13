@@ -13,11 +13,11 @@
     cursor: pointer;
 }
 
-    .product-card:hover {
-        transform: translateY(-6px);
-        box-shadow: 0 22px 52px rgba(0,0,0,0.32);
-        background: linear-gradient(145deg, #f5f7fb, #dce1eb);
-    }
+.product-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 22px 52px rgba(0,0,0,0.32);
+    background: linear-gradient(145deg, #f5f7fb, #dce1eb);
+}
 
 /* === IMAGE AREA === */
 .image-wrapper {
@@ -42,12 +42,12 @@
     overflow: hidden;
 }
 
-    .image-box img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        border-radius: 16px;
-    }
+.image-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 16px;
+}
 
 /* === CARD BODY === */
 .card-body {
@@ -64,15 +64,15 @@
     line-height: 1.35;
 }
 
-    .product-title::after {
-        content: "";
-        display: block;
-        width: 36px;
-        height: 3px;
-        margin-top: 6px;
-        background-color: #2c7a7b;
-        border-radius: 999px;
-    }
+.product-title::after {
+    content: "";
+    display: block;
+    width: 36px;
+    height: 3px;
+    margin-top: 6px;
+    background-color: #2c7a7b;
+    border-radius: 999px;
+}
 
 .product-description {
     font-size: 0.88rem;
@@ -105,15 +105,15 @@
     font-weight: 600;
 }
 
-    .tag.category {
-        background-color: #0ea558;
-        color: #ecfdf5;
-    }
+.tag.category {
+    background-color: #0ea558;
+    color: #ecfdf5;
+}
 
-    .tag.county {
-        background-color: #3b82f6;
-        color: #eff6ff;
-    }
+.tag.county {
+    background-color: #3b82f6;
+    color: #eff6ff;
+}
 
 /* === BUTTON === */
 .details-btn {
@@ -129,8 +129,8 @@
     transition: all 0.2s ease;
 }
 
-    .details-btn:hover {
-        background: linear-gradient(135deg, #f59e0b, #d97706);
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
-    }
+.details-btn:hover {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+}

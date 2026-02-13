@@ -21,18 +21,18 @@
     transition: all 0.3s ease;
 }
 
-    /*egér felette megnagyobbodás*/
-    .form-control:hover {
-        border-color: #ced4da !important;
-        transform: translateY(-1px);
-    }
+/*egér felette megnagyobbodás*/
+.form-control:hover {
+    border-color: #ced4da !important;
+    transform: translateY(-1px);
+}
 
-    /*menübe belépésnel fokszál*/
-    .form-control:focus {
-        background: #ffffff;
-        box-shadow: 0 0 15px rgba(255, 255, 255, 0.5) !important;
-        transform: scale(1.02);
-    }
+/*menübe belépésnel fokszál*/
+.form-control:focus {
+    background: #ffffff;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5) !important;
+    transform: scale(1.02);
+}
 
 /*legördulõ menu*/
 .selectForm {
@@ -71,17 +71,18 @@
     width: 100%;
     padding-bottom: 10px;
 }
-    /*megnagyobbitas ha fölé visszûk az egeret*/
-    .actions button:hover {
-        filter: brightness(1.1);
-        transform: translateY(-3px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-    }
 
-    /* Kattintáskor kicsit benyomódik */
-    .actions button:active {
-        transform: scale(0.98);
-    }
+/*megnagyobbitas ha fölé visszûk az egeret*/
+.actions button:hover {
+    filter: brightness(1.1);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+/* Kattintáskor kicsit benyomódik */
+.actions button:active {
+    transform: scale(0.98);
+}
 
 /* 3. Kártya és egyéb dolgok*/
 .registration-card {
@@ -97,13 +98,13 @@
     color: white;
 }
 
-    /*h2 es cimsor formázása*/
-    .registration-card h2 {
-        font-size: 1.5rem;
-        margin-bottom: 20px;
-        text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        text-align: center;
-    }
+/*h2 es cimsor formázása*/
+.registration-card h2 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    text-align: center;
+}
 
 /* Legördülõ menü kurzor */
 .selectForm {
@@ -152,10 +153,10 @@ h3 {
     width: 100%;
 }
 
-    /*Input mezõ jobb szelén hagyjuk*/
-    .password-wrapper .form-control {
-        padding-right: 45px !important;
-    }
+/*Input mezõ jobb szelén hagyjuk*/
+.password-wrapper .form-control {
+    padding-right: 45px !important;
+}
 
 /* Az ikon stílusa és pozicionálás */
 .password-icon {
@@ -172,11 +173,11 @@ h3 {
     transition: color 0.2s, transform 0.2s;
 }
 
-    /*szem ikon kiemelése*/
-    .password-icon:hover {
-        color: #007bff !important;
-        transform: scale(1.2);
-    }
+/*szem ikon kiemelése*/
+.password-icon:hover {
+    color: #007bff !important;
+    transform: scale(1.2);
+}
 
 /* A szöveg ikonra valo gépelõdésének megakadályozása */
 .password-wrapper .form-control {
