@@ -15,7 +15,7 @@ var apiBaseUrl = builder.Configuration.GetValue<string>("ApiSettings:BaseUrl");
 // 2. Regisztráljuk a HttpClient-et a kiolvasott URL-lel
 builder.Services.AddScoped(sp => new HttpClient
 {
-    BaseAddress = new Uri(apiBaseUrl ?? "https://localhost:44349/api/")
+    BaseAddress = new Uri(apiBaseUrl ?? "https://localhost:7161/api/")
 });
 
 // 3. Regisztráljuk a Web-es AuthService-t (a postást)

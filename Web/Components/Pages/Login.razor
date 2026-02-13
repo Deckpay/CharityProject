@@ -2,44 +2,66 @@
 @using Application.DTOs
 @using Application.Interfaces
 @using Microsoft.AspNetCore.Components.Authorization
-@using Web.Services
+@* <--- Be kell húzni a mappát, ahol a Provider és a Storage van *@
+@using Web.Services 
 @inject NavigationManager Navigation
 @inject LocalStorageService localStorage
+@* <--- Injektáljuk a raktárost *@
 @inject AuthenticationStateProvider AuthProvider
+@* <--- Injektáljuk a határőrt *@
 @rendermode InteractiveServer
 
-<div class="login-page-wrapper">
-    <div class="registration-card">
-        <h2>Bejelentkezés</h2>
+<div class="register-container">
+    @* 1. A fő konténer megkapja a 'registration-card' osztályt, de a 'form-control'-t levesszük róla *@
+    <div class="login-container registration-card">
+        <div class="row justify-content-center">
+            @* 2. Itt kivettük a Bootstrap-es fehérítést, csak a padding marad *@
+            <div class="col-md-6 p-4">
+                <h3 class="text-center mb-4">Bejelentkezés</h3>
 
-        <EditForm FormName="LoginForm" Model="@loginDto" OnValidSubmit="HandleLogin">
-            <DataAnnotationsValidator />
+                <EditForm FormName="LoginForm" Model="@loginDto" OnValidSubmit="HandleLogin">
+                    <DataAnnotationsValidator />
 
-            <div class="input-group">
-                <label>Email vagy Felhasználónév</label>
-                <InputText @bind-Value="loginDto.EmailOrUserName" class="form-control" placeholder="Azonosító" />
-                <ValidationMessage For="@(() => loginDto.EmailOrUserName)" class="validation-message" />
+                    @* 3. Az 'input-group' és 'form-control' osztályokat levettük a div-ről *@
+                    <div class="mb-3">
+                        <label>Email vagy Felhasználónév</label>
+                        @* Az InputText-re rákerült a 'form-control' *@
+                        <InputText @bind-Value="loginDto.EmailOrUserName" class="form-control" placeholder="Add meg az azonosítót" />
+
+                        <div class="error-msg">
+                            <ValidationMessage For="@(() => loginDto.EmailOrUserName)" />
+                        </div>
+                    </div>
+
+                    @* 4. Itt is tisztítottuk a div-et *@
+                    <div class="mb-3">
+                        <label>Jelszó</label>
+                        <div class="password-wrapper">
+                            @* Megkapta a 'form-control' osztályt a stílushoz *@
+                            <InputText @bind-Value="loginDto.Password" type="@(showPassword ? "text" : "password")" class="form-control" placeholder="******" />
+                            <button type="button" class="password-icon" @onclick="TogglePassword" tabindex="-1">
+                                <i class="bi @(showPassword ? "bi-eye" : "bi-eye-slash")"></i>
+                            </button>
+                        </div>
+                        <div class="error-msg">
+                            <ValidationMessage For="@(() => loginDto.Password)" />
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <div class="server-error alert alert-danger">@errorMessage</div>
+                    }
+
+                    <div class="actions">
+                        @* A gomb megkapta a szélességet *@
+                        <button type="submit" class="w-100" disabled="@isSubmitting">
+                            @(isSubmitting ? "Folyamatban..." : "Belépés")
+                        </button>
+                    </div>
+                </EditForm>
             </div>
-
-            <div class="input-group">
-                <label>Jelszó</label>
-                <div class="password-wrapper">
-                    <InputText @bind-Value="loginDto.Password" type="password" class="form-control" placeholder="******" />
-                </div>
-                <ValidationMessage For="@(() => loginDto.Password)" class="validation-message" />
-            </div>
-
-            @if (!string.IsNullOrEmpty(errorMessage))
-            {
-                <div class="server-error">@errorMessage</div>
-            }
-
-            <div class="actions">
-                <button type="submit" disabled="@isSubmitting">
-                    @(isSubmitting ? "Folyamatban..." : "Belépés")
-                </button>
-            </div>
-        </EditForm>
+        </div>
     </div>
 </div>
 
@@ -61,26 +83,39 @@
 
             if (user != null)
             {
+                // 1. ELMENTJÜK a nevet a böngészőbe (hogy F5 után is ott legyen)
+                // Figyelj: a CustomAuthStateProvider-ben stringet várunk (userName)!
                 await localStorage.SetItemAsync("currentUser", user.UserName);
 
+                // 2. SZÓLUNK az AuthenticationStateProvider-nek, hogy frissítse az UI-t
+                // Itt típuskényszerítést (cast) kell használnunk a saját osztályunkra
                 var customAuth = (CustomAuthStateProvider)AuthProvider;
                 customAuth.NotifyUserLogin(user.UserName);
 
+                // 3. MEHETÜNK a főoldalra
                 Navigation.NavigateTo("/");
             }
             else
             {
-                errorMessage = "Hibás felhasználónév vagy jelszó.";
+                errorMessage = "Hibás adatok.";
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Hiba: {ex.Message}");
+            // Így már nem fog panaszkodni, és látsz is valamit a Debug Output-ban
+            Console.WriteLine($"Hiba a bejelentkezés során: {ex.Message}");
             errorMessage = "Hálózati hiba történt.";
         }
         finally
         {
             isSubmitting = false;
         }
+    }
+
+    /*jelszó rejtésének a függvénye*/
+    private bool showPassword = false;
+    private void TogglePassword()
+    {
+        showPassword = !showPassword;
     }
 }
