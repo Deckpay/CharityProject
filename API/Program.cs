@@ -31,7 +31,7 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("BlazorPolicy", policy =>
-        policy.WithOrigins("https://localhost:7001") // Ide a Web projekt URL-je jön
+        policy.WithOrigins("https://localhost:7161") // Ide a Web projekt URL-je jön
               .AllowAnyMethod()
               .AllowAnyHeader());
 });
