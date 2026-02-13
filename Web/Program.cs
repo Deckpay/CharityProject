@@ -5,45 +5,39 @@ using Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// --- 1. BLAZOR ALAPOK ---
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-// 1. Kiolvassuk az URL-t az appsettings.json-bõl
-var apiBaseUrl = builder.Configuration.GetValue<string>("ApiSettings:BaseUrl");
+// --- 2. HTTPCLIENT ÉS API URL (Módosítva) ---
+// Kiolvassuk az appsettings.json-bõl az API címét
+var apiBaseUrl = builder.Configuration["ApiSettings:BaseUrl"] ?? "https://localhost:7161/api/";
 
-// 2. Regisztráljuk a HttpClient-et a kiolvasott URL-lel
 builder.Services.AddScoped(sp => new HttpClient
 {
-    BaseAddress = new Uri(apiBaseUrl ?? "https://localhost:7161/api/")
+    BaseAddress = new Uri(apiBaseUrl)
 });
 
-// 3. Regisztráljuk a Web-es AuthService-t (a postást)
-// Fontos: a Web projektben lévõ AuthService osztályt add meg itt!
+// --- 3. SAJÁT SZERVIZEK ---
+// A Web-es implementációk (amik az API-t hívják)
 builder.Services.AddScoped<IAuthService, AuthApiService>();
 builder.Services.AddScoped<IProductService, ProductApiService>();
 
-// 1. Regisztráljuk a saját LocalStorage hídunkat.
+// Auth és LocalStorage kezelés
 builder.Services.AddScoped<LocalStorageService>();
-
-// 2. Fontos: Azt mondjuk, hogy az AuthenticationStateProvider ne az alap legyen, hanem a miénk!
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
-
-// 3. Bekapcsoljuk a Blazor belsõ engedélyezési motorját.
 builder.Services.AddAuthorizationCore();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// --- 4. MIDDLEWARE CSATORNA ---
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
-
 app.UseStaticFiles();
 app.UseAntiforgery();
 
