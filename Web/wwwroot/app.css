@@ -1,33 +1,41 @@
-/* Alap reset, hogy ne legyen felesleges margó */
+/* Minden elemre vonatkozzon a dobozmodell javítás */
+* {
+    box-sizing: border-box;
+}
+
 html, body {
     margin: 0;
     padding: 0;
     height: 100%;
-    overflow: hidden; /* Tiltjuk a teljes oldal görgetését */
+    width: 100%;
+    overflow: hidden; /* A böngészõ saját görgetõsávját tiltjuk le */
 }
 
+/* A fõ keret, ami az egész képernyõt kitölti */
 .page-wrapper {
     display: flex;
     flex-direction: column;
     height: 100vh;
+    width: 100vw;
 }
 
 .top-bar {
     height: 60px;
     width: 100%;
-    background: #3b5998; /* A logó sáv színe */
+    background: #3b5998;
     color: white;
     display: flex;
     align-items: center;
     padding: 0 20px;
+    flex-shrink: 0;
     z-index: 1001;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
 .content-wrapper {
     display: flex;
-    flex: 1; /* Kitölti a maradék helyet a TopBar alatt */
-    overflow: hidden;
+    flex: 1;
+    overflow: hidden; /* Ez tartja kordában az oldalsávot és a tartalmat */
 }
 
 .sidenav-container {
@@ -35,11 +43,12 @@ html, body {
     flex-shrink: 0;
 }
 
-/* Ez a rész felel a szekciók görgetéséért */
 .main-content {
     flex: 1;
-    overflow-y: scroll;
+    overflow-y: auto; /* Csak függõleges görgetés, ha kell */
+    overflow-x: hidden; /* Vízszintes görgetés TILTÁSA */
+    background-color: #f4f4f4;
+    min-width: 0; /* Flexbox túlcsordulás fix */
     scroll-snap-type: y proximity;
     scroll-behavior: smooth;
-    background-color: #f4f4f4;
 }
