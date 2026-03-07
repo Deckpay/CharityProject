@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Components.Authorization;
+using Web.Services;
 using WEB.Components;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +14,22 @@ if (string.IsNullOrEmpty(apiBaseUrl))
 {
     throw new Exception("ApiSettings:BaseUrl nincs beállítva az appsettings.json-ben");
 }
+
+// TokenStore és TokenHandler regisztrálása a kliensek előtt
+builder.Services.AddScoped<TokenStore>();
+builder.Services.AddScoped<TokenHandler>();
+
+builder.Services.AddHttpClient<AuthApiService>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl);
+})
+.AddHttpMessageHandler<TokenHandler>();
+
+// A Web-es implementációk (amik az API-t hívják)
+builder.Services.AddScoped<LocalStorageService>();
+builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
+builder.Services.AddAuthorizationCore();
+builder.Services.AddCascadingAuthenticationState();
 
 var app = builder.Build();
 
