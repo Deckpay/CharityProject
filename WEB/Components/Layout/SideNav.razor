@@ -1,0 +1,88 @@
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@using Web.Services
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthProvider
+@inject LocalStorageService Storage
+@rendermode InteractiveServer
+
+<div class="sidebar @(isOpened ? "sidebar-opened" : "sidebar-closed")">
+    @* ÁTFORDULÓ NYÍL *@
+    <div class="toggle-btn" @onclick="ToggleSidebar">
+        <span class="material-symbols-outlined toggle-icon @(isOpened ? "rotate-180" : "")">
+            chevron_left
+        </span>
+    </div>
+
+    @* MENÜ *@
+    <div class="nav-menu">
+        <a href="/#home"><span class="material-symbols-outlined">home</span><span>Főoldal</span></a>
+        <a href="/#rolunk"><span class="material-symbols-outlined">group</span><span>Rólunk</span></a>
+        <a href="/products"><span class="material-symbols-outlined">store</span><span>Termékek</span></a>
+        <a href="/#eredmenyek"><span class="material-symbols-outlined">leaderboard</span><span>Eredmények</span></a>
+        <a href="/#gyik"><span class="material-symbols-outlined">help</span><span>Gyik</span></a>
+        <a href="/#kapcsolat"><span class="material-symbols-outlined">contact_page</span><span>Kapcsolat</span></a>
+    </div>
+
+    @* ALSÓ GOMBOK - Itt történik a varázslat *@
+    <div class="bottom-actions">
+        <AuthorizeView>
+            <Authorized>
+                @* Ez a rész csak akkor látszik, ha a User be van jelentkezve *@
+                <div class="auth-btn user-display">
+                    <span class="material-symbols-outlined">account_circle</span>
+                    @if (isOpened)
+                    {
+                        @* A 'context' változót az AuthorizeView biztosítja, benne a user nevével *@
+                        <span>@context.User.Identity?.Name</span>
+                    }
+                </div>
+
+                <button @onclick="HandleLogout" class="auth-btn logout">
+                    <span class="material-symbols-outlined">logout</span>
+                    @if (isOpened)
+                    {
+                        <span>Kijelentkezés</span>
+                    }
+                </button>
+            </Authorized>
+
+            <NotAuthorized>
+                @* Ez a rész csak akkor látszik, ha nincs érvényes munkamenet *@
+                <button @onclick="GoToLogin" class="auth-btn login">
+                    <span class="material-symbols-outlined">login</span>
+                    @if (isOpened)
+                    {
+                        <span>Bejelentkezés</span>
+                    }
+                </button>
+
+                <button @onclick="GoToRegister" class="auth-btn register">
+                    <span class="material-symbols-outlined">person_add</span>
+                    @if (isOpened)
+                    {
+                        <span>Regisztráció</span>
+                    }
+                </button>
+            </NotAuthorized>
+        </AuthorizeView>
+    </div>
+</div>
+
+@code {
+    private bool isOpened = true;
+    private void ToggleSidebar() => isOpened = !isOpened;
+
+    private void GoToLogin() => Navigation.NavigateTo("/login");
+    private void GoToRegister() => Navigation.NavigateTo("/register");
+
+    // Kijelentkezés logikája
+    private async Task HandleLogout()
+    {
+        var provider = (CustomAuthStateProvider)AuthProvider;
+
+        await provider.LogoutAsync();
+
+        // Visszaviszünk a főoldalra
+        Navigation.NavigateTo("/");
+    }
+}

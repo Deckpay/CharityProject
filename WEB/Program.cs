@@ -6,6 +6,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+// Kiolvassuk az appsettings.json-ből az API címét
+var apiBaseUrl = builder.Configuration["ApiSettings:BaseUrl"];
+if (string.IsNullOrEmpty(apiBaseUrl))
+{
+    throw new Exception("ApiSettings:BaseUrl nincs beállítva az appsettings.json-ben");
+}
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

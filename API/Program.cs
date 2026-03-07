@@ -1,4 +1,12 @@
+using Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
+
+// --- 1. ADATBÁZIS ---
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<CharityDbContext>(options =>
+    options.UseSqlServer(connectionString));
 
 // Add services to the container.
 

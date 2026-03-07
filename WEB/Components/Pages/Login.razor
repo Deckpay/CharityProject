@@ -1,0 +1,113 @@
+﻿@page "/login"
+@using Application.DTOs
+@using Microsoft.AspNetCore.Components.Authorization
+@using Web.Services
+@using System.Net.Http.Headers
+@inject NavigationManager Navigation
+@inject LocalStorageService localStorage
+@inject AuthApiService AuthApiService
+@inject HttpClient Http
+@inject AuthenticationStateProvider AuthStateProvider
+@inject TokenStore TokenStore
+@rendermode InteractiveServer
+
+<div class="register-container">
+    <div class="login-container registration-card">
+        <div class="row justify-content-center">
+            <div class="col-md-6 p-4">
+                <h3 class="text-center mb-4">Bejelentkezés</h3>
+
+                <EditForm FormName="LoginForm" Model="@loginDto" OnValidSubmit="HandleLogin">
+                    <DataAnnotationsValidator />
+
+                    <div class="mb-3">
+                        <label>Email vagy Felhasználónév</label>
+                        <InputText @bind-Value="loginDto.EmailOrUserName"
+                                   class="form-control"
+                                   placeholder="Add meg az azonosítót" />
+                        <div class="error-msg">
+                            <ValidationMessage For="@(() => loginDto.EmailOrUserName)" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Jelszó</label>
+                        <div class="password-wrapper">
+                            <InputText @bind-Value="loginDto.Password"
+                                       type="@(showPassword ? "text" : "password")"
+                                       class="form-control"
+                                       placeholder="******" />
+                            <button type="button"
+                                    class="password-icon"
+                                    @onclick="TogglePassword"
+                                    tabindex="-1">
+                                <i class="bi @(showPassword ? "bi-eye" : "bi-eye-slash")"></i>
+                            </button>
+                        </div>
+                        <div class="error-msg">
+                            <ValidationMessage For="@(() => loginDto.Password)" />
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <div class="server-error alert alert-danger">@errorMessage</div>
+                    }
+
+                    <div class="actions">
+                        <button type="submit" class="w-100" disabled="@isSubmitting">
+                            @(isSubmitting ? "Folyamatban..." : "Belépés")
+                        </button>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private LoginDto loginDto = new();
+    private string? errorMessage;
+    private bool isSubmitting = false;
+
+    private async Task HandleLogin()
+    {
+        isSubmitting = true;
+        errorMessage = null;
+
+        try
+        {
+            var token = await AuthApiService.LoginAsync(loginDto);
+            if (!string.IsNullOrEmpty(token))
+            {
+                await localStorage.SetItemAsync("authToken", token);
+                TokenStore.Token = token; // <-- EZ A HIÁNYZÓ SOR
+
+                var customAuth = (CustomAuthStateProvider)AuthStateProvider;
+                customAuth.NotifyUserAuthentication(token);
+
+                Navigation.NavigateTo("/");
+            }
+            else
+            {
+                errorMessage = "Hibás adatok.";
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Login hiba: {ex.Message}");
+            errorMessage = "Hálózati hiba történt.";
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+
+    private bool showPassword = false;
+
+    private void TogglePassword()
+    {
+        showPassword = !showPassword;
+    }
+}
