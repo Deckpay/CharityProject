@@ -1,4 +1,5 @@
 using Application.Interfaces;
+using Application.Services;
 using Infrastructure.Data;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
@@ -17,6 +18,7 @@ builder.Services.AddDbContext<CharityDbContext>(options =>
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<JwtTokenGenerator>();
 
 // --- DINAMIKUS CORS BEÁLLÍTÁS (Módosítva) ---

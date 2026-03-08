@@ -25,6 +25,13 @@ builder.Services.AddHttpClient<AuthApiService>(client =>
 })
 .AddHttpMessageHandler<TokenHandler>();
 
+// Product API Kliens felkészítése a Token küldésre
+builder.Services.AddHttpClient<ProductApiService>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl);
+})
+.AddHttpMessageHandler<TokenHandler>();
+
 // A Web-es implementációk (amik az API-t hívják)
 builder.Services.AddScoped<LocalStorageService>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
