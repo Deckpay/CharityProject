@@ -17,7 +17,17 @@
     <div class="nav-menu">
         <a href="/#home"><span class="material-symbols-outlined">home</span><span>Főoldal</span></a>
         <a href="/#rolunk"><span class="material-symbols-outlined">group</span><span>Rólunk</span></a>
-        <a href="/products"><span class="material-symbols-outlined">store</span><span>Termékek</span></a>
+        <AuthorizeView Roles="Recipient"> @* kell ez is a rendes razor oldalba @attribute [Authorize(Roles = "Recipient")] *@
+            <Authorized>
+                <a href="/products"><span class="material-symbols-outlined">store</span><span>Termékek</span></a>
+            </Authorized>
+        </AuthorizeView>
+        <AuthorizeView Roles="Donor">
+            @* kell ez is a rendes razor oldalba @attribute [Authorize(Roles = "Donor")] *@
+            <Authorized>
+                <a href="/my-products"><span class="material-symbols-outlined">store</span><span>Termékeim</span></a>
+            </Authorized>
+        </AuthorizeView>
         <a href="/#eredmenyek"><span class="material-symbols-outlined">leaderboard</span><span>Eredmények</span></a>
         <a href="/#gyik"><span class="material-symbols-outlined">help</span><span>Gyik</span></a>
         <a href="/#kapcsolat"><span class="material-symbols-outlined">contact_page</span><span>Kapcsolat</span></a>
@@ -34,6 +44,7 @@
                     {
                         @* A 'context' változót az AuthorizeView biztosítja, benne a user nevével *@
                         <span>@context.User.Identity?.Name</span>
+                        <span>(@(context.User.FindFirst(c => c.Type == System.Security.Claims.ClaimTypes.Role)?.Value ?? "Felhasználó"))</span>
                         
                     }
                 </div>
@@ -43,7 +54,6 @@
                     @if (isOpened)
                     {
                         <span>Kijelentkezés</span>
-                        <span>(@(context.User.FindFirst(c => c.Type == System.Security.Claims.ClaimTypes.Role)?.Value ?? "Felhasználó"))</span>
                     }
                 </button>
             </Authorized>

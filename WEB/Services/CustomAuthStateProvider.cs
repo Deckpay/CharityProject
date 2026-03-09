@@ -7,10 +7,12 @@ namespace Web.Services
     public class CustomAuthStateProvider : AuthenticationStateProvider
     {
         private readonly LocalStorageService _localStorage;
+        private readonly TokenStore _tokenStore;
 
-        public CustomAuthStateProvider(LocalStorageService localStorage)
+        public CustomAuthStateProvider(LocalStorageService localStorage, TokenStore tokenStore)
         {
             _localStorage = localStorage;
+            _tokenStore = tokenStore;
         }
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
@@ -24,6 +26,9 @@ namespace Web.Services
                     return new AuthenticationState(
                         new ClaimsPrincipal(new ClaimsIdentity()));
                 }
+
+                // KRITIKUS: A TokenStore-t is frissíteni kell, hogy a többi Service lássa!
+                _tokenStore.Token = token;
 
                 var handler = new JwtSecurityTokenHandler();
                 var jwt = handler.ReadJwtToken(token);
@@ -65,12 +70,23 @@ namespace Web.Services
         public async Task LogoutAsync()
         {
             await _localStorage.RemoveItemAsync("authToken");
+            _tokenStore.Token = null; // TokenStore törlése.
 
             var anonymousUser = new ClaimsPrincipal(new ClaimsIdentity());
 
             NotifyAuthenticationStateChanged(
                 Task.FromResult(new AuthenticationState(anonymousUser))
             );
+        }
+
+        public async Task<int> GetCurrentUserIdAsync()
+        {
+            var state = await GetAuthenticationStateAsync();
+            var user = state.User;
+
+            var idClaim = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            return int.TryParse(idClaim, out var id) ? id : 0;
         }
     }
 }

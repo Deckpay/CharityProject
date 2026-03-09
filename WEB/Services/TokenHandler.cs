@@ -19,6 +19,8 @@ namespace Web.Services
 
             if (!string.IsNullOrWhiteSpace(token))
             {
+                // A szóköz automatikusan bekerül a séma és a token közé, 
+                // ne írj szóközt a "Bearer" szó után!
                 request.Headers.Authorization =
                     new AuthenticationHeaderValue("Bearer", token);
             }

@@ -4,9 +4,10 @@
 @using Application.Services
 @using Domain.Entities
 @using Infrastructure.Services
+@using Microsoft.AspNetCore.Authorization
 @using Web.Services
 @inject NavigationManager Navigation
-@inject IAuthService AuthService
+@inject AuthApiService AuthService
 @inject ProductApiService productService
 @rendermode InteractiveServer
 

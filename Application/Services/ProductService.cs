@@ -13,7 +13,7 @@ namespace Application.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<bool> CreateProductAsync(ProductDto productDto)
+        public async Task<bool> CreateProductAsync(ProductDto productDto, int userId)
         {
             var newProduct = new Product
             {
@@ -25,7 +25,7 @@ namespace Application.Services
                 CreatedAt = DateTime.Now,
                 IsActive = true,
                 ProductStatus = Domain.Enums.DonationStatus.Active,
-                DonorId = 1
+                DonorId = userId
             };
 
             // A GenericRepository "AddAsync" metódusát hívjuk meg:
@@ -47,7 +47,7 @@ namespace Application.Services
                 ProductDescription = p.ProductDescription,
                 ImagePath= p.ImagePath,
                 ProductCategoryId = p.ProductCategoryId,
-                CountyId = p.CountyId
+                CountyId = p.CountyId,
             }).ToList();
         }
         public async Task DeleteProductAsync(int id)

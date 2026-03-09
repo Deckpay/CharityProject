@@ -6,7 +6,7 @@ namespace Application.Interfaces
 {
     public interface IProductService
     {
-        Task<bool> CreateProductAsync(ProductDto productDto);
+        Task<bool> CreateProductAsync(ProductDto productDto, int userId);
         Task<IEnumerable<ProductDto>> GetProductsAsync();
         Task DeleteProductAsync(int id);
     }

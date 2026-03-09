@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Authorization;
 using Web.Services;
 using WEB.Components;
@@ -32,9 +33,20 @@ builder.Services.AddHttpClient<ProductApiService>(client =>
 })
 .AddHttpMessageHandler<TokenHandler>();
 
+builder.Services.AddScoped<CustomAuthStateProvider>(sp =>
+    (CustomAuthStateProvider)sp.GetRequiredService<AuthenticationStateProvider>());
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie();
+
+// WEB Program.cs
+builder.Services.AddSingleton<TokenStore>(); // Scoped helyett Singleton
+
 // A Web-es implementációk (amik az API-t hívják)
 builder.Services.AddScoped<LocalStorageService>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
+builder.Services.AddAuthentication();
+builder.Services.AddAuthorization();
 builder.Services.AddAuthorizationCore();
 builder.Services.AddCascadingAuthenticationState();
 
@@ -52,6 +64,9 @@ app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 app.UseAntiforgery();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();

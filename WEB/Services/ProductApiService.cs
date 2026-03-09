@@ -41,6 +41,11 @@ namespace Web.Services
                    ?? new List<ProductDto>();
         }
 
+        public async Task<IEnumerable<ProductDto>> GetMyProductsAsync()
+        {
+            return await _http.GetFromJsonAsync<IEnumerable<ProductDto>>("Product/my-products") ?? new List<ProductDto>();
+        }
+
         // "Postás, mondd meg az API-nak, hogy törölje a 5-öst!"
         public async Task DeleteProductAsync(int id)
         {

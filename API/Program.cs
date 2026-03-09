@@ -19,6 +19,7 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<JwtTokenGenerator>();
 
 // --- DINAMIKUS CORS BEÁLLÍTÁS (Módosítva) ---
@@ -67,7 +68,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
+// Fontos: a CORS-nak az Auth előtt kell lennie!
+app.UseCors("BlazorPolicy"); 
+app.UseStaticFiles(); // fontos a sorrend
+app.UseAuthentication(); // fontos a sorrend
+app.UseAuthorization(); // fontos a sorrend
 
 app.MapControllers();
 
