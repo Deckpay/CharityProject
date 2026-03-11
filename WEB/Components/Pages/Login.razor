@@ -13,14 +13,14 @@
 
 <div class="register-container">
     <div class="login-container registration-card">
-        <div class="row justify-content-center">
-            <div class="col-md-6 p-4">
-                <h3 class="text-center mb-4">Bejelentkezés</h3>
+        <div>
+            <div>
+                <h3 class="text-center">Bejelentkezés</h3>
 
                 <EditForm FormName="LoginForm" Model="@loginDto" OnValidSubmit="HandleLogin">
                     <DataAnnotationsValidator />
 
-                    <div class="mb-3">
+                    <div>
                         <label>Email vagy Felhasználónév</label>
                         <InputText @bind-Value="loginDto.EmailOrUserName"
                                    class="form-control"
@@ -30,7 +30,7 @@
                         </div>
                     </div>
 
-                    <div class="mb-3">
+                    <div>
                         <label>Jelszó</label>
                         <div class="password-wrapper">
                             <InputText @bind-Value="loginDto.Password"

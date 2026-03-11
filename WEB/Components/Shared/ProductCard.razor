@@ -1,4 +1,5 @@
 ﻿@using Application.DTOs
+@using Microsoft.AspNetCore.Components.Authorization
 @inject IConfiguration Configuration
 
 <div class="product-card">
@@ -8,7 +9,7 @@
             {
                 @if (!string.IsNullOrEmpty(Product.ImagePath))
                 {
-                    <img src="@($"{apiBaseUrl}{Product.ImagePath}")"
+                    <img src="@($"{apiBaseUrl?.Replace("/api", "").TrimEnd('/')}{Product.ImagePath}")"
                          alt="@Product.ProductName" />
                 }
             }
@@ -35,7 +36,12 @@
             <span class="tag county">@CountyName</span>
         </div>
 
-        <button class="details-btn">Részletek</button>
+        <AuthorizeView Roles="Recipient">
+            <Authorized>
+                <button class="details-btn">Igénylés</button>
+            </Authorized>
+        </AuthorizeView>
+        
     </div>
 </div>
 @code {

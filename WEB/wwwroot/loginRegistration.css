@@ -6,7 +6,7 @@
     justify-content: center;
     align-items: center; /* Függõlegesen is középre teszi */
     margin: 0;
-    min-height: 100vh;
+    min-height: 100%;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 

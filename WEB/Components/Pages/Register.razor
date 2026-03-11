@@ -10,42 +10,42 @@
 
 <PageTitle>Regisztráció</PageTitle>
 <div class="register-container">
-    <div class="container mt-5 registration-card  form-control ">
-        <div class="row justify-content-center">
-            <div class="col-md-6 border p-4 shadow-sm bg-light">
-                <h3 class="text-center mb-4 ">Új fiók létrehozása</h3>
+    <div class="registration-card form-control">
+        <div>
+            <div>
+                <h3>Új fiók létrehozása</h3>
 
                 <EditForm Model="@registerModel" OnValidSubmit="HandleRegistration" FormName="RegistrationForm">
                     <DataAnnotationsValidator />
 
-                    <div class="mb-3 ">
+                    <div class="">
                         <label>Felhasználónév</label>
                         
                         <InputText  @bind-Value="registerModel.UserName" class="form-control " placeholder="Kérlek add meg a felhasználó neved"  />
                         <ValidationMessage For="@(() => registerModel.UserName)" />
                     </div>
 
-                    <div class="row   ">
-                        <div class="col-md-6 mb-3">
+                    <div>
+                        <div>
                             <label>Vezetéknév</label>
                             
                             <InputText @bind-Value="registerModel.LastName" class="form-control" placeholder="Kérlek add meg a vezetékneved" />
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div>
                             <label>Keresztnév</label>
                             
                             <InputText @bind-Value="registerModel.FirstName" class="form-control" placeholder="Kérlek add meg a kereszt  neved" />
                         </div>
                     </div>
 
-                    <div class="mb-3">
+                    <div>
                         <label>Email cím</label>
                         
                         <InputText @bind-Value="registerModel.Email" class="form-control" placeholder="Kérlek add meg az email cíned"  />
                         <ValidationMessage For="@(() => registerModel.Email)" />
                     </div>
 
-                    <div class="mb-3 selectForm">
+                    <div class="selectForm">
                         <label>Megye</label>
                         <InputSelect @bind-Value="registerModel.CountyId" class="form-control">
                             <option value="0">-- Válassz megyét --</option>
@@ -57,7 +57,7 @@
                         <ValidationMessage For="@(() => registerModel.CountyId)" />
                     </div>
 
-                    <div class="mb-3">
+                    <div>
                         <label>Jelszó</label>
                         <div class="password-wrapper">
 
@@ -72,7 +72,7 @@
                         
                     </div>
 
-                    <div class="mb-3">
+                    <div>
                         <label>Jelszó újra</label>
                         <div class="password-wrapper">
 
@@ -89,8 +89,8 @@
                         <div class="alert alert-danger">@errorMessage</div>
                     }
 
-                    <div class="mb-3">
-                        <label class="fw-bold">Regisztráció célja</label>
+                    <div>
+                        <label>Regisztráció célja</label>
                         <InputSelect @bind-Value="registerModel.RoleId" class="form-control">
                             <option value="0">-- Válassz szerepkört --</option>
                             <option value="1">Adományozó (Donor)</option>s
@@ -98,9 +98,9 @@
                         </InputSelect>
                         <ValidationMessage For="@(() => registerModel.RoleId)" />
                     </div>
-                    <div class="actions button">
+                    <div class="actions">
 
-                        <button type="submit" class="btn btn-primary w-100 actions ">Regisztráció</button>
+                        <button type="submit" class="actions">Regisztráció</button>
                     </div>
                 </EditForm>
             </div>
