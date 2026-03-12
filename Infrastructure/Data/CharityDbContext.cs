@@ -16,6 +16,8 @@ namespace Infrastructure.Data
         public DbSet<ProductCategory> ProductCategories { get; set; } = null!;
         public DbSet<County> Counties { get; set; } = null!;
 
+        public DbSet<ChatMessage> ChatMessages { get; set; } = null!;
+
         // Ez a metódus felel az adatbázis finomhangolásáért (Fluent API)
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -48,6 +50,21 @@ namespace Infrastructure.Data
                 .WithMany(c => c.Products)
                 .HasForeignKey(p => p.CountyId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // 5. chat uzenetek kapcsolata
+            modelBuilder.Entity<ChatMessage>( entity => {
+                entity.HasOne(m => m.Sender)
+                .WithMany()
+                .HasForeignKey(m => m.SenderId)
+                .OnDelete(DeleteBehavior.Restrict); // nem törlunk uzenetet ha felfuggesztik a felhasználót
+
+                // kapcsolat a fogadóval
+                entity.HasOne(m => m.Receiver)
+                .WithMany()
+                .HasForeignKey(m => m.ReceiverId)
+                .OnDelete(DeleteBehavior.Restrict);
+            });
+                
 
             // Enum konverzió (Opcionális: Ha szövegként akarnád tárolni az adatbázisban)
             // Itt most hagyjuk alapértelmezett INT-en, ahogy beszéltük.

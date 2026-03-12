@@ -1,5 +1,10 @@
+using Application.Interfaces;
+using Application.Services;
+using Infrastructure.Data;
+using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.Extensions.Options;
 using Web.Services;
 using WEB.Components;
 
@@ -64,6 +69,9 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
             }
         };
     });
+
+
+
 
 var app = builder.Build();
 
