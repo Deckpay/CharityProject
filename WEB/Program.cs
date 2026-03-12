@@ -17,7 +17,8 @@ if (string.IsNullOrEmpty(apiBaseUrl))
 }
 
 // TokenStore és TokenHandler regisztrálása a kliensek előtt
-builder.Services.AddScoped<TokenStore>();
+// TokenStore-ot egyszer regisztráljuk és a TokenHandler ezt használja.
+builder.Services.AddSingleton<TokenStore>();
 builder.Services.AddScoped<TokenHandler>();
 
 builder.Services.AddHttpClient<AuthApiService>(client =>
@@ -36,19 +37,33 @@ builder.Services.AddHttpClient<ProductApiService>(client =>
 builder.Services.AddScoped<CustomAuthStateProvider>(sp =>
     (CustomAuthStateProvider)sp.GetRequiredService<AuthenticationStateProvider>());
 
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie();
-
 // WEB Program.cs
-builder.Services.AddSingleton<TokenStore>(); // Scoped helyett Singleton
 
 // A Web-es implementációk (amik az API-t hívják)
 builder.Services.AddScoped<LocalStorageService>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
-builder.Services.AddAuthentication();
-builder.Services.AddAuthorization();
 builder.Services.AddAuthorizationCore();
 builder.Services.AddCascadingAuthenticationState();
+// Register cookie authentication but suppress automatic redirect on challenge so
+// Blazor auth uses the CustomAuthStateProvider and HTTP requests get 401s
+// instead of redirects.
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.Events = new Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationEvents
+        {
+            OnRedirectToLogin = ctx =>
+            {
+                ctx.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                return Task.CompletedTask;
+            },
+            OnRedirectToAccessDenied = ctx =>
+            {
+                ctx.Response.StatusCode = StatusCodes.Status403Forbidden;
+                return Task.CompletedTask;
+            }
+        };
+    });
 
 var app = builder.Build();
 
@@ -65,6 +80,10 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
 
+// Blazor Server uses the custom AuthenticationStateProvider and AddAuthorizationCore.
+// Do not register cookie authentication here to avoid automatic redirects/challenges
+// that would send users to an external login page. Keep authorization middleware
+// if needed by other middleware.
 app.UseAuthentication();
 app.UseAuthorization();
 

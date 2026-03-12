@@ -9,6 +9,7 @@
 @inject NavigationManager Navigation
 @inject AuthApiService AuthService
 @inject ProductApiService productService
+@inject CustomAuthStateProvider AuthStateProvider
 @rendermode InteractiveServer
 
 <h3>ProductCreate</h3>
@@ -89,20 +90,35 @@
     private List<ProductCategory> categories = new();
     private List<County> counties = new();
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        try
+        if (firstRender)
         {
-            // Adatok lekérése
-            var catResult = await AuthService.GetProductCategoriesAsync();
-            categories = catResult.ToList();
+            // Várjuk meg, hogy a CustomAuthStateProvider beolvassa a tokent.
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
 
-            var countyResult = await AuthService.GetCountiesAsync();
-            counties = countyResult.ToList();
-        }
-        catch (Exception ex)
-        {
-            errorMessage = "Nem sikerült betölteni az alapadatokat: " + ex.Message;
+            // Ha nincs bejelentkezett Donor felhasználó, navigáljunk a bejelentkező oldalra (klien oldali ellenőrzés).
+            if (authState.User?.Identity == null || !authState.User.Identity.IsAuthenticated || !authState.User.IsInRole("Donor"))
+            {
+                Navigation.NavigateTo("/login");
+                return;
+            }
+
+            try
+            {
+                // Adatok lekérése
+                var catResult = await AuthService.GetProductCategoriesAsync();
+                categories = catResult.ToList();
+
+                var countyResult = await AuthService.GetCountiesAsync();
+                counties = countyResult.ToList();
+            }
+            catch (Exception ex)
+            {
+                errorMessage = "Nem sikerült betölteni az alapadatokat: " + ex.Message;
+            }
+
+            StateHasChanged();
         }
     }
 
@@ -111,6 +127,7 @@
     void OnFileSelected(InputFileChangeEventArgs e)
     {
         imageFile = e.File;
+        selectedFileName = imageFile?.Name;
     }
 
 

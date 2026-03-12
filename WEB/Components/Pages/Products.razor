@@ -4,8 +4,10 @@
 @using Domain.Entities
 @using WEB.Components.Shared
 @using Web.Services
+@inject NavigationManager Navigation
 @inject AuthApiService AuthService
 @inject ProductApiService productService
+@inject CustomAuthStateProvider AuthStateProvider
 
 <div class="container mt-4">
     <h3 class="mb-4">Termékek böngészése</h3>
@@ -68,15 +70,41 @@
     private string searchQuery = "";
     private int selectedCategoryId = 0;
     private int selectedCountyId = 0;
+    private bool isLoading = true;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        // Párhuzamosan indítjuk a lekéréseket a gyorsaságért
-        var tasks = new Task[] {
-            LoadProducts(),
-            LoadFilters()
-        };
-        await Task.WhenAll(tasks);
+        if (firstRender)
+        {
+            // 1. Megvárjuk, amíg a Provider beolvassa a tokent a LocalStorage-ból
+            // Ez feltölti a TokenStore-t is!
+            await AuthStateProvider.GetAuthenticationStateAsync();
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+
+            if (authState.User?.Identity == null || !authState.User.Identity.IsAuthenticated || !authState.User.IsInRole("Recipient"))
+            {
+                Navigation.NavigateTo("/login");
+                return;
+            }
+
+            // 2. Csak ezután hívjuk meg az API-t
+            try
+            {
+                var tasks = new Task[] {
+                    LoadProducts(),
+                    LoadFilters()
+                };
+                await Task.WhenAll(tasks);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Hiba a betöltésnél: {ex.Message}");
+            }
+
+            await LoadFilters();
+            isLoading = false;
+            StateHasChanged(); // Frissítjük a UI-t
+        }
     }
 
     private async Task LoadProducts() => allProducts = (await productService.GetProductsAsync()).ToList();

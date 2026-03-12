@@ -1,9 +1,12 @@
 ﻿@page "/my-products"
+@* Client-side authorization: check auth state in code to avoid server pipeline 401s *@
 @using Application.DTOs
 @using Application.Interfaces
 @using Domain.Entities
+@using Microsoft.AspNetCore.Authorization
 @using WEB.Components.Shared
 @using Web.Services
+@inject NavigationManager Navigation
 @inject AuthApiService AuthService
 @inject ProductApiService productService
 @inject CustomAuthStateProvider AuthStateProvider
@@ -77,7 +80,13 @@
         {
             // 1. Megvárjuk, amíg a Provider beolvassa a tokent a LocalStorage-ból
             // Ez feltölti a TokenStore-t is!
-            await AuthStateProvider.GetAuthenticationStateAsync();
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+
+            if (authState.User?.Identity == null || !authState.User.Identity.IsAuthenticated || !authState.User.IsInRole("Donor"))
+            {
+                Navigation.NavigateTo("/login");
+                return;
+            }
 
             // 2. Csak ezután hívjuk meg az API-t
             try
@@ -95,10 +104,6 @@
         }
     }
 
-    protected override async Task OnInitializedAsync()
-    {
-        
-    }
 
     private async Task LoadProducts() => allProducts = (await productService.GetProductsAsync()).ToList();
     private async Task LoadFilters()

@@ -33,7 +33,16 @@ namespace Web.Services
                 var handler = new JwtSecurityTokenHandler();
                 var jwt = handler.ReadJwtToken(token);
 
-                var identity = new ClaimsIdentity(jwt.Claims, "jwt");
+                //var identity = new ClaimsIdentity(jwt.Claims, "jwt");
+                //var user = new ClaimsPrincipal(identity);
+
+                var identity = new ClaimsIdentity(
+                    jwt.Claims,
+                    "jwt",
+                    ClaimTypes.Name,
+                    ClaimTypes.Role
+                );
+
                 var user = new ClaimsPrincipal(identity);
 
                 return new AuthenticationState(user);
@@ -48,10 +57,23 @@ namespace Web.Services
 
         public void NotifyUserAuthentication(string token)
         {
+            // Frissítsük a TokenStore-ot is, hogy a TokenHandler és az HttpClient-ek
+            // azonnal lássák az új tokent.
+            _tokenStore.Token = token;
+
             var handler = new JwtSecurityTokenHandler();
             var jwt = handler.ReadJwtToken(token);
 
-            var identity = new ClaimsIdentity(jwt.Claims, "jwt");
+            //var identity = new ClaimsIdentity(jwt.Claims, "jwt");
+
+            //var user = new ClaimsPrincipal(identity);
+
+            var identity = new ClaimsIdentity(
+                    jwt.Claims,
+                    "jwt",
+                    ClaimTypes.Name,
+                    ClaimTypes.Role
+                );
 
             var user = new ClaimsPrincipal(identity);
 
