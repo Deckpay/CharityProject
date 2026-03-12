@@ -1,7 +1,10 @@
 using Application.Interfaces;
 using Application.Services;
+using Infrastructure.Data;
+using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.Extensions.Options;
 using Web.Services;
 using WEB.Components;
 
@@ -52,9 +55,8 @@ builder.Services.AddAuthorization();
 builder.Services.AddAuthorizationCore();
 builder.Services.AddCascadingAuthenticationState();
 
-// caht implementációk
-builder.Services.AddScoped<IChatRepository, IChatRepository>();
-builder.Services.AddScoped<IChatService, ChatService>();
+
+
 
 var app = builder.Build();
 
