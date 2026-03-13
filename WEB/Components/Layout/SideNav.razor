@@ -12,27 +12,82 @@
             chevron_left
         </span>
     </div>
+    <AuthorizeView Context="auth">
 
-    @* MENÜ *@
-    <div class="nav-menu">
-        <a href="/#home"><span class="material-symbols-outlined">home</span><span>Főoldal</span></a>
-        <a href="/#rolunk"><span class="material-symbols-outlined">group</span><span>Rólunk</span></a>
-        <AuthorizeView Roles="Recipient"> @* kell ez is a rendes razor oldalba @attribute [Authorize(Roles = "Recipient")] *@
-            <Authorized>
-                <a href="/products"><span class="material-symbols-outlined">store</span><span>Termékek</span></a>
-            </Authorized>
-        </AuthorizeView>
-        <AuthorizeView Roles="Donor">
-            @* kell ez is a rendes razor oldalba @attribute [Authorize(Roles = "Donor")] *@
-            <Authorized>
-                <a href="/my-products"><span class="material-symbols-outlined">store</span><span>Termékeim</span></a>
-            </Authorized>
-        </AuthorizeView>
-        <a href="/#eredmenyek"><span class="material-symbols-outlined">leaderboard</span><span>Eredmények</span></a>
-        <a href="/#gyik"><span class="material-symbols-outlined">help</span><span>Gyik</span></a>
-        <a href="/#kapcsolat"><span class="material-symbols-outlined">contact_page</span><span>Kapcsolat</span></a>
-    </div>
+        <Authorized>
 
+            <!-- ADMIN MENÜ -->
+            <AuthorizeView Roles="Admin" Context="adminAuth">
+                <Authorized>
+                    <div class="nav-menu">
+                        <a href="/admin">
+                            <span class="material-symbols-outlined">admin_panel_settings</span>
+                            <span>Admin Panel</span>
+                        </a>
+
+                        <a href="/admin/users">
+                            <span class="material-symbols-outlined">groups</span>
+                            <span>Felhasználók</span>
+                        </a>
+
+                        <a href="/admin/products">
+                            <span class="material-symbols-outlined">inventory</span>
+                            <span>Termékek</span>
+                        </a>
+
+                        <a href="/admin/requests">
+                            <span class="material-symbols-outlined">assignment</span>
+                            <span>Igénylések</span>
+                        </a>
+                    </div>
+                </Authorized>
+
+                <NotAuthorized>
+                    <div class="nav-menu">
+                        <!-- NORMÁL MENÜ -->
+                        <a href="/#home"><span class="material-symbols-outlined">home</span><span>Főoldal</span></a>
+                        <a href="/#rolunk"><span class="material-symbols-outlined">group</span><span>Rólunk</span></a>
+
+                        <AuthorizeView Roles="Recipient" Context="recAuth">
+                            <Authorized>
+                                <a href="/products">
+                                    <span class="material-symbols-outlined">store</span>
+                                    <span>Termékek</span>
+                                </a>
+                            </Authorized>
+                        </AuthorizeView>
+
+                        <AuthorizeView Roles="Donor" Context="donAuth">
+                            <Authorized>
+                                <a href="/my-products">
+                                    <span class="material-symbols-outlined">store</span>
+                                    <span>Termékeim</span>
+                                </a>
+                            </Authorized>
+                        </AuthorizeView>
+
+                        <a href="/#eredmenyek"><span class="material-symbols-outlined">leaderboard</span><span>Eredmények</span></a>
+                        <a href="/#gyik"><span class="material-symbols-outlined">help</span><span>Gyik</span></a>
+                        <a href="/#kapcsolat"><span class="material-symbols-outlined">contact_page</span><span>Kapcsolat</span></a>
+                    </div>
+
+                </NotAuthorized>
+
+            </AuthorizeView>
+
+        </Authorized>
+
+        <NotAuthorized>
+            <div class="nav-menu">
+                <!-- ha nincs bejelentkezve -->
+                <a href="/#home"><span class="material-symbols-outlined">home</span><span>Főoldal</span></a>
+                <a href="/#rolunk"><span class="material-symbols-outlined">group</span><span>Rólunk</span></a>
+                <a href="/#eredmenyek"><span class="material-symbols-outlined">leaderboard</span><span>Eredmények</span></a>
+                <a href="/#gyik"><span class="material-symbols-outlined">help</span><span>Gyik</span></a>
+                <a href="/#kapcsolat"><span class="material-symbols-outlined">contact_page</span><span>Kapcsolat</span></a>
+            </div>
+        </NotAuthorized>
+    </AuthorizeView>
     @* ALSÓ GOMBOK - Itt történik a varázslat *@
     <div class="bottom-actions">
         <AuthorizeView>
@@ -45,7 +100,7 @@
                         @* A 'context' változót az AuthorizeView biztosítja, benne a user nevével *@
                         <span>@context.User.Identity?.Name</span>
                         <span>(@(context.User.FindFirst(c => c.Type == System.Security.Claims.ClaimTypes.Role)?.Value ?? "Felhasználó"))</span>
-                        
+
                     }
                 </div>
 

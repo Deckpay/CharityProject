@@ -10,9 +10,18 @@
     z-index: 1000;
 }
 
-    #blazor-error-ui .dismiss {
-        cursor: pointer;
-        position: absolute;
-        right: 0.75rem;
-        top: 0.5rem;
-    }
+#blazor-error-ui .dismiss {
+    cursor: pointer;
+    position: absolute;
+    right: 0.75rem;
+    top: 0.5rem;
+}
+
+.logo-section-top {
+    display: flex; /* Hogy az ikon és a szöveg egymás mellett maradjon */
+    align-items: center; /* Középre igazítja őket függőlegesen */
+    gap: 10px; /* Távolság az ikon és a szöveg között */
+    text-decoration: none; /* Eltünteti a kék aláhúzást, amit a link adna */
+    color: inherit; /* Megtartja az eredeti szövegszínt */
+    cursor: pointer; /* Mutassa a "kezecskét", hogy tudják: kattintható */
+}
