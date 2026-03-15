@@ -1,9 +1,10 @@
 ﻿using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Application.Interfaces;
 
 namespace Infrastructure.Data
 {
-    public class CharityDbContext : DbContext
+    public class CharityDbContext : DbContext, IApplicationDbcontext
     {
         // A konstruktoron keresztül kapja meg a beállításokat (pl. Connection String)
         public CharityDbContext(DbContextOptions options) : base(options)
@@ -17,6 +18,9 @@ namespace Infrastructure.Data
         public DbSet<County> Counties { get; set; } = null!;
 
         public DbSet<ChatMessage> ChatMessages { get; set; } = null!;
+
+        public DbSet<Product> Requests { get; set; } = null!;
+        public DbSet<Chat> Chats { get; set; } = null!;
 
         // Ez a metódus felel az adatbázis finomhangolásáért (Fluent API)
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -58,12 +62,11 @@ namespace Infrastructure.Data
                 .HasForeignKey(m => m.SenderId)
                 .OnDelete(DeleteBehavior.Restrict); // nem törlunk uzenetet ha felfuggesztik a felhasználót
 
-                // kapcsolat a fogadóval
-                entity.HasOne(m => m.Receiver)
-                .WithMany()
-                .HasForeignKey(m => m.ReceiverId)
-                .OnDelete(DeleteBehavior.Restrict);
+                
             });
+
+             // 6 hozzadjuk az IapplicationDbContextet a származáshoz
+
                 
 
             // Enum konverzió (Opcionális: Ha szövegként akarnád tárolni az adatbázisban)
