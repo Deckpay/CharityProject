@@ -83,5 +83,26 @@ namespace API.Controllers
             await _productService.DeleteProductAsync(id);
             return Ok();
         }
+
+        [HttpPost("claim/{productId}")]
+        public async Task<IActionResult> Claim(int productId)
+        {
+           
+            // megkeressuk a claim et
+            var nameIdentifier = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            // null ha a felhasznalo nincs bejelentkezve vagy nincs id je
+            if (string.IsNullOrEmpty(nameIdentifier)) return Unauthorized("A felhasználó nem található");
+
+            // igy lesz jó a parse
+            var userId = int.Parse(nameIdentifier);
+
+            var result = await _productService.ClaimProductAsync(productId, userId);
+
+            if (result) return Ok("Igyénylés és a chat létrejött");
+                
+            
+            return BadRequest("hiba keletkezett az igénylés során");
+        }
     }
 }

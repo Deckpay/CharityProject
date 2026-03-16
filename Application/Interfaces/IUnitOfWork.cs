@@ -10,8 +10,10 @@ namespace Application.Interfaces
         IGenericRepository<User> Users { get; }
         IGenericRepository<ProductCategory> Categories { get; }
         IGenericRepository<County> Counties { get; }
+        IGenericRepository<Chat> Chats { get; }
 
         // Ez a metódus menti el az összes változtatást (Tranzakció kezelés)
         Task<int> CompleteAsync();
+
     }
 }
