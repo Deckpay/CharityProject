@@ -14,7 +14,7 @@ namespace Application.Interfaces
         Task SendMessageAsync(ChatMessageRequestDto dto);
 
         //beszekgetés lekérése a két fél között
-        Task<List<ChatMessageResponseDto>> GetChatHistoryAsync(int currentUserId, int otherUserId);
+        Task<List<ChatMessageResponseDto>> GetChatHistoryAsync(int requestId, int currentUserId);
 
         //olvasatlannak jelölés
         Task MarkAsRead(int messageId);

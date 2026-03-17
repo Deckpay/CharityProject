@@ -1,25 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Domain.Entities
 {
+    [Table("ChatMessage")] // EZ KELL: Megmondja az EF-nek, hogy a tábla NEVE egyes számban van
     public class ChatMessage
     {
         [Key]
-        public int Id { get; set; } // elsodleges kulcs
-        public string Content { get; set; } = string.Empty;
-        public DateTime Timestamp { get; set; } 
-        public int SenderId { get; set; }
-        public User Sender { get; set; } = null!;
-        public int ReceiverId { get; set; }
-        public User Receiver { get; set; } = null!;
-        public bool IsRead { get; set; } = false;
-        
-        
+        [Column("ChatMessageId")] // Stimmel az SQL-lel
+        public int Id { get; set; }
 
+        [Column("ChatId")] // Stimmel az SQL-lel
+        public int RequestId { get; set; }
+
+        [Column("ChatMessage")] // Stimmel az SQL-lel
+        public string Content { get; set; } = string.Empty;
+
+        [Column("SentAt")] // Biztosítsuk be, hogy az SQL 'SentAt' oszlopát használja
+        public DateTime Timestamp { get; set; } = DateTime.UtcNow;
+
+        [Column("SenderId")] // Stimmel az SQL-lel
+        public int SenderId { get; set; }
+
+        public User Sender { get; set; } = null!;
+
+        [Column("IsRead")] // Stimmel az SQL-lel
+        public bool IsRead { get; set; } = false;
+
+        // Ha van ReadAt oszlopod is az SQL-ben, érdemes felvenni:
+        // public DateTime? ReadAt { get; set; } 
     }
 }

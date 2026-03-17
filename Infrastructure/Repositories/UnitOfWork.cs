@@ -7,6 +7,7 @@ namespace Infrastructure.Repositories
     public class UnitOfWork : IUnitOfWork
     {
         private readonly CharityDbContext _context;
+        
 
         // Itt tároljuk a konkrét repository példányokat
         public IGenericRepository<Product> Products { get; private set; }
@@ -23,6 +24,7 @@ namespace Infrastructure.Repositories
             Users = new GenericRepository<User>(_context);
             Categories = new GenericRepository<ProductCategory>(_context);
             Counties = new GenericRepository<County>(_context);
+            Chats = new GenericRepository<Chat>(_context);
         }
 
         // Ez a metódus az "indítógomb": egyszerre ment el mindent az adatbázisba
@@ -31,10 +33,14 @@ namespace Infrastructure.Repositories
             return await _context.SaveChangesAsync();
         }
 
+        public IGenericRepository<Chat> Chats { get; private set; }
+
         // Felszabadítjuk az erőforrásokat, ha végeztünk
         public void Dispose()
         {
             _context.Dispose();
         }
+
+        
     }
 }

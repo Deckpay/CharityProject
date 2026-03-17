@@ -65,5 +65,29 @@ namespace Application.Services
                 await _unitOfWork.CompleteAsync();
             }
         }
+
+        // igénylés
+        public async Task<bool> ClaimProductAsync(int productId, int requestId)
+        {
+            var product = await _unitOfWork.Products.GetByIdAsync(productId);
+            if (product == null) return false;
+
+            var newRequest = new Chat
+            {
+                ProductRequestId = requestId,
+                DonorId = product.DonorId,
+                RequesterId = requestId,
+                IsActive = true,
+                CreatedAt = DateTime.Now
+            };
+
+            await _unitOfWork.Chats.AddAsync(newRequest);
+            
+
+           
+                // itt hivjuk meg a chat servict hogy keszitse el az uj rekordokat
+            return await  _unitOfWork.CompleteAsync() > 0;
+
+        }
     }
 }
