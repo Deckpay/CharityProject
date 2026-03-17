@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Options;
 using Web.Services;
 using WEB.Components;
+using WEB.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,6 +40,12 @@ builder.Services.AddHttpClient<ProductApiService>(client =>
 })
 .AddHttpMessageHandler<TokenHandler>();
 
+builder.Services.AddHttpClient<AdminApiService>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl);
+})
+.AddHttpMessageHandler<TokenHandler>();
+
 builder.Services.AddScoped<CustomAuthStateProvider>(sp =>
     (CustomAuthStateProvider)sp.GetRequiredService<AuthenticationStateProvider>());
 
@@ -49,6 +56,7 @@ builder.Services.AddScoped<LocalStorageService>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
 builder.Services.AddAuthorizationCore();
 builder.Services.AddCascadingAuthenticationState();
+
 // Register cookie authentication but suppress automatic redirect on challenge so
 // Blazor auth uses the CustomAuthStateProvider and HTTP requests get 401s
 // instead of redirects.
@@ -69,9 +77,6 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
             }
         };
     });
-
-
-
 
 var app = builder.Build();
 

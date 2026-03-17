@@ -1,0 +1,161 @@
+﻿@page "/admin-users"
+@using Application.DTOs
+@using Domain.Entities
+@using Domain.Enums
+@using WEB.Services
+@using Web.Services
+@inject CustomAuthStateProvider AuthStateProvider
+@inject NavigationManager Navigation
+@inject AdminApiService AdminService
+
+<div class="page-container">
+    <h2>Felhasználók kezelése</h2>
+
+    <div class="table-container">
+        <table class="table table-hover table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">FelhasználóNév</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Jogosultság/Rang</th>
+                    <th scope="col">Státusz</th>
+                    <th scope="col">Létrehozva</th>
+                    <th scope="col">Modosítva</th>
+                    <th scope="col">Műveletek</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in users)
+                {
+                    <tr>
+                        <td>@user.UserId.</td>
+                        <td>@user.UserName</td>
+                        <td>@user.Email</td>
+                        <td>@user.UserRole</td>
+                        <td>@user.UserStatus</td>
+                        <td>@user.CreatedAt</td>
+                        <td>@user.UpdatedAt</td>
+                        <td>
+                            <button class="btn btn-secondary btn-sm" @onclick="() => EditUser(user)">Szerkesztés</button>
+                            <button class="btn btn-danger btn-sm" @onclick="() => DeleteUser(user.UserId)">Törlés</button>
+                            <button class="btn btn-warning btn-sm" @onclick="() => BanUser(user.UserId)">Tiltás</button>
+                        </td>
+                    </tr>  
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (showEditModal && editingUser != null)
+    {
+        <div class="modal-backdrop">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content shadow-lg border-0">
+                    <div class="modal-header text-black">
+                        <h5 class="modal-title">Felhasználó szerkesztése</h5>
+                        <button type="button" class="btn-close" @onclick="CloseModal"></button>
+                    </div>
+                    <div class="modal-body p-4">
+                        <div class="mb-3">
+                            <label class="form-label text-black">Felhasználónév</label>
+                            <input class="form-control" @bind="editingUser.UserName" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-black">Email</label>
+                            <input class="form-control" @bind="editingUser.Email" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-black">Jogosultság/Rang</label>
+                            <select class="form-control" @bind="editingUser.UserRole">
+                                @foreach (var role in Enum.GetValues<UserRole>())
+                                {
+                                    <option value="@role">@role</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-black">státusz</label>
+                            <select class="form-control" @bind="editingUser.UserStatus">
+                                @foreach (var status in Enum.GetValues<UserStatus>())
+                                {
+                                    <option value="@status">@status</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-primary" @onclick="SaveUser">Mentés</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private List<UserDto> users = new();
+    private UserDto? editingUser;
+    private bool showEditModal = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+
+        if (authState.User?.Identities == null ||
+            !authState.User.Identity!.IsAuthenticated ||
+            !authState.User.IsInRole("Admin"))
+        {
+            Navigation.NavigateTo("/login");
+            return;
+        }
+
+        users = (await AdminService.GetUsersAsync()).ToList();
+    }
+
+    private async Task BanUser(int userId)
+    {
+        await AdminService.BanUserAsync(userId);
+
+        users = (await AdminService.GetUsersAsync()).ToList();
+    }
+
+    private async Task DeleteUser(int userId)
+    {
+        await AdminService.DeleteUserAsync(userId);
+
+        users = (await AdminService.GetUsersAsync()).ToList();
+    }
+
+    private void EditUser(UserDto user)
+    {
+        editingUser = new UserDto
+        {
+            UserId = user.UserId,
+            UserName = user.UserName,
+            Email = user.Email,
+            UserRole = user.UserRole,
+            UserStatus = user.UserStatus,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+        showEditModal = true;
+    }
+
+    private async Task SaveUser()
+    {
+        if (editingUser == null) return;
+
+        await AdminService.UpdateUserAsync(editingUser);
+
+        showEditModal = false;
+
+        users = (await AdminService.GetUsersAsync()).ToList();
+    }
+
+    private void CloseModal()
+    {
+        showEditModal = false;
+        editingUser = null;
+    }
+}
