@@ -10,6 +10,7 @@
 @inject AuthApiService AuthService
 @inject ProductApiService productService
 @inject CustomAuthStateProvider AuthStateProvider
+@inject LookupService Lookup
 @rendermode InteractiveServer
 
 <h3>ProductCreate</h3>
@@ -107,10 +108,10 @@
             try
             {
                 // Adatok lekérése
-                var catResult = await AuthService.GetProductCategoriesAsync();
+                var catResult = await Lookup.GetProductCatergoriesAsync();
                 categories = catResult.ToList();
 
-                var countyResult = await AuthService.GetCountiesAsync();
+                var countyResult = await Lookup.GetCountiesAsync();
                 counties = countyResult.ToList();
             }
             catch (Exception ex)

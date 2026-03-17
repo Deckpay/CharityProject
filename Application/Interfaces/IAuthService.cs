@@ -7,7 +7,5 @@ namespace Application.Interfaces
     {
         Task<bool> RegisterAsync(RegisterDto registerDto);
         Task<User?> LoginAsync(string emailOrUserName, string password);
-        Task<IEnumerable<County>> GetCountiesAsync();
-        Task<IEnumerable<ProductCategory>> GetProductCategoriesAsync();
     }
 }

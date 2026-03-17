@@ -43,5 +43,12 @@ namespace API.Controllers
             await _adminService.UpdateUserAsync(userDto);
             return Ok();
         }
+
+        [HttpGet("products")]
+        public async Task<IActionResult> GetProducts()
+        {
+            var products = await _adminService.GetProductsAsync();
+            return Ok(products);
+        }
     }
 }

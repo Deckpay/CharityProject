@@ -10,6 +10,15 @@
 
 <div class="page-container">
     <h2>Felhasználók kezelése</h2>
+    @if (isLoading)
+    {
+        <div class="d-flex justify-content-center my-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Betöltés...</span>
+            </div>
+            <p class="ms-3">betöltés...</p>
+        </div>
+    }
 
     <div class="table-container">
         <table class="table table-hover table-striped table-bordered">
@@ -97,6 +106,7 @@
     private List<UserDto> users = new();
     private UserDto? editingUser;
     private bool showEditModal = false;
+    private bool isLoading = true;
 
     protected override async Task OnInitializedAsync()
     {
@@ -111,6 +121,7 @@
         }
 
         users = (await AdminService.GetUsersAsync()).ToList();
+        isLoading = false;
     }
 
     private async Task BanUser(int userId)

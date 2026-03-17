@@ -2,6 +2,7 @@
 @* Client-side authorization: check auth state in code to avoid server pipeline 401s *@
 @using Application.DTOs
 @using Application.Interfaces
+@using Application.Services
 @using Domain.Entities
 @using Microsoft.AspNetCore.Authorization
 @using WEB.Components.Shared
@@ -10,6 +11,7 @@
 @inject AuthApiService AuthService
 @inject ProductApiService productService
 @inject CustomAuthStateProvider AuthStateProvider
+@inject LookupService Lookup
 
 <div class="container mt-4">
     <h3 class="mb-4">Termékek böngészése</h3>
@@ -118,8 +120,8 @@
     private async Task LoadProducts() => allProducts = (await productService.GetProductsAsync()).ToList();
     private async Task LoadFilters()
     {
-        categories = (await AuthService.GetProductCategoriesAsync()).ToList();
-        counties = (await AuthService.GetCountiesAsync()).ToList();
+        categories = (await Lookup.GetProductCatergoriesAsync()).ToList();
+        counties = (await Lookup.GetCountiesAsync()).ToList();
     }
 
     // A keresési logika

@@ -1,6 +1,7 @@
 ﻿@page "/products"
 @using Application.DTOs
 @using Application.Interfaces
+@using Application.Services
 @using Domain.Entities
 @using WEB.Components.Shared
 @using Web.Services
@@ -8,6 +9,7 @@
 @inject AuthApiService AuthService
 @inject ProductApiService productService
 @inject CustomAuthStateProvider AuthStateProvider
+@inject LookupService Lookup
 
 <div class="container mt-4">
     <h3 class="mb-4">Termékek böngészése</h3>
@@ -120,8 +122,8 @@
     private async Task LoadProducts() => allProducts = (await productService.GetProductsAsync()).ToList();
     private async Task LoadFilters()
     {
-        categories = (await AuthService.GetProductCategoriesAsync()).ToList();
-        counties = (await AuthService.GetCountiesAsync()).ToList();
+        categories = (await Lookup.GetProductCatergoriesAsync()).ToList();
+        counties = (await Lookup.GetCountiesAsync()).ToList();
     }
 
     // A keresési logika

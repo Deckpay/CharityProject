@@ -75,5 +75,24 @@ namespace Application.Services
 
             await _unitOfWork.CompleteAsync();
         }
+
+        public async Task<IEnumerable<ProductDto>> GetProductsAsync()
+        {
+            var producst = await _unitOfWork.Products.GetAllAsync();
+
+            return producst.Select(p => new ProductDto
+            {
+                ProductId = p.ProductId,
+                ProductName = p.ProductName,
+                ProductDescription = p.ProductDescription,
+                ProductSatus = p.ProductStatus,
+                IsActive = p.IsActive,
+                CreatedAt = p.CreatedAt,
+                UpdatedAt = p.UpdatedAt,
+                DonorId = p.DonorId,
+                ProductCategoryId = p.ProductCategoryId,
+                CountyId = p.CountyId,
+            });
+        }
     }
 }

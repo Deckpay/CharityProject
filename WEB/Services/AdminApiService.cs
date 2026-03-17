@@ -31,5 +31,11 @@ namespace WEB.Services
         {
             await _httpClient.PutAsJsonAsync("admin/update-user", user);
         }
+
+        public async Task<IEnumerable<ProductDto>> GetProductsAsync()
+        {
+            var result = await _httpClient.GetFromJsonAsync<IEnumerable<ProductDto>>("admin/products");
+            return result ?? new List<ProductDto>();
+        }
     }
 }

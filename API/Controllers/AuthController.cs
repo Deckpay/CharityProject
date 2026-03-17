@@ -34,20 +34,6 @@ namespace API.Controllers
             return BadRequest("A regisztráció sikertelen");
         }
 
-        [HttpGet("counties")] // GET api/Auth/counties
-        public async Task<IActionResult> GetCounties()
-        {
-            var counties = await _authService.GetCountiesAsync();
-            return Ok(counties);
-        }
-
-        [HttpGet("productcategories")] // Végpont: api/auth/productcategories
-        public async Task<IActionResult> GetCategories()
-        {
-            var categories = await _authService.GetProductCategoriesAsync();
-            return Ok(categories);
-        }
-
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDto dto)
         {

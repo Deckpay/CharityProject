@@ -23,6 +23,7 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<JwtTokenGenerator>();
 builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<ILookupService, LookupService>();
 
 // --- DINAMIKUS CORS BEÁLLÍTÁS (Módosítva) ---
 // Megpróbáljuk kiolvasni az appsettings-ből, ha nincs ott, a 7189-et használjuk alapértelmezettként

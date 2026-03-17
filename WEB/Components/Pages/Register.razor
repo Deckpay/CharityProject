@@ -4,9 +4,11 @@
 @using Application.DTOs
 @using Application.Interfaces
 @using Domain.Entities
+@using WEB.Services
 @using Web.Services
 @inject AuthApiService AuthService
 @inject NavigationManager NavigationManager
+@inject LookupApiService Lookup
 
 <PageTitle>Regisztráció</PageTitle>
 <div class="register-container">
@@ -116,7 +118,7 @@
     protected override async Task OnInitializedAsync()
     {
         // Betöltjük a megyéket az adatbázisból a lenyíló listához
-        counties = await AuthService.GetCountiesAsync();
+        counties = await Lookup.GetCountiesAsync();
     }
 
     private async Task HandleRegistration()

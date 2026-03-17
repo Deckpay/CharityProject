@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Http;
 */
+using Domain.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace Application.DTOs
@@ -17,6 +18,15 @@ namespace Application.DTOs
         public string? ProductDescription { get; set; } = string.Empty;
 
         public string? ImagePath { get; set; }
+
+        public bool IsActive { get; set; }
+
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+
+        public DonationStatus ProductSatus { get; set; }
+
+        public int DonorId { get; set; }
 
         [Required(ErrorMessage = "Kategória választása kötelező")]
         public int ProductCategoryId { get; set; }

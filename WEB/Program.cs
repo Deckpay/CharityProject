@@ -46,6 +46,12 @@ builder.Services.AddHttpClient<AdminApiService>(client =>
 })
 .AddHttpMessageHandler<TokenHandler>();
 
+builder.Services.AddHttpClient<LookupApiService>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl);
+})
+.AddHttpMessageHandler<TokenHandler>();
+
 builder.Services.AddScoped<CustomAuthStateProvider>(sp =>
     (CustomAuthStateProvider)sp.GetRequiredService<AuthenticationStateProvider>());
 

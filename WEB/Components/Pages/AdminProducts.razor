@@ -1,0 +1,85 @@
+﻿@page "/admin-products"
+@using Application.DTOs
+@using Domain.Entities
+@using Domain.Enums
+@using WEB.Services
+@using Web.Services
+@inject CustomAuthStateProvider AuthStateProvider
+@inject NavigationManager Navigation
+@inject AdminApiService AdminService
+@inject LookupApiService LookupService
+
+<div class="page-container">
+    <h2>Termékek kezelése</h2>
+    @if (isLoading)
+    {
+        <div class="d-flex justify-content-center my-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Betöltés...</span>
+            </div>
+            <p class="ms-3">betöltés...</p>
+        </div>
+    }
+
+    <div class="table-container">
+        <table class="table table-hover table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Termék Név</th>
+                    <th scope="col">Termékleírás</th>
+                    <th scope="col">Státusz/Rang</th>
+                    <th scope="col">Állapot</th>
+                    <th scope="col">Létrehozva</th>
+                    <th scope="col">Modosítva</th>
+                    <th scope="col">Feladó</th>
+                    <th scope="col">Kategória</th>
+                    <th scope="col">Hely</th>
+                    <th scope="col">Műveletek</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var product in products)
+                {
+                    <tr>
+                        <td>@product.ProductId.</td>
+                        <td>@product.ProductName</td>
+                        <td>@product.ProductDescription</td>
+                        <td>@product.ProductSatus</td>
+                        <td>@(product.IsActive ? "Aktív" : "Inaktív")</td>
+                        <td>@product.CreatedAt</td>
+                        <td>@product.UpdatedAt</td>
+                        <td>@LookupService.GetUserName(product.DonorId)</td>
+                        <td>@LookupService.GetProductCategoryName(product.ProductCategoryId)</td>
+                        <td>@LookupService.GetCountyName(product.CountyId)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@code {
+    private List<ProductDto> products = new();
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+
+        if (authState.User?.Identities == null ||
+            !authState.User.Identity!.IsAuthenticated ||
+            !authState.User.IsInRole("Admin"))
+        {
+            Navigation.NavigateTo("/login");
+            return;
+        }
+
+        await LookupService.GetCountiesAsync();
+        await LookupService.GetProductCategoriesAsync();
+        await LookupService.GetUsersAsync();
+
+        products = (await AdminService.GetProductsAsync()).ToList();
+        isLoading = false;
+    }
+}

@@ -19,11 +19,6 @@ namespace Web.Services
             return response.IsSuccessStatusCode;
         }
 
-        public async Task<IEnumerable<County>> GetCountiesAsync()
-        {
-            return await _http.GetFromJsonAsync<IEnumerable<County>>("auth/counties") ?? new List<County>();
-        }
-
         // LOGIN → JWT TOKEN-t ad vissza
         public async Task<string?> LoginAsync(LoginDto dto)
         {
@@ -35,11 +30,6 @@ namespace Web.Services
             var result = await response.Content.ReadFromJsonAsync<LoginResponseDto>();
 
             return result?.Token;
-        }
-
-        public async Task<IEnumerable<ProductCategory>> GetProductCategoriesAsync()
-        {
-            return await _http.GetFromJsonAsync<IEnumerable<ProductCategory>>("auth/productcategories") ?? new List<ProductCategory>();
         }
     }
 }
