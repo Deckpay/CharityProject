@@ -2,7 +2,6 @@
 using Application.Interfaces;
 using Domain.Enums;
 using Infrastructure.Repositories;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers

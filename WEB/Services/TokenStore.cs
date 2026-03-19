@@ -1,4 +1,4 @@
-﻿namespace Web.Services
+﻿namespace WEB.Services
 {
     public class TokenStore
     {

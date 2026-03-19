@@ -4,12 +4,12 @@
 @using Application.Services
 @using Domain.Entities
 @using WEB.Components.Shared
-@using Web.Services
+@using WEB.Services
 @inject NavigationManager Navigation
 @inject AuthApiService AuthService
 @inject ProductApiService productService
 @inject CustomAuthStateProvider AuthStateProvider
-@inject LookupService Lookup
+@inject LookupApiService Lookup
 
 <div class="container mt-4">
     <h3 class="mb-4">Termékek böngészése</h3>
@@ -122,7 +122,7 @@
     private async Task LoadProducts() => allProducts = (await productService.GetProductsAsync()).ToList();
     private async Task LoadFilters()
     {
-        categories = (await Lookup.GetProductCatergoriesAsync()).ToList();
+        categories = (await Lookup.GetProductCategoriesAsync()).ToList();
         counties = (await Lookup.GetCountiesAsync()).ToList();
     }
 

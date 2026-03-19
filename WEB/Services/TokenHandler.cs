@@ -1,6 +1,6 @@
 ﻿using System.Net.Http.Headers;
 
-namespace Web.Services
+namespace WEB.Services
 {
     public class TokenHandler : DelegatingHandler
     {

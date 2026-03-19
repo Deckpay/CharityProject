@@ -1,7 +1,5 @@
 ﻿using Application.DTOs;
 
-//using Microsoft.AspNetCore.Components.Forms;
-
 namespace Application.Interfaces
 {
     public interface IProductService

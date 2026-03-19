@@ -1,7 +1,7 @@
 ﻿using Microsoft.JSInterop;
 using System.Text.Json;
 
-namespace Web.Services
+namespace WEB.Services
 {
     public class LocalStorageService
     {

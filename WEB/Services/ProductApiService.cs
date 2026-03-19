@@ -1,10 +1,8 @@
 ﻿using Application.DTOs;
-using Application.Interfaces;
 using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.JSInterop;
 using System.Net.Http.Headers;
 
-namespace Web.Services
+namespace WEB.Services
 {
     public class ProductApiService
     {

@@ -4,10 +4,8 @@ using Infrastructure.Data;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,7 +53,6 @@ builder.Services.AddAuthentication("Bearer")
     };
 });
 
-
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -91,8 +88,6 @@ builder.Services.AddSwaggerGen(c => {
 
 });
 
-
-// chat implementáció
 // adatbázis elérése
 builder.Services.AddDbContext<CharityDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -102,8 +97,6 @@ builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<IApplicationDbcontext>(provider => provider.GetRequiredService<CharityDbContext>());
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
-
-
 
 var app = builder.Build();
 

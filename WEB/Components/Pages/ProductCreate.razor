@@ -5,12 +5,12 @@
 @using Domain.Entities
 @using Infrastructure.Services
 @using Microsoft.AspNetCore.Authorization
-@using Web.Services
+@using WEB.Services
 @inject NavigationManager Navigation
 @inject AuthApiService AuthService
 @inject ProductApiService productService
 @inject CustomAuthStateProvider AuthStateProvider
-@inject LookupService Lookup
+@inject LookupApiService Lookup
 @rendermode InteractiveServer
 
 <h3>ProductCreate</h3>
@@ -108,7 +108,7 @@
             try
             {
                 // Adatok lekérése
-                var catResult = await Lookup.GetProductCatergoriesAsync();
+                var catResult = await Lookup.GetProductCategoriesAsync();
                 categories = catResult.ToList();
 
                 var countyResult = await Lookup.GetCountiesAsync();

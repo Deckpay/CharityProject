@@ -1,12 +1,5 @@
-﻿using Application.DTOs;
-using Application.Interfaces;
+﻿using Application.Interfaces;
 using Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Json;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Services
 {
@@ -36,7 +29,7 @@ namespace Application.Services
         public string GetCountiesNameString(int id) =>
             _counties?.FirstOrDefault(c => c.CountyId == id)?.CountyName ?? "Ismeretlen";
 
-        public async Task<IEnumerable<ProductCategory>> GetProductCatergoriesAsync()
+        public async Task<IEnumerable<ProductCategory>> GetProductCategoriesAsync()
         {
             if (_productCategories == null)
             {

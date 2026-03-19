@@ -1,9 +1,6 @@
 ﻿using Application.DTOs;
-using Application.Interfaces;
-using Domain.Entities;
-using static System.Net.WebRequestMethods;
 
-namespace Web.Services
+namespace WEB.Services
 {
     public class AuthApiService
     {
