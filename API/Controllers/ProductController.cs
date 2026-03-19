@@ -83,6 +83,7 @@ namespace API.Controllers
             return Ok();
         }
 
+        [Authorize]
         [HttpPost("claim/{productId}")]
         public async Task<IActionResult> Claim(int productId)
         {
@@ -102,6 +103,15 @@ namespace API.Controllers
                 
             
             return BadRequest("hiba keletkezett az igénylés során");
+        }
+
+        [Authorize]
+        [HttpGet("my-requests")]
+        public async Task<IActionResult> GetMyRequests()
+        {
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+            var requests = await _productService.GetMyRequestsAsync(userId);
+            return Ok(requests);
         }
     }
 }

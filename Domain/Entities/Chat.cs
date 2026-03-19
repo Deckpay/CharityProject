@@ -7,6 +7,7 @@ namespace Domain.Entities
     public class Chat
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)] 
         public int ChatId { get; set; }
         public int ProductRequestId { get; set; }
         public int DonorId { get; set; }

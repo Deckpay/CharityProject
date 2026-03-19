@@ -48,6 +48,8 @@ namespace Application.Services
                 ImagePath= p.ImagePath,
                 ProductCategoryId = p.ProductCategoryId,
                 CountyId = p.CountyId,
+                DonorId = p.DonorId,
+                IsActive = p.IsActive
             }).ToList();
         }
         public async Task DeleteProductAsync(int id)
@@ -67,27 +69,50 @@ namespace Application.Services
         }
 
         // igénylés
-        public async Task<bool> ClaimProductAsync(int productId, int requestId)
+        public async Task<bool> ClaimProductAsync(int productId, int userId)
         {
             var product = await _unitOfWork.Products.GetByIdAsync(productId);
             if (product == null) return false;
 
-            var newRequest = new Chat
+            //ellenörzés ne igényeljen saját terméket
+            if (product.DonorId == userId) return false;
+            
+
+            var newRequest = new ProductRequest
             {
-                ProductRequestId = requestId,
-                DonorId = product.DonorId,
-                RequesterId = requestId,
+                //ProductRequestId = requestId,
+                //DonorId = product.DonorId,
+                ProductId = productId,                
+                RequesterId = userId,
+                RequestStatus = 0,
                 IsActive = true,
-                CreatedAt = DateTime.Now
+                RequestedAt = DateTime.Now
+                
+               
             };
 
-            await _unitOfWork.Chats.AddAsync(newRequest);
+            await _unitOfWork.ProductRequests.AddAsync(newRequest);
             
 
            
                 // itt hivjuk meg a chat servict hogy keszitse el az uj rekordokat
             return await  _unitOfWork.CompleteAsync() > 0;
 
+        }
+
+        public async Task<IEnumerable<ProductRequestDto>> GetMyRequestsAsync(int userId)
+        {
+            var allRequests = await _unitOfWork.ProductRequests.GetAllAsync();
+            return allRequests.Where(r => r.RequesterId == userId).Select(r => new ProductRequestDto 
+            {
+                ProductRequestId = r.RequesterId,
+                ProductId = r.ProductId,
+               RequesterId = r.RequesterId,
+               RequestStatus = r.RequestStatus,
+               IsActive = r.IsActive,
+               RequestedAt = r.RequestedAt
+            });
+                
         }
     }
 }

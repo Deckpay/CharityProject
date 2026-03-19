@@ -10,7 +10,7 @@ namespace Application.Interfaces
         
         // itt van az oszes tabléa amit a chat service hasznalni fog
         DbSet<ChatMessage> ChatMessages { get; set; }
-        DbSet<Product> Requests { get; set; }
+        DbSet<ProductRequest> ProductRequests { get; set; }
         //metnés 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }

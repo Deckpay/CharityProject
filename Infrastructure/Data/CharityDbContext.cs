@@ -21,6 +21,7 @@ namespace Infrastructure.Data
 
         public DbSet<Product> Requests { get; set; } = null!;
         public DbSet<Chat> Chats { get; set; } = null!;
+        public DbSet<ProductRequest> ProductRequests { get; set; }
 
         // Ez a metódus felel az adatbázis finomhangolásáért (Fluent API)
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -57,7 +58,7 @@ namespace Infrastructure.Data
 
             // 5. chat uzenetek kapcsolata
             modelBuilder.Entity<ChatMessage>( entity => {
-                entity.HasOne(m => m.Sender)
+                entity.HasOne<User>()
                 .WithMany()
                 .HasForeignKey(m => m.SenderId)
                 .OnDelete(DeleteBehavior.Restrict); // nem törlunk uzenetet ha felfuggesztik a felhasználót
@@ -65,7 +66,7 @@ namespace Infrastructure.Data
                 
             });
 
-             // 6 hozzadjuk az IapplicationDbContextet a származáshoz
+             
 
                 
 

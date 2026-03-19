@@ -7,27 +7,24 @@ namespace Domain.Entities
     public class ChatMessage
     {
         [Key]
-        [Column("ChatMessageId")] // Stimmel az SQL-lel
-        public int Id { get; set; }
 
-        [Column("ChatId")] // Stimmel az SQL-lel
-        public int RequestId { get; set; }
+        public int ChatMessageId { get; set; }
 
-        [Column("ChatMessage")] // Stimmel az SQL-lel
-        public string Content { get; set; } = string.Empty;
+        public int ChatId { get; set; }
 
-        [Column("SentAt")] // Biztosítsuk be, hogy az SQL 'SentAt' oszlopát használja
-        public DateTime Timestamp { get; set; } = DateTime.UtcNow;
-
-        [Column("SenderId")] // Stimmel az SQL-lel
         public int SenderId { get; set; }
 
-        public User Sender { get; set; } = null!;
+        // Megmondjuk az EF-nek, hogy a C#-os 'Content' az SQL-ben 'ChatMessage' néven fut
+        [Column("ChatMessage")]
+        public string Content { get; set; } = string.Empty;
 
-        [Column("IsRead")] // Stimmel az SQL-lel
-        public bool IsRead { get; set; } = false;
+        public bool IsRead { get; set; }
 
-        // Ha van ReadAt oszlopod is az SQL-ben, érdemes felvenni:
-        // public DateTime? ReadAt { get; set; } 
+        // Megmondjuk az EF-nek, hogy a 'Timestamp' valójában a 'SentAt' oszlop
+        [Column("SentAt")]
+        public DateTime Timestamp { get; set; }
+
+        // Mivel az SQL-ben van egy ReadAt oszlopod is, ezt is felvesszük (nullable-ként, mert nem biztos, hogy rögtön elolvassák)
+        public DateTime? ReadAt { get; set; }
     }
 }

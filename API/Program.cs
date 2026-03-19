@@ -94,7 +94,6 @@ builder.Services.AddDbContext<CharityDbContext>(options =>
 //adatbázis műveletek regisztrálása
 builder.Services.AddScoped<IChatRepository, ChatRepository>();
 builder.Services.AddScoped<IChatService, ChatService>();
-builder.Services.AddScoped<IApplicationDbcontext>(provider => provider.GetRequiredService<CharityDbContext>());
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 

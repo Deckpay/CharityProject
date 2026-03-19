@@ -1,6 +1,7 @@
 ﻿using Application.Interfaces;
 using Domain.Entities;
 using Infrastructure.Data;
+using Microsoft.Data.SqlClient;
 
 namespace Infrastructure.Repositories
 {
@@ -25,6 +26,8 @@ namespace Infrastructure.Repositories
             Categories = new GenericRepository<ProductCategory>(_context);
             Counties = new GenericRepository<County>(_context);
             Chats = new GenericRepository<Chat>(_context);
+            ChatMessages = new GenericRepository<ChatMessage>(_context);
+            ProductRequests = new GenericRepository<ProductRequest>(_context);
         }
 
         // Ez a metódus az "indítógomb": egyszerre ment el mindent az adatbázisba
@@ -32,8 +35,10 @@ namespace Infrastructure.Repositories
         {
             return await _context.SaveChangesAsync();
         }
-
         public IGenericRepository<Chat> Chats { get; private set; }
+        public IGenericRepository<ChatMessage> ChatMessages { get; private set; }
+        public IGenericRepository<ProductRequest> ProductRequests { get; private set; }
+
 
         // Felszabadítjuk az erőforrásokat, ha végeztünk
         public void Dispose()

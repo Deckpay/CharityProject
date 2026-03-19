@@ -13,16 +13,17 @@ namespace Application.Services
             _contextAccessor = contextAccessor;
         }
 
-        public int UserId // Így, nagy U-val!
+        public int UserId
         {
-
-            get 
-            { 
-                var id = _contextAccessor.HttpContext?.User?.Claims?.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            get
+            {
+                var id = _contextAccessor.HttpContext?.User?
+                    .Claims
+                    .FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
                 return string.IsNullOrEmpty(id) ? 0 : int.Parse(id);
             }
-        }
 
-        int ICurrentUserService.UserId { get => UserId; set => throw new NotImplementedException(); }
+            //int ICurrentUserService.UserId { get => UserId; set => throw new NotImplementedException(); }
+        }
     }
 }
