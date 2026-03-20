@@ -27,12 +27,13 @@ builder.Services.AddHttpClient<AuthApiService>(client =>
 })
 .AddHttpMessageHandler<TokenHandler>();
 
-// Product API Kliens felkészítése a Token küldésre
+// Product API Kliens – TokenHandler NÉLKÜL, mert a token paraméterként érkezik a komponensből
+// (Blazor Server-ben a JS Interop csak komponens szinten működik, ezért a token
+// közvetlenül a razor oldalakról kerül átadásra a service metódusoknak)
 builder.Services.AddHttpClient<ProductApiService>(client =>
 {
     client.BaseAddress = new Uri(apiBaseUrl);
-})
-.AddHttpMessageHandler<TokenHandler>();
+});
 
 builder.Services.AddHttpClient<AdminApiService>(client =>
 {
@@ -50,7 +51,6 @@ builder.Services.AddScoped<CustomAuthStateProvider>(sp =>
     (CustomAuthStateProvider)sp.GetRequiredService<AuthenticationStateProvider>());
 
 // WEB Program.cs
-
 // A Web-es implementációk (amik az API-t hívják)
 builder.Services.AddScoped<LocalStorageService>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
@@ -78,6 +78,12 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         };
     });
 
+builder.Services.AddHttpClient<ChatApiService>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl);
+});
+//.AddHttpMessageHandler<TokenHandler>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -89,7 +95,6 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseStaticFiles();
 app.UseAntiforgery();
 

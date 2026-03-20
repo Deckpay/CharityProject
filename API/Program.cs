@@ -96,7 +96,7 @@ builder.Services.AddScoped<IChatRepository, ChatRepository>();
 builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
-
+builder.Services.AddScoped<IChatService, ChatService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

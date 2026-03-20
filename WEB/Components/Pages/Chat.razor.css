@@ -1,0 +1,41 @@
+﻿.chat-box {
+    background-color: #f8fafc;
+    border-radius: 12px;
+}
+
+.chat-bubble {
+    max-width: 70%;
+    padding: 10px 14px;
+    border-radius: 16px;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    word-break: break-word;
+}
+
+/* Saját üzenet – jobb oldal, kék */
+.bubble-me {
+    background-color: #3b5998;
+    color: white;
+    border-bottom-right-radius: 4px;
+}
+
+/* Másik üzenet – bal oldal, szürke */
+.bubble-other {
+    background-color: #e2e8f0;
+    color: #1e293b;
+    border-bottom-left-radius: 4px;
+}
+
+.sender-name {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #64748b;
+    margin-bottom: 3px;
+}
+
+.msg-time {
+    font-size: 0.7rem;
+    opacity: 0.65;
+    text-align: right;
+    margin-top: 4px;
+}

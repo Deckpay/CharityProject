@@ -1,0 +1,173 @@
+﻿@page "/chat/{RequestId:int}"
+@using Application.DTOs
+@using WEB.Services
+@inject ChatApiService ChatService
+@inject CustomAuthStateProvider AuthStateProvider
+@inject NavigationManager Navigation
+@implements IDisposable
+
+<div class="container mt-4" style="max-width: 760px;">
+
+    <div class="d-flex align-items-center mb-3 gap-2">
+        <a href="/my-requests" class="btn btn-outline-secondary btn-sm">← Vissza</a>
+        <h4 class="mb-0 ms-2">💬 Üzenetváltás – Igénylés #@RequestId</h4>
+    </div>
+
+    <div class="card shadow-sm p-3 mb-3" style="height: 460px; overflow-y: auto;" @ref="chatBoxRef">
+        @if (isLoading)
+        {
+            <div class="d-flex justify-content-center align-items-center h-100">
+                <div class="spinner-border text-primary" role="status"></div>
+            </div>
+        }
+        else if (!messages.Any())
+        {
+            <div class="text-center text-muted mt-5">
+                <p>Még nincs üzenet. Kezdj el írni!</p>
+            </div>
+        }
+        else
+        {
+            @foreach (var msg in messages)
+            {
+                bool isMe = msg.SenderId == currentUserId;
+                string alignClass = isMe ? "justify-content-end" : "justify-content-start";
+                string bubbleClass = isMe ? "bubble-me" : "bubble-other";
+
+                <div class="d-flex mb-2 @alignClass">
+                    <div class="chat-bubble @bubbleClass">
+                        @if (!isMe)
+                        {
+                            <div class="sender-name">@msg.SenderName</div>
+                        }
+                        <div>@msg.Content</div>
+                        <div class="msg-time">@msg.SentAt.ToLocalTime().ToString("HH:mm")</div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger py-2">@errorMessage</div>
+    }
+
+    <div class="input-group">
+        <input type="text"
+               class="form-control"
+               placeholder="Írj üzenetet..."
+               @bind="newMessage"
+               @bind:event="oninput"
+               @onkeydown="HandleKeyDown" />
+        <button class="btn btn-primary" @onclick="SendMessage" disabled="@sendDisabled">
+            @if (isSending)
+            {
+                <span class="spinner-border spinner-border-sm"></span>
+            }
+            else
+            {
+                <span>Küldés</span>
+            }
+        </button>
+    </div>
+    <p class="text-muted small mt-1">Enter = küldés · 5 másodpercenként automatikusan frissül</p>
+</div>
+
+@code {
+    [Parameter] public int RequestId { get; set; }
+
+    private List<ChatMessageResponseDto> messages = new();
+    private string newMessage = string.Empty;
+    private string? errorMessage;
+    private bool isLoading = true;
+    private bool isSending = false;
+    private int currentUserId = 0;
+    private ElementReference chatBoxRef;
+    private PeriodicTimer? _timer;
+
+    private bool sendDisabled => isSending || string.IsNullOrWhiteSpace(newMessage);
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            if (authState.User?.Identity == null || !authState.User.Identity.IsAuthenticated)
+            {
+                Navigation.NavigateTo("/login");
+                return;
+            }
+
+            currentUserId = await AuthStateProvider.GetCurrentUserIdAsync();
+            //await LoadMessages();
+            isLoading = false;
+            StateHasChanged();
+
+            _ = StartPollingAsync();
+        }
+    }
+    /*
+    private async Task LoadMessages()
+    {
+        try
+        {
+            messages = await ChatService.GetHistoryAsync(RequestId);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Chat betöltési hiba: {ex.Message}");
+        }
+    }
+    */
+
+    private async Task StartPollingAsync()
+    {
+        _timer = new PeriodicTimer(TimeSpan.FromSeconds(5));
+        while (await _timer.WaitForNextTickAsync())
+        {
+            //await LoadMessages();
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task SendMessage()
+    {
+        if (string.IsNullOrWhiteSpace(newMessage)) return;
+        isSending = true;
+        errorMessage = null;
+
+        try
+        {
+            /*var success = await ChatService.SendMessageAsync(RequestId, newMessage);
+            if (success)
+            {
+                newMessage = string.Empty;
+                await LoadMessages();
+            }
+            else
+            {
+                errorMessage = "Nem sikerült elküldeni az üzenetet.";
+            }
+            */
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "Hálózati hiba történt.";
+            Console.WriteLine($"Küldési hiba: {ex.Message}");
+        }
+        finally
+        {
+            isSending = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && !string.IsNullOrWhiteSpace(newMessage))
+            await SendMessage();
+    }
+
+    public void Dispose() => _timer?.Dispose();
+}

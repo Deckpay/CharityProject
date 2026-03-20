@@ -11,6 +11,7 @@
 @inject ProductApiService productService
 @inject CustomAuthStateProvider AuthStateProvider
 @inject LookupApiService Lookup
+@inject LocalStorageService LocalStorage
 @rendermode InteractiveServer
 
 <h3>ProductCreate</h3>
@@ -146,8 +147,8 @@
             }
 
             // Itt küldjük be a DTO-t
-            var success = await productService.CreateProductAsync(productDto, imageFile!);
-
+            var token = await LocalStorage.GetItemAsync<string>("authToken") ?? "";
+            var success = await productService.CreateProductAsync(productDto, imageFile!, token);
             if (success)
             {
                 showSuccessMessage = true;

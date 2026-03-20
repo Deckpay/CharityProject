@@ -87,22 +87,24 @@ namespace API.Controllers
         [HttpPost("claim/{productId}")]
         public async Task<IActionResult> Claim(int productId)
         {
-           
-            // megkeressuk a claim et
             var nameIdentifier = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-
-            // null ha a felhasznalo nincs bejelentkezve vagy nincs id je
             if (string.IsNullOrEmpty(nameIdentifier)) return Unauthorized("A felhasználó nem található");
 
-            // igy lesz jó a parse
             var userId = int.Parse(nameIdentifier);
+            var success = await _productService.ClaimProductAsync(productId, userId);
 
-            var result = await _productService.ClaimProductAsync(productId, userId);
+            if (!success) return BadRequest("Hiba keletkezett az igénylés során");
 
-            if (result) return Ok("Igyénylés és a chat létrejött");
-                
-            
-            return BadRequest("hiba keletkezett az igénylés során");
+            // Siker után lekérdezzük a keletkezett requestId-t
+            var allRequests = await _unitOfWork.ProductRequests.GetAllAsync();
+            var request = allRequests
+                .Where(r => r.ProductId == productId && r.RequesterId == userId && r.IsActive)
+                .OrderByDescending(r => r.RequestedAt)
+                .FirstOrDefault();
+
+            if (request == null) return BadRequest("Igénylés nem található");
+
+            return Ok(new { requestId = request.ProductRequestId });
         }
 
         [Authorize]

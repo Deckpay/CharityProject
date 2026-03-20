@@ -1,17 +1,17 @@
 ﻿@using Application.DTOs
 @using Microsoft.AspNetCore.Components.Authorization
+@using WEB.Services
 @inject IConfiguration Configuration
+@inject ProductApiService ProductService
+@inject NavigationManager Navigation
+@inject LocalStorageService LocalStorage
 
 <div class="product-card">
     <div class="image-wrapper">
         <div class="image-box">
             @if (!string.IsNullOrEmpty(Product.ImagePath))
             {
-                @if (!string.IsNullOrEmpty(Product.ImagePath))
-                {
-                    <img src="@($"{apiBaseUrl?.Replace("/api", "").TrimEnd('/')}{Product.ImagePath}")"
-                         alt="@Product.ProductName" />
-                }
+                <img src="@imageUrl" alt="@Product.ProductName" />
             }
             else
             {
@@ -19,40 +19,77 @@
             }
         </div>
     </div>
-
     <div class="card-body">
         <h3 class="product-title">@Product.ProductName</h3>
-
         <p class="product-description">
             @((Product.ProductDescription?.Length > 110)
                         ? Product.ProductDescription.Substring(0, 107) + "..."
                         : Product.ProductDescription)
         </p>
     </div>
-
     <div class="card-footer">
         <div class="tags">
             <span class="tag category">@CategoryName</span>
             <span class="tag county">@CountyName</span>
         </div>
-
         <AuthorizeView Roles="Recipient">
             <Authorized>
-                <button class="details-btn">Igénylés</button>
+                @if (claimError)
+                {
+                    <span class="btn-error-msg">❌ Hiba történt</span>
+                }
+                else
+                {
+                    <button class="details-btn" @onclick="ClaimProduct" disabled="@isClaiming">
+                        @(isClaiming ? "⏳ Folyamatban..." : "Igénylés")
+                    </button>
+                }
             </Authorized>
         </AuthorizeView>
-        
     </div>
 </div>
+
 @code {
     [Parameter] public ProductDto Product { get; set; } = new();
     [Parameter] public string CategoryName { get; set; } = "Egyéb";
     [Parameter] public string CountyName { get; set; } = "Ismeretlen";
 
-    private string? apiBaseUrl;
+    private bool isClaiming = false;
+    private bool claimError = false;
+    private string imageUrl = "";
 
-    protected override void OnInitialized()
+    protected override void OnParametersSet()
     {
-        apiBaseUrl = Configuration["ApiSettings:BaseUrl"];
+        var apiBase = Configuration["ApiSettings:BaseUrl"] ?? "";
+        var staticBase = apiBase.Replace("/api/", "").Replace("/api", "").TrimEnd('/');
+        var path = Product.ImagePath ?? "";
+        if (!path.StartsWith("/")) path = "/" + path;
+        imageUrl = staticBase + path;
+    }
+
+    private async Task ClaimProduct()
+    {
+        isClaiming = true;
+        claimError = false;
+        try
+        {
+            var rawToken = await LocalStorage.GetItemAsync<string>("authToken") ?? "";
+            var token = rawToken.Trim('"');
+            Console.WriteLine($"Claim token: '{(string.IsNullOrEmpty(token) ? "ÜRES" : "VAN")}'");
+            var requestId = await ProductService.ClaimProductAsync(Product.ProductId, token);
+            if (requestId > 0)
+                Navigation.NavigateTo($"/chat/{requestId}");
+            else
+                claimError = true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Claim hiba: {ex.Message}");
+            claimError = true;
+        }
+        finally
+        {
+            isClaiming = false;
+        }
     }
 }
