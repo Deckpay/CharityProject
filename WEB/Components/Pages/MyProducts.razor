@@ -3,8 +3,8 @@
 @using Application.Interfaces
 @using Application.Services
 @using Domain.Entities
-@using Infrastructure.Services
 @using Microsoft.AspNetCore.Authorization
+@using WEB.Components.Shared
 @using WEB.Services
 @inject NavigationManager Navigation
 @inject AuthApiService AuthService
@@ -12,167 +12,127 @@
 @inject CustomAuthStateProvider AuthStateProvider
 @inject LookupApiService Lookup
 @inject LocalStorageService LocalStorage
-@rendermode InteractiveServer
 
-<h3>ProductCreate</h3>
+<div class="container mt-4">
+    <h3 class="mb-4">Termékek böngészése</h3>
 
-<EditForm Model="@productDto" OnValidSubmit="HandleSubmit">
-    <div>
-        <label>Termék Neve</label>
-        <InputText @bind-Value="productDto.ProductName" placeholder="Pl.:Mosógép" />
-    </div>
-    <div>
-        <label>Leírás</label>
-        <InputText @bind-Value="productDto.ProductDescription" placeholder="Írd le a termék részleteit..." />
-    </div>
-    <div>
-        @* KATEGÓRIA VÁLASZTÓ *@
-        <div>
-            <label>Kategória</label>
-            <InputSelect @bind-Value="productDto.ProductCategoryId">
-                <option value="0">-- Válassz --</option>
-                @foreach (var cat in categories)
-                {
-                    <option value="@cat.ProductCategoryId">@cat.ProductCategoryName</option>
-                }
-            </InputSelect>
-            <div><ValidationMessage For="@(() => productDto.ProductCategoryId)" /></div>
+    @if (isLoading)
+    {
+        <div class="d-flex justify-content-center my-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Betöltés...</span>
+            </div>
+            <p class="ms-3">Termékek betöltése...</p>
         </div>
+    }
 
-        @* MEGYE VÁLASZTÓ *@
-        <div>
-            <label>Megye</label>
-            <InputSelect @bind-Value="productDto.CountyId">
-                <option value="0">-- Válassz --</option>
-                @foreach (var county in counties)
-                {
-                    <option value="@county.CountyId">@county.CountyName</option>
-                }
-            </InputSelect>
-            <div><ValidationMessage For="@(() => productDto.CountyId)" /></div>
+    <div class="card mb-4 p-3 shadow-sm bg-light">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label font-weight-bold">Keresés névben vagy leírásban</label>
+                <input type="text" class="form-control" @bind="searchQuery" @bind:event="oninput" placeholder="Írd be a keresett szót..." />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label font-weight-bold">Kategória</label>
+                <select class="form-select" @bind="selectedCategoryId">
+                    <option value="0">Összes kategória</option>
+                    @foreach (var cat in categories)
+                    {
+                        <option value="@cat.ProductCategoryId">@cat.ProductCategoryName</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label font-weight-bold">Megye</label>
+                <select class="form-select" @bind="selectedCountyId">
+                    <option value="0">Összes megye</option>
+                    @foreach (var county in counties)
+                    {
+                        <option value="@county.CountyId">@county.CountyName</option>
+                    }
+                </select>
+            </div>
         </div>
+    </div>
 
-        <div>
-            <label>Kép</label>
-            <InputFile OnChange="OnFileSelected" />
-            @if (!string.IsNullOrEmpty(selectedFileName))
+    <div class="product-grid">
+        @if (FilteredProducts.Any())
+        {
+            @foreach (var product in FilteredProducts)
             {
-                <div>Válaszott fájl: @selectedFileName</div>
+                <ProductCard Product="product"
+                             CategoryName="@GetCategoryName(product.ProductCategoryId)"
+                             CountyName="@GetCountyName(product.CountyId)" />
             }
-        </div>
+        }
+        else
+        {
+            <div class="col-12 text-center py-5">
+                <p class="text-muted">Nincs a feltételeknek megfelelő termék.</p>
+            </div>
+        }
     </div>
-
-    @if (showSuccessMessage)
-    {
-        <div class="alert alert-success" style="background-color: #d4edda; color: #155724; padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px solid #c3e6cb;">
-            <strong>Siker!</strong> A termék hirdetése sikeresen feladva.
-        </div>
-    }
-
-    @if (!string.IsNullOrEmpty(errorMessage))
-    {
-        <div class="alert alert-danger" style="background-color: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px solid #f5c6cb;">
-            @errorMessage
-        </div>
-    }
-    <div>
-        <button type="submit" disabled="@isSubmitting">@(isSubmitting ? "Mentés..." : "Termék beküldése")</button>
-    </div>
-</EditForm>
+</div>
 
 @code {
-    private ProductDto productDto = new();
-    private string? errorMessage;
-    private bool isSubmitting = false;
-    private bool showSuccessMessage = false; // Új változó a siker jelzésére
-    private string? selectedFileName;
-
-    // Csak egyszer deklaráljuk a listákat.
-    // Használjuk az Entity típusokat, ha a Service azt ad vissza.
+    private List<ProductDto> allProducts = new();
     private List<ProductCategory> categories = new();
     private List<County> counties = new();
+
+    private string searchQuery = "";
+    private int selectedCategoryId = 0;
+    private int selectedCountyId = 0;
+    private bool isLoading = true;
+    private string token = "";
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            // Várjuk meg, hogy a CustomAuthStateProvider beolvassa a tokent.
+            token = await LocalStorage.GetItemAsync<string>("authToken") ?? "";
+            // 1. Megvárjuk, amíg a Provider beolvassa a tokent a LocalStorage-ból
+            // Ez feltölti a TokenStore-t is!
             var authState = await AuthStateProvider.GetAuthenticationStateAsync();
 
-            // Ha nincs bejelentkezett Donor felhasználó, navigáljunk a bejelentkező oldalra (klien oldali ellenőrzés).
             if (authState.User?.Identity == null || !authState.User.Identity.IsAuthenticated || !authState.User.IsInRole("Donor"))
             {
                 Navigation.NavigateTo("/login");
                 return;
             }
 
+            // 2. Csak ezután hívjuk meg az API-t
             try
             {
-                // Adatok lekérése
-                var catResult = await Lookup.GetProductCategoriesAsync();
-                categories = catResult.ToList();
-
-                var countyResult = await Lookup.GetCountiesAsync();
-                counties = countyResult.ToList();
+                allProducts = (await productService.GetMyProductsAsync(token)).ToList();
             }
             catch (Exception ex)
             {
-                errorMessage = "Nem sikerült betölteni az alapadatokat: " + ex.Message;
+                Console.WriteLine($"Hiba a betöltésnél: {ex.Message}");
             }
 
-            StateHasChanged();
+            await LoadFilters();
+            isLoading = false;
+            StateHasChanged(); // Frissítjük a UI-t
         }
     }
 
-    IBrowserFile? imageFile;
 
-    void OnFileSelected(InputFileChangeEventArgs e)
+    private async Task LoadProducts() => allProducts = (await productService.GetProductsAsync()).ToList();
+    private async Task LoadFilters()
     {
-        imageFile = e.File;
-        selectedFileName = imageFile?.Name;
+        categories = (await Lookup.GetProductCategoriesAsync()).ToList();
+        counties = (await Lookup.GetCountiesAsync()).ToList();
     }
 
-    private async Task HandleSubmit()
-    {
-        isSubmitting = true;
-        errorMessage = null;
+    // A keresési logika
+    private IEnumerable<ProductDto> FilteredProducts => allProducts.Where(p =>
+        (string.IsNullOrWhiteSpace(searchQuery) ||
+         p.ProductName.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) ||
+         (p.ProductDescription?.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) ?? false)) &&
+        (selectedCategoryId == 0 || p.ProductCategoryId == selectedCategoryId) &&
+        (selectedCountyId == 0 || p.CountyId == selectedCountyId)
+    );
 
-        try
-        {
-            if (imageFile == null)
-            {
-                errorMessage = "Kép kiválasztása kötelező!";
-                return;
-            }
-
-            // Token lekérése a localStorage-ból
-            var token = await LocalStorage.GetItemAsync<string>("authToken") ?? "";
-
-            // Itt küldjük be a DTO-t a tokennel együtt
-            var success = await productService.CreateProductAsync(productDto, imageFile!, token);
-
-            if (success)
-            {
-                showSuccessMessage = true;
-                productDto = new(); // reset
-                selectedFileName = null;
-                //Navigation.NavigateTo("/"); // Vagy a sikeres oldaladra
-                // StateHasChanged(); // Frissítjük a felületet
-                // await Task.Delay(5000); // Várunk 5 másodpercet
-                // StateHasChanged(); // Eltüntetjük az üzenetet
-            }
-            else
-            {
-                errorMessage = "A mentés nem sikerült a szerveren.";
-            }
-        }
-        catch (Exception ex)
-        {
-            errorMessage = "Hiba a mentés során: " + ex.Message;
-        }
-        finally
-        {
-            isSubmitting = false;
-        }
-    }
+    private string GetCategoryName(int id) => categories.FirstOrDefault(c => c.ProductCategoryId == id)?.ProductCategoryName ?? "Egyéb";
+    private string GetCountyName(int id) => counties.FirstOrDefault(c => c.CountyId == id)?.CountyName ?? "Ismeretlen";
 }
