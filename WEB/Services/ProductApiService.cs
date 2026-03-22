@@ -68,6 +68,15 @@ namespace WEB.Services
             return await response.Content.ReadFromJsonAsync<IEnumerable<ProductRequestDto>>() ?? new List<ProductRequestDto>();
         }
 
+        // Donor: az ő termékeihez beérkezett igénylések
+        public async Task<IEnumerable<ProductRequestDto>> GetDonorRequestsAsync(string token)
+        {
+            var request = CreateAuthRequest(HttpMethod.Get, "Product/donor-requests", token);
+            var response = await _http.SendAsync(request);
+            if (!response.IsSuccessStatusCode) return new List<ProductRequestDto>();
+            return await response.Content.ReadFromJsonAsync<IEnumerable<ProductRequestDto>>() ?? new List<ProductRequestDto>();
+        }
+
         //  Igénylés törlése
         public async Task DeleteRequestAsync(int requestId, string token)
         {

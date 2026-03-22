@@ -105,7 +105,7 @@ namespace API.Controllers
             return Ok(requests);
         }
 
-        //  Igénylés törlése (soft delete)
+        //  Igénylés törlése 
         [Authorize]
         [HttpDelete("request/{requestId}")]
         public async Task<IActionResult> DeleteRequest(int requestId)
@@ -118,11 +118,46 @@ namespace API.Controllers
             // Csak a saját igénylését törölheti
             if (request.RequesterId != userId) return Forbid();
 
-            // Soft delete
+            // törlés
             request.IsActive = false;
             await _unitOfWork.CompleteAsync();
 
             return Ok();
         }
+
+
+        // Donor: az ő termékeihez beérkező igénylések listája
+        [Authorize]
+        [HttpGet("donor-requests")]
+        public async Task<IActionResult> GetDonorRequests()
+        {
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+
+            var myProducts = await _unitOfWork.Products.GetAllAsync();
+            var myProductIds = myProducts
+                .Where(p => p.DonorId == userId && p.IsActive)
+                .Select(p => p.ProductId)
+                .ToHashSet();
+
+            var allRequests = await _unitOfWork.ProductRequests.GetAllAsync();
+            var donorRequests = allRequests
+                .Where(r => myProductIds.Contains(r.ProductId) && r.IsActive)
+                .Select(r => new ProductRequestDto
+                {
+                    ProductRequestId = r.ProductRequestId,
+                    ProductId = r.ProductId,
+                    RequesterId = r.RequesterId,
+                    RequestStatus = r.RequestStatus,
+                    IsActive = r.IsActive,
+                    RequestedAt = r.RequestedAt
+                });
+
+            return Ok(donorRequests);
+        }
+
+        // Igénylés törlése (soft delete) – csak a saját igénylését törölheti
+        
+        
+
     }
 }

@@ -19,16 +19,27 @@
     @if (isLoading)
     {
         <div class="chats-loading">
-            @for (int i = 0; i < 4; i++)
-            {
-                <div class="skeleton-row">
-                    <div class="skeleton-avatar"></div>
-                    <div class="skeleton-lines">
-                        <div class="skeleton-line" style="width:60%"></div>
-                        <div class="skeleton-line" style="width:40%"></div>
-                    </div>
+            <div class="skeleton-row">
+                <div class="skeleton-avatar"></div>
+                <div class="skeleton-lines">
+                    <div class="skeleton-line sl-60"></div>
+                    <div class="skeleton-line sl-40"></div>
                 </div>
-            }
+            </div>
+            <div class="skeleton-row">
+                <div class="skeleton-avatar"></div>
+                <div class="skeleton-lines">
+                    <div class="skeleton-line sl-55"></div>
+                    <div class="skeleton-line sl-35"></div>
+                </div>
+            </div>
+            <div class="skeleton-row">
+                <div class="skeleton-avatar"></div>
+                <div class="skeleton-lines">
+                    <div class="skeleton-line sl-65"></div>
+                    <div class="skeleton-line sl-30"></div>
+                </div>
+            </div>
         </div>
     }
     else if (!conversations.Any())
@@ -44,10 +55,24 @@
         <div class="conversations-list">
             @foreach (var conv in conversations)
             {
-                <div class="conv-row @(deletingConvId == conv.RequestId ? "conv-deleting" : "")"
-                     @onclick="() => OpenChat(conv.RequestId)">
+                var chatUrl = "/chat/" + conv.RequestId.ToString();
+                var reqId = conv.RequestId;
+                var initial = conv.ProductName.Length > 0 ? conv.ProductName.Substring(0, 1).ToUpper() : "?";
+                var preview = string.Empty;
+                if (conv.LastMessage != null)
+                {
+                    preview = conv.LastMessage.Length > 50
+                    ? conv.LastMessage.Substring(0, 50) + "…"
+                    : conv.LastMessage;
+                }
+                var timeStr = conv.LastMessageTime.HasValue ? FormatTime(conv.LastMessageTime.Value) : string.Empty;
+                var statusCls = "status-pill " + GetStatusClass(conv.Status);
+                var statusTxt = GetStatusText(conv.Status);
+                var rowCls = deletingConvId == conv.RequestId ? "conv-row conv-deleting" : "conv-row";
+
+                <div class="@rowCls" @onclick="() => Navigation.NavigateTo(chatUrl)">
                     <div class="conv-avatar">
-                        <span>@(conv.ProductName.Length > 0 ? conv.ProductName[0].ToString().ToUpper() : "?")</span>
+                        <span>@initial</span>
                         @if (conv.UnreadCount > 0)
                         {
                             <span class="unread-dot">@conv.UnreadCount</span>
@@ -56,15 +81,15 @@
                     <div class="conv-body">
                         <div class="conv-top">
                             <span class="conv-title">@conv.ProductName</span>
-                            @if (conv.LastMessageTime.HasValue)
+                            @if (!string.IsNullOrEmpty(timeStr))
                             {
-                                <span class="conv-time">@FormatTime(conv.LastMessageTime.Value)</span>
+                                <span class="conv-time">@timeStr</span>
                             }
                         </div>
                         <div class="conv-preview">
-                            @if (!string.IsNullOrEmpty(conv.LastMessage))
+                            @if (!string.IsNullOrEmpty(preview))
                             {
-                                <span>@(conv.LastMessage.Length > 50 ? conv.LastMessage[..50] + "…" : conv.LastMessage)</span>
+                                <span>@preview</span>
                             }
                             else
                             {
@@ -73,11 +98,12 @@
                         </div>
                         <div class="conv-meta">
                             <span class="req-id">#@conv.RequestId</span>
-                            <span class="status-pill @GetStatusClass(conv.Status)">@GetStatusText(conv.Status)</span>
+                            <span class="@statusCls">@statusTxt</span>
                         </div>
                     </div>
-                    <button class="conv-delete" @onclick="() => AskDelete(conv.RequestId)"
-                            @onclick:stopPropagation="true" title="Beszélgetés törlése">
+                    <button class="conv-delete" title="Törlés"
+                            @onclick:stopPropagation="true"
+                            @onclick="() => AskDelete(reqId)">
                         <span class="material-symbols-outlined">close</span>
                     </button>
                 </div>
@@ -86,7 +112,6 @@
     }
 </div>
 
-@* ── Törlés megerősítő modal ── *@
 @if (showConfirm)
 {
     <div class="modal-backdrop" @onclick="CancelDelete">
@@ -98,29 +123,46 @@
                 <span class="material-symbols-outlined">delete_forever</span>
             </div>
             <h3 class="modal-title">Töröljük a beszélgetést?</h3>
-            <p class="modal-desc">Ez a művelet nem vonható vissza.<br />A chat üzenetek is törlődnek.</p>
+            <p class="modal-desc">Ez a művelet nem vonható vissza. A chat üzenetek is törlődnek.</p>
             <div class="modal-actions">
                 <button class="btn-modal-cancel" @onclick="CancelDelete">Mégsem</button>
-                <button class="btn-modal-danger" @onclick="ConfirmDelete" @attributes="GetDeleteBtnAttrs()">
-                    @if (isDeleting)
-                    {
+                @if (isDeleting)
+                {
+                    <button class="btn-modal-danger" disabled="disabled">
                         <span class="spinner-border spinner-border-sm"></span>
-                    }
-                    Igen, törlöm
-                </button>
+                        Törlés...
+                    </button>
+                }
+                else
+                {
+                    <button class="btn-modal-danger" @onclick="ConfirmDelete">
+                        Igen, törlöm
+                    </button>
+                }
             </div>
         </div>
     </div>
 }
 
 @code {
+    private class ConversationVm
+    {
+        public int RequestId { get; set; }
+        public string ProductName { get; set; } = string.Empty;
+        public int Status { get; set; }
+        public string? LastMessage { get; set; }
+        public DateTime? LastMessageTime { get; set; }
+        public int UnreadCount { get; set; }
+    }
+
     private List<ConversationVm> conversations = new();
     private bool isLoading = true;
     private bool showConfirm = false;
     private bool isDeleting = false;
     private int? deletingConvId = null;
     private int currentUserId = 0;
-    private string token = "";
+    private string token = string.Empty;
+    private bool isDonor = false;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -133,8 +175,9 @@
             return;
         }
 
+        isDonor = authState.User.IsInRole("Donor");
         currentUserId = await AuthStateProvider.GetCurrentUserIdAsync();
-        token = await LocalStorage.GetItemAsync<string>("authToken") ?? "";
+        token = await LocalStorage.GetItemAsync<string>("authToken") ?? string.Empty;
 
         await LoadConversations();
         isLoading = false;
@@ -145,21 +188,25 @@
     {
         try
         {
-            var requests = (await ProductService.GetMyRequestsAsync(token)).ToList();
-            var products = (await ProductService.GetProductsAsync()).ToList();
-            var result = new List<ConversationVm>();
+            var allProducts = (await ProductService.GetProductsAsync()).ToList();
+            IEnumerable<ProductRequestDto> requests;
 
+            if (isDonor)
+                requests = await ProductService.GetDonorRequestsAsync(token);
+            else
+                requests = await ProductService.GetMyRequestsAsync(token);
+
+            var result = new List<ConversationVm>();
             foreach (var req in requests.OrderByDescending(r => r.RequestedAt))
             {
-                var productName = products.FirstOrDefault(p => p.ProductId == req.ProductId)?.ProductName
-                                  ?? $"Termék #{req.ProductId}";
+                var found = allProducts.FirstOrDefault(p => p.ProductId == req.ProductId);
+                var productName = found != null ? found.ProductName : ("Termék #" + req.ProductId.ToString());
 
-                // Üzenetek betöltése (ha van chat)
                 List<ChatMessageResponseDto> msgs = new();
                 try { msgs = await ChatService.GetHistoryAsync(req.ProductRequestId, token); }
                 catch { }
 
-                var last = msgs.LastOrDefault();
+                var last = msgs.Count > 0 ? msgs[msgs.Count - 1] : null;
                 result.Add(new ConversationVm
                 {
                     RequestId = req.ProductRequestId,
@@ -170,16 +217,13 @@
                     UnreadCount = msgs.Count(m => !m.IsRead && m.SenderId != currentUserId)
                 });
             }
-
             conversations = result;
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Hiba: {ex.Message}");
+            Console.WriteLine("Hiba: " + ex.Message);
         }
     }
-
-    private void OpenChat(int requestId) => Navigation.NavigateTo($"/chat/{requestId}");
 
     private void AskDelete(int requestId)
     {
@@ -197,7 +241,7 @@
     {
         if (deletingConvId == null) return;
         isDeleting = true;
-
+        StateHasChanged();
         try
         {
             await ProductService.DeleteRequestAsync(deletingConvId.Value, token);
@@ -205,7 +249,7 @@
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Törlési hiba: {ex.Message}");
+            Console.WriteLine("Törlési hiba: " + ex.Message);
         }
         finally
         {
@@ -225,21 +269,19 @@
         return local.ToString("MM. dd.");
     }
 
-    private string GetStatusText(int s) => s switch { 0 => "Függőben", 1 => "Elfogadva", 2 => "Elutasítva", _ => "" };
-    private string GetStatusClass(int s) => s switch { 0 => "st-pending", 1 => "st-accepted", 2 => "st-rejected", _ => "" };
-
-    private Dictionary<string, object> GetDeleteBtnAttrs() =>
-        isDeleting
-            ? new Dictionary<string, object> { { "disabled", "disabled" } }
-            : new Dictionary<string, object>();
-
-    private class ConversationVm
+    private string GetStatusText(int s)
     {
-        public int RequestId { get; set; }
-        public string ProductName { get; set; } = "";
-        public int Status { get; set; }
-        public string? LastMessage { get; set; }
-        public DateTime? LastMessageTime { get; set; }
-        public int UnreadCount { get; set; }
+        if (s == 0) return "Függőben";
+        if (s == 1) return "Elfogadva";
+        if (s == 2) return "Elutasítva";
+        return string.Empty;
+    }
+
+    private string GetStatusClass(int s)
+    {
+        if (s == 0) return "st-pending";
+        if (s == 1) return "st-accepted";
+        if (s == 2) return "st-rejected";
+        return string.Empty;
     }
 }

@@ -73,6 +73,30 @@
     border-radius: 6px;
 }
 
+.sl-30 {
+    width: 30%;
+}
+
+.sl-35 {
+    width: 35%;
+}
+
+.sl-40 {
+    width: 40%;
+}
+
+.sl-55 {
+    width: 55%;
+}
+
+.sl-60 {
+    width: 60%;
+}
+
+.sl-65 {
+    width: 65%;
+}
+
 /* ── Üres állapot ── */
 .chats-empty {
     text-align: center;
