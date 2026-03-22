@@ -1,41 +1,430 @@
-﻿.chat-box {
-    background-color: #f8fafc;
-    border-radius: 12px;
+﻿/* ═══════════════════════════════════════════
+   Chat shell – teljes képernyős elrendezés
+   ═══════════════════════════════════════════ */
+.chat-shell {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 60px); /* fejléc magasságát vonjuk le */
+    max-width: 780px;
+    margin: 0 auto;
+    background: #f0f2f5;
+    border-left: 1px solid #e4e6ea;
+    border-right: 1px solid #e4e6ea;
 }
 
-.chat-bubble {
-    max-width: 70%;
-    padding: 10px 14px;
-    border-radius: 16px;
-    font-size: 0.95rem;
-    line-height: 1.4;
+/* ═══════════════════════════════════════════
+   Fejléc
+   ═══════════════════════════════════════════ */
+.chat-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: #ffffff;
+    border-bottom: 1px solid #e4e6ea;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    z-index: 10;
+    flex-shrink: 0;
+}
+
+.back-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: #f0f2f5;
+    border-radius: 50%;
+    cursor: pointer;
+    color: #1c1e21;
+    transition: background 0.15s;
+    flex-shrink: 0;
+}
+
+    .back-btn:hover {
+        background: #e4e6ea;
+    }
+
+.header-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0084ff 0%, #00b0ff 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 15px;
+    flex-shrink: 0;
+}
+
+.header-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.header-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1c1e21;
+    line-height: 1.2;
+}
+
+.header-sub {
+    font-size: 12px;
+    color: #65676b;
+}
+
+/* ═══════════════════════════════════════════
+   Üzenetlista
+   ═══════════════════════════════════════════ */
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    scroll-behavior: smooth;
+}
+
+    .chat-messages::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .chat-messages::-webkit-scrollbar-thumb {
+        background: #c4c4c4;
+        border-radius: 4px;
+    }
+
+/* ── Dátum elválasztó ── */
+.date-divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 16px 0 8px;
+}
+
+    .date-divider::before,
+    .date-divider::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: #d4d6da;
+    }
+
+    .date-divider span {
+        font-size: 11px;
+        color: #65676b;
+        font-weight: 500;
+        white-space: nowrap;
+        padding: 2px 8px;
+        background: #e4e6ea;
+        border-radius: 10px;
+    }
+
+/* ── Üzenetsor ── */
+.msg-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    margin: 1px 0;
+}
+
+.row-me {
+    flex-direction: row-reverse;
+}
+
+.row-other {
+    flex-direction: row;
+}
+
+/* ── Kis avatar ── */
+.avatar-sm {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #e4e6ea;
+    color: #444950;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-bottom: 2px;
+}
+
+/* ── Buborék wrap ── */
+.bubble-wrap {
+    display: flex;
+    flex-direction: column;
+    max-width: 65%;
+    gap: 2px;
+}
+
+.row-me .bubble-wrap {
+    align-items: flex-end;
+}
+
+.row-other .bubble-wrap {
+    align-items: flex-start;
+}
+
+.sender-label {
+    font-size: 11px;
+    color: #65676b;
+    padding: 0 10px;
+    font-weight: 500;
+}
+
+/* ── Buborék ── */
+.bubble {
+    display: flex;
+    flex-direction: column;
+    padding: 8px 12px;
+    border-radius: 18px;
+    position: relative;
     word-break: break-word;
+    line-height: 1.45;
 }
 
-/* Saját üzenet – jobb oldal, kék */
 .bubble-me {
-    background-color: #3b5998;
+    background: #0084ff;
     color: white;
     border-bottom-right-radius: 4px;
 }
 
-/* Másik üzenet – bal oldal, szürke */
 .bubble-other {
-    background-color: #e2e8f0;
-    color: #1e293b;
+    background: #ffffff;
+    color: #1c1e21;
+    border-bottom-left-radius: 4px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+}
+
+/* Csoportosított üzenetsor: ha egymás után jön ugyanattól */
+.row-me + .row-me .bubble-me {
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+.row-other + .row-other .bubble-other {
+    border-top-left-radius: 4px;
     border-bottom-left-radius: 4px;
 }
 
-.sender-name {
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: #64748b;
-    margin-bottom: 3px;
+.bubble-text {
+    font-size: 14.5px;
 }
 
-.msg-time {
-    font-size: 0.7rem;
+.bubble-time {
+    font-size: 10px;
+    margin-top: 3px;
     opacity: 0.65;
-    text-align: right;
-    margin-top: 4px;
+    align-self: flex-end;
+}
+
+.bubble-me .bubble-time {
+    color: rgba(255,255,255,0.85);
+}
+
+.bubble-other .bubble-time {
+    color: #65676b;
+}
+
+/* ═══════════════════════════════════════════
+   Üres / betöltő állapot
+   ═══════════════════════════════════════════ */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    gap: 12px;
+    color: #65676b;
+    padding: 40px;
+    text-align: center;
+}
+
+.empty-icon {
+    font-size: 52px;
+    line-height: 1;
+}
+
+.empty-state p {
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.loading-state {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    padding: 40px;
+}
+
+/* Typing indicator animáció */
+.typing-indicator {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    background: white;
+    padding: 12px 16px;
+    border-radius: 18px;
+    border-bottom-left-radius: 4px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+}
+
+    .typing-indicator span {
+        width: 8px;
+        height: 8px;
+        background: #65676b;
+        border-radius: 50%;
+        animation: typing-bounce 1.4s infinite ease-in-out;
+    }
+
+        .typing-indicator span:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+@keyframes typing-bounce {
+    0%, 60%, 100% {
+        transform: translateY(0);
+        opacity: 0.4;
+    }
+
+    30% {
+        transform: translateY(-6px);
+        opacity: 1;
+    }
+}
+
+/* ═══════════════════════════════════════════
+   Hiba sáv
+   ═══════════════════════════════════════════ */
+.error-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fff0f0;
+    border-top: 1px solid #ffc9c9;
+    color: #c92a2a;
+    padding: 8px 16px;
+    font-size: 13px;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+    .error-bar button {
+        border: none;
+        background: none;
+        color: #c92a2a;
+        font-size: 18px;
+        cursor: pointer;
+        line-height: 1;
+        padding: 0 4px;
+        opacity: 0.7;
+    }
+
+        .error-bar button:hover {
+            opacity: 1;
+        }
+
+/* ═══════════════════════════════════════════
+   Beviteli sáv (footer)
+   ═══════════════════════════════════════════ */
+.chat-footer {
+    padding: 10px 12px;
+    background: #ffffff;
+    border-top: 1px solid #e4e6ea;
+    flex-shrink: 0;
+}
+
+.input-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    background: #f0f2f5;
+    border-radius: 22px;
+    padding: 6px 6px 6px 16px;
+}
+
+.msg-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 14.5px;
+    color: #1c1e21;
+    resize: none;
+    outline: none;
+    max-height: 120px;
+    line-height: 1.45;
+    padding: 4px 0;
+    font-family: inherit;
+}
+
+    .msg-input::placeholder {
+        color: #65676b;
+    }
+
+    .msg-input:disabled {
+        opacity: 0.6;
+    }
+
+.send-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    background: #e4e6ea;
+    color: #bcc0c4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: not-allowed;
+    transition: background 0.2s, color 0.2s, transform 0.15s;
+    flex-shrink: 0;
+}
+
+.send-btn.send-active {
+   background: #0084ff;
+   color: white;
+   cursor: pointer;
+}
+
+.send-btn.send-active:hover {
+   background: #0073e0;
+   transform: scale(1.05);
+}
+
+.send-btn.send-active:active {
+   transform: scale(0.95);
+}
+
+/* ═══════════════════════════════════════════
+   Reszponzív
+   ═══════════════════════════════════════════ */
+@media (max-width: 600px) {
+    .chat-shell {
+        border-left: none;
+        border-right: none;
+    }
+
+    .bubble-wrap {
+        max-width: 80%;
+    }
 }

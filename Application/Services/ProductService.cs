@@ -64,10 +64,11 @@ namespace Application.Services
         {
             var product = await _unitOfWork.Products.GetByIdAsync(productId);
             if (product == null) return false;
-
             if (product.DonorId == userId) return false;
 
             var allRequests = await _unitOfWork.ProductRequests.GetAllAsync();
+
+            //  Csak aktív igénylést vizsgálunk, ha már törölték engedünk újat
             var existing = allRequests.FirstOrDefault(r =>
                 r.ProductId == productId && r.RequesterId == userId && r.IsActive);
             if (existing != null) return true;
@@ -88,15 +89,19 @@ namespace Application.Services
         public async Task<IEnumerable<ProductRequestDto>> GetMyRequestsAsync(int userId)
         {
             var allRequests = await _unitOfWork.ProductRequests.GetAllAsync();
-            return allRequests.Where(r => r.RequesterId == userId).Select(r => new ProductRequestDto
-            {
-                ProductRequestId = r.ProductRequestId, // javítva: r.RequesterId volt!
-                ProductId = r.ProductId,
-                RequesterId = r.RequesterId,
-                RequestStatus = r.RequestStatus,
-                IsActive = r.IsActive,
-                RequestedAt = r.RequestedAt
-            });
+
+            // CSAK aktív igénylések inaktívak (töröltek) nem jelennek meg
+            return allRequests
+                .Where(r => r.RequesterId == userId && r.IsActive)
+                .Select(r => new ProductRequestDto
+                {
+                    ProductRequestId = r.ProductRequestId,
+                    ProductId = r.ProductId,
+                    RequesterId = r.RequesterId,
+                    RequestStatus = r.RequestStatus,
+                    IsActive = r.IsActive,
+                    RequestedAt = r.RequestedAt
+                });
         }
     }
 }

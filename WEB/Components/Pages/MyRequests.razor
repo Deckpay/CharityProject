@@ -7,103 +7,142 @@
 @inject CustomAuthStateProvider AuthStateProvider
 @inject LocalStorageService LocalStorage
 
-<div class="container mt-4">
-    <h3 class="mb-4">Igényléseim</h3>
+<div class="requests-page">
+    <div class="page-header">
+        <h2>Igényléseim</h2>
+        @if (!isLoading)
+        {
+            <span class="badge-count">@requests.Count aktív</span>
+        }
+    </div>
 
     @if (isLoading)
     {
-        <div class="d-flex justify-content-center my-5">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Betöltés...</span>
-            </div>
-            <p class="ms-3">Igénylések betöltése...</p>
+        <div class="skeleton-grid">
+            @for (int i = 0; i < 6; i++)
+            {
+                <div class="skeleton-card">
+                    <div class="sk-line" style="width:55%;height:18px;"></div>
+                    <div class="sk-line" style="width:35%;height:12px;margin-top:8px;"></div>
+                    <div class="sk-line" style="width:25%;height:20px;margin-top:10px;border-radius:10px;"></div>
+                    <div class="sk-line" style="width:100%;height:36px;margin-top:16px;border-radius:8px;"></div>
+                </div>
+            }
         </div>
     }
     else if (!requests.Any())
     {
-        <div class="text-center py-5">
-            <p class="text-muted">Még nincs igénylésed.</p>
-            <a href="/products" class="btn btn-primary mt-2">Termékek böngészése</a>
+        <div class="empty-state">
+            <div class="empty-icon">📭</div>
+            <h3>Még nincs igénylésed</h3>
+            <p>Böngéssz a termékek között és igényelj egyet!</p>
+            <a href="/products" class="btn-browse">Termékek böngészése</a>
         </div>
     }
     else
     {
-        <div class="row g-3">
+        <div class="requests-grid">
             @foreach (var req in requests)
             {
-                <div class="col-md-6 col-lg-4">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body d-flex flex-column">
-                            <h5 class="card-title">@GetProductName(req.ProductId)</h5>
-                            <p class="text-muted small mb-1">
-                                Igényelve: @req.RequestedAt.ToLocalTime().ToString("yyyy. MM. dd. HH:mm")
-                            </p>
-                            <p class="mb-3">
-                                <span class="badge @GetStatusBadgeClass(req.RequestStatus)">
-                                    @GetStatusText(req.RequestStatus)
-                                </span>
-                            </p>
-                            <div class="mt-auto">
-                                <a href="/chat/@req.ProductRequestId" class="btn btn-outline-primary w-100">
-                                    💬 Chat megnyitása
-                                </a>
-                            </div>
-                        </div>
+                <div class="request-card">
+                    <div class="card-top-row">
+                        <span class="status-badge @GetStatusClass(req.RequestStatus)">
+                            @GetStatusText(req.RequestStatus)
+                        </span>
+                        <button class="delete-icon-btn" @onclick="() => AskDelete(req.ProductRequestId)"
+                                title="Törlés">
+                            <span class="material-symbols-outlined">delete_outline</span>
+                        </button>
                     </div>
+                    <div class="card-product-name">@GetProductName(req.ProductId)</div>
+                    <div class="card-date">
+                        <span class="material-symbols-outlined">schedule</span>
+                        @req.RequestedAt.ToLocalTime().ToString("yyyy. MM. dd. HH:mm")
+                    </div>
+                    <a href="/chat/@req.ProductRequestId" class="btn-chat">
+                        <span class="material-symbols-outlined">chat</span>
+                        Chat megnyitása
+                    </a>
                 </div>
             }
         </div>
     }
 </div>
 
+@if (showConfirm)
+{
+    <div class="modal-backdrop" @onclick="CancelDelete">
+        <div class="modal-card" @onclick:stopPropagation="true">
+            <button class="modal-close-btn" @onclick="CancelDelete">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            <div class="modal-danger-icon">
+                <span class="material-symbols-outlined">delete_forever</span>
+            </div>
+            <h3 class="modal-title">Töröljük az igénylést?</h3>
+            <p class="modal-desc">Ez a művelet nem vonható vissza.<br />A chat üzenetek is törlődnek.</p>
+            <div class="modal-actions">
+                <button class="btn-modal-cancel" @onclick="CancelDelete">Mégsem</button>
+                <button class="btn-modal-danger" @onclick="ConfirmDelete" @attributes="GetDeleteBtnAttrs()">
+                    @if (isDeleting)
+                    {
+                        <span class="spinner-border spinner-border-sm"></span>
+                    }
+                    Igen, törlöm
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
 @code {
     private List<ProductRequestDto> requests = new();
     private List<ProductDto> products = new();
     private bool isLoading = true;
+    private bool showConfirm = false;
+    private bool isDeleting = false;
+    private int? deletingId = null;
+    private string token = "";
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        if (!firstRender) return;
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        if (authState.User?.Identity == null || !authState.User.Identity.IsAuthenticated)
+        { Navigation.NavigateTo("/login"); return; }
+
+        token = await LocalStorage.GetItemAsync<string>("authToken") ?? "";
+        try
         {
-            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-            if (authState.User?.Identity == null || !authState.User.Identity.IsAuthenticated)
-            {
-                Navigation.NavigateTo("/login");
-                return;
-            }
-
-            try
-            {
-                var token = await LocalStorage.GetItemAsync<string>("authToken") ?? "";
-                requests = (await ProductService.GetMyRequestsAsync(token)).ToList();
-                products = (await ProductService.GetProductsAsync()).ToList();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Hiba: {ex.Message}");
-            }
-
-            isLoading = false;
-            StateHasChanged();
+            requests = (await ProductService.GetMyRequestsAsync(token)).ToList();
+            products = (await ProductService.GetProductsAsync()).ToList();
         }
+        catch (Exception ex) { Console.WriteLine($"Hiba: {ex.Message}"); }
+        isLoading = false;
+        StateHasChanged();
     }
 
-    private string GetProductName(int productId) =>
-        products.FirstOrDefault(p => p.ProductId == productId)?.ProductName ?? $"Termék #{productId}";
+    private void AskDelete(int id) { deletingId = id; showConfirm = true; }
+    private void CancelDelete() { showConfirm = false; deletingId = null; }
 
-    private string GetStatusText(int status) => status switch
+    private async Task ConfirmDelete()
     {
-        0 => "Függőben",
-        1 => "Elfogadva",
-        2 => "Elutasítva",
-        _ => "Ismeretlen"
-    };
+        if (deletingId == null) return;
+        isDeleting = true;
+        try
+        {
+            await ProductService.DeleteRequestAsync(deletingId.Value, token);
+            requests.RemoveAll(r => r.ProductRequestId == deletingId.Value);
+        }
+        catch (Exception ex) { Console.WriteLine($"Törlési hiba: {ex.Message}"); }
+        finally { isDeleting = false; showConfirm = false; deletingId = null; StateHasChanged(); }
+    }
 
-    private string GetStatusBadgeClass(int status) => status switch
-    {
-        0 => "bg-warning text-dark",
-        1 => "bg-success",
-        2 => "bg-danger",
-        _ => "bg-secondary"
-    };
+    private string GetProductName(int id) =>
+        products.FirstOrDefault(p => p.ProductId == id)?.ProductName ?? $"Termék #{id}";
+    private string GetStatusText(int s) => s switch { 0 => "Függőben", 1 => "Elfogadva", 2 => "Elutasítva", _ => "?" };
+    private string GetStatusClass(int s) => s switch { 0 => "st-pending", 1 => "st-accepted", 2 => "st-rejected", _ => "" };
+    private Dictionary<string, object> GetDeleteBtnAttrs() =>
+        isDeleting ? new Dictionary<string, object> { { "disabled", "disabled" } }
+                   : new Dictionary<string, object>();
 }

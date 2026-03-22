@@ -1,0 +1,245 @@
+﻿@page "/chats"
+@using Application.DTOs
+@using WEB.Services
+@inject NavigationManager Navigation
+@inject ChatApiService ChatService
+@inject ProductApiService ProductService
+@inject CustomAuthStateProvider AuthStateProvider
+@inject LocalStorageService LocalStorage
+
+<div class="chats-page">
+    <div class="chats-header">
+        <h2>Üzenetek</h2>
+        @if (!isLoading)
+        {
+            <span class="badge-count">@conversations.Count beszélgetés</span>
+        }
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="chats-loading">
+            @for (int i = 0; i < 4; i++)
+            {
+                <div class="skeleton-row">
+                    <div class="skeleton-avatar"></div>
+                    <div class="skeleton-lines">
+                        <div class="skeleton-line" style="width:60%"></div>
+                        <div class="skeleton-line" style="width:40%"></div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else if (!conversations.Any())
+    {
+        <div class="chats-empty">
+            <span>💬</span>
+            <p>Még nincs aktív beszélgetésed.</p>
+            <a href="/products" class="link-btn">Termékek böngészése</a>
+        </div>
+    }
+    else
+    {
+        <div class="conversations-list">
+            @foreach (var conv in conversations)
+            {
+                <div class="conv-row @(deletingConvId == conv.RequestId ? "conv-deleting" : "")"
+                     @onclick="() => OpenChat(conv.RequestId)">
+                    <div class="conv-avatar">
+                        <span>@(conv.ProductName.Length > 0 ? conv.ProductName[0].ToString().ToUpper() : "?")</span>
+                        @if (conv.UnreadCount > 0)
+                        {
+                            <span class="unread-dot">@conv.UnreadCount</span>
+                        }
+                    </div>
+                    <div class="conv-body">
+                        <div class="conv-top">
+                            <span class="conv-title">@conv.ProductName</span>
+                            @if (conv.LastMessageTime.HasValue)
+                            {
+                                <span class="conv-time">@FormatTime(conv.LastMessageTime.Value)</span>
+                            }
+                        </div>
+                        <div class="conv-preview">
+                            @if (!string.IsNullOrEmpty(conv.LastMessage))
+                            {
+                                <span>@(conv.LastMessage.Length > 50 ? conv.LastMessage[..50] + "…" : conv.LastMessage)</span>
+                            }
+                            else
+                            {
+                                <span class="no-msg">Még nincs üzenet</span>
+                            }
+                        </div>
+                        <div class="conv-meta">
+                            <span class="req-id">#@conv.RequestId</span>
+                            <span class="status-pill @GetStatusClass(conv.Status)">@GetStatusText(conv.Status)</span>
+                        </div>
+                    </div>
+                    <button class="conv-delete" @onclick="() => AskDelete(conv.RequestId)"
+                            @onclick:stopPropagation="true" title="Beszélgetés törlése">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@* ── Törlés megerősítő modal ── *@
+@if (showConfirm)
+{
+    <div class="modal-backdrop" @onclick="CancelDelete">
+        <div class="modal-card" @onclick:stopPropagation="true">
+            <button class="modal-close-btn" @onclick="CancelDelete">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            <div class="modal-danger-icon">
+                <span class="material-symbols-outlined">delete_forever</span>
+            </div>
+            <h3 class="modal-title">Töröljük a beszélgetést?</h3>
+            <p class="modal-desc">Ez a művelet nem vonható vissza.<br />A chat üzenetek is törlődnek.</p>
+            <div class="modal-actions">
+                <button class="btn-modal-cancel" @onclick="CancelDelete">Mégsem</button>
+                <button class="btn-modal-danger" @onclick="ConfirmDelete" @attributes="GetDeleteBtnAttrs()">
+                    @if (isDeleting)
+                    {
+                        <span class="spinner-border spinner-border-sm"></span>
+                    }
+                    Igen, törlöm
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<ConversationVm> conversations = new();
+    private bool isLoading = true;
+    private bool showConfirm = false;
+    private bool isDeleting = false;
+    private int? deletingConvId = null;
+    private int currentUserId = 0;
+    private string token = "";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        if (authState.User?.Identity == null || !authState.User.Identity.IsAuthenticated)
+        {
+            Navigation.NavigateTo("/login");
+            return;
+        }
+
+        currentUserId = await AuthStateProvider.GetCurrentUserIdAsync();
+        token = await LocalStorage.GetItemAsync<string>("authToken") ?? "";
+
+        await LoadConversations();
+        isLoading = false;
+        StateHasChanged();
+    }
+
+    private async Task LoadConversations()
+    {
+        try
+        {
+            var requests = (await ProductService.GetMyRequestsAsync(token)).ToList();
+            var products = (await ProductService.GetProductsAsync()).ToList();
+            var result = new List<ConversationVm>();
+
+            foreach (var req in requests.OrderByDescending(r => r.RequestedAt))
+            {
+                var productName = products.FirstOrDefault(p => p.ProductId == req.ProductId)?.ProductName
+                                  ?? $"Termék #{req.ProductId}";
+
+                // Üzenetek betöltése (ha van chat)
+                List<ChatMessageResponseDto> msgs = new();
+                try { msgs = await ChatService.GetHistoryAsync(req.ProductRequestId, token); }
+                catch { }
+
+                var last = msgs.LastOrDefault();
+                result.Add(new ConversationVm
+                {
+                    RequestId = req.ProductRequestId,
+                    ProductName = productName,
+                    Status = req.RequestStatus,
+                    LastMessage = last?.Content,
+                    LastMessageTime = last?.SentAt,
+                    UnreadCount = msgs.Count(m => !m.IsRead && m.SenderId != currentUserId)
+                });
+            }
+
+            conversations = result;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Hiba: {ex.Message}");
+        }
+    }
+
+    private void OpenChat(int requestId) => Navigation.NavigateTo($"/chat/{requestId}");
+
+    private void AskDelete(int requestId)
+    {
+        deletingConvId = requestId;
+        showConfirm = true;
+    }
+
+    private void CancelDelete()
+    {
+        showConfirm = false;
+        deletingConvId = null;
+    }
+
+    private async Task ConfirmDelete()
+    {
+        if (deletingConvId == null) return;
+        isDeleting = true;
+
+        try
+        {
+            await ProductService.DeleteRequestAsync(deletingConvId.Value, token);
+            conversations.RemoveAll(c => c.RequestId == deletingConvId.Value);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Törlési hiba: {ex.Message}");
+        }
+        finally
+        {
+            isDeleting = false;
+            showConfirm = false;
+            deletingConvId = null;
+            StateHasChanged();
+        }
+    }
+
+    private string FormatTime(DateTime dt)
+    {
+        var local = dt.ToLocalTime();
+        var now = DateTime.Now;
+        if (local.Date == now.Date) return local.ToString("HH:mm");
+        if (local.Date == now.Date.AddDays(-1)) return "Tegnap";
+        return local.ToString("MM. dd.");
+    }
+
+    private string GetStatusText(int s) => s switch { 0 => "Függőben", 1 => "Elfogadva", 2 => "Elutasítva", _ => "" };
+    private string GetStatusClass(int s) => s switch { 0 => "st-pending", 1 => "st-accepted", 2 => "st-rejected", _ => "" };
+
+    private Dictionary<string, object> GetDeleteBtnAttrs() =>
+        isDeleting
+            ? new Dictionary<string, object> { { "disabled", "disabled" } }
+            : new Dictionary<string, object>();
+
+    private class ConversationVm
+    {
+        public int RequestId { get; set; }
+        public string ProductName { get; set; } = "";
+        public int Status { get; set; }
+        public string? LastMessage { get; set; }
+        public DateTime? LastMessageTime { get; set; }
+        public int UnreadCount { get; set; }
+    }
+}

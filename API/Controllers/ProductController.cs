@@ -12,49 +12,39 @@ namespace API.Controllers
     {
         private readonly IProductService _productService;
         private readonly IUnitOfWork _unitOfWork;
+
         public ProductController(IProductService productService, IUnitOfWork unitOfWork)
         {
             _productService = productService;
             _unitOfWork = unitOfWork;
         }
 
-        // 1. Összes termék lekérése
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             var products = await _productService.GetProductsAsync();
-            return Ok(products); // Visszaküldjük a listát 200 OK-val
+            return Ok(products);
         }
 
-        [Authorize] // Csak bejelentkezett felhasználó hívhatja
+        [Authorize]
         [HttpGet("my-products")]
         public async Task<IActionResult> GetMyProducts()
         {
-            // [Authorize] miatt a .NET automatikusan kiszedi a Usert-t a Tokenből
-            // lekérjük a NameIdentifier claim-et
-            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-
-            if (string.IsNullOrEmpty(userIdClaim))
-                return Unauthorized();
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim)) return Unauthorized();
 
             int userId = int.Parse(userIdClaim);
-
             var allProducts = await _unitOfWork.Products.GetAllAsync();
-            var myProducts = allProducts.Where(p => p.DonorId.Equals(userId));
-
+            var myProducts = allProducts.Where(p => p.DonorId == userId);
             return Ok(myProducts);
         }
 
-        // 2. Új termék létrehozása
         [Authorize]
         [HttpPost]
-        // MultipartFormData esetén a controller paramétereket érdemes explicit [FromForm]-mal jelölni
-        public async Task<IActionResult> Create([FromForm]ProductDto dto, IFormFile imageFile)
+        public async Task<IActionResult> Create([FromForm] ProductDto dto, IFormFile imageFile)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            if (userId == null)
-                return Unauthorized();
+            if (userId == null) return Unauthorized();
 
             if (imageFile != null && imageFile.Length > 0)
             {
@@ -70,12 +60,13 @@ namespace API.Controllers
                 dto.ImagePath = "/images/products/" + fileName;
             }
 
-            var succes = await _productService.CreateProductAsync(dto, int.Parse(userId));
-            if (!succes) return BadRequest("Nem sikerült menteni");
+            var success = await _productService.CreateProductAsync(dto, int.Parse(userId));
+            if (!success) return BadRequest("Nem sikerült menteni");
 
             return Ok();
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -87,15 +78,13 @@ namespace API.Controllers
         [HttpPost("claim/{productId}")]
         public async Task<IActionResult> Claim(int productId)
         {
-            var nameIdentifier = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var nameIdentifier = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(nameIdentifier)) return Unauthorized("A felhasználó nem található");
 
             var userId = int.Parse(nameIdentifier);
             var success = await _productService.ClaimProductAsync(productId, userId);
-
             if (!success) return BadRequest("Hiba keletkezett az igénylés során");
 
-            // Siker után lekérdezzük a keletkezett requestId-t
             var allRequests = await _unitOfWork.ProductRequests.GetAllAsync();
             var request = allRequests
                 .Where(r => r.ProductId == productId && r.RequesterId == userId && r.IsActive)
@@ -114,6 +103,26 @@ namespace API.Controllers
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
             var requests = await _productService.GetMyRequestsAsync(userId);
             return Ok(requests);
+        }
+
+        //  Igénylés törlése (soft delete)
+        [Authorize]
+        [HttpDelete("request/{requestId}")]
+        public async Task<IActionResult> DeleteRequest(int requestId)
+        {
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+
+            var request = await _unitOfWork.ProductRequests.GetByIdAsync(requestId);
+            if (request == null) return NotFound("Igénylés nem található");
+
+            // Csak a saját igénylését törölheti
+            if (request.RequesterId != userId) return Forbid();
+
+            // Soft delete
+            request.IsActive = false;
+            await _unitOfWork.CompleteAsync();
+
+            return Ok();
         }
     }
 }

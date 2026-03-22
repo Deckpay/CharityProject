@@ -5,106 +5,167 @@
 @inject LocalStorageService Storage
 @rendermode InteractiveServer
 
-<div class="sidebar @(isOpened ? "sidebar-opened" : "sidebar-closed")">
-    @* ÁTFORDULÓ NYÍL *@
-    <div class="toggle-btn" @onclick="ToggleSidebar">
-        <span class="material-symbols-outlined toggle-icon @(isOpened ? "rotate-180" : "")">
-            chevron_left
-        </span>
-    </div>
-    <AuthorizeView Context="auth">
+<nav class="sidebar @(isOpened ? "sidebar-opened" : "sidebar-closed")">
 
-        <Authorized>
+    @* Logo *@
+    <a class="sidebar-logo" href="/">
+        <div class="logo-icon">
+            <span class="material-symbols-outlined">volunteer_activism</span>
+        </div>
+        @if (isOpened)
+        {
+            <span class="logo-text">Charity App</span>
+        }
+    </a>
 
-            <!-- ADMIN MENÜ -->
-            <AuthorizeView Roles="Admin" Context="adminAuth">
-                <Authorized>
-                    <div class="nav-menu">
-                        <a href="/admin">
-                            <span class="material-symbols-outlined">admin_panel_settings</span>
-                            <span>Admin Panel</span>
-                        </a>
+    @* Toggle *@
+    <button class="toggle-btn" @onclick="ToggleSidebar">
+        <span class="material-symbols-outlined @(isOpened ? "ti-open" : "ti-closed")">chevron_left</span>
+    </button>
 
-                        <a href="/admin-users">
+    @* Nav *@
+    <div class="nav-scroll">
+        <AuthorizeView Context="auth">
+            <Authorized>
+                <AuthorizeView Roles="Admin" Context="adminAuth">
+                    <Authorized>
+                        @if (isOpened)
+                        {
+                            <span class="section-label">Adminisztráció</span>
+                        }
+                        <a class="nav-item @Active("/admin-users")" href="/admin-users">
                             <span class="material-symbols-outlined">groups</span>
-                            <span>Felhasználók</span>
+                            @if (isOpened)
+                            {
+                                <span>Felhasználók</span>
+                            }
                         </a>
-
-                        <a href="/admin-products">
+                        <a class="nav-item @Active("/admin-products")" href="/admin-products">
                             <span class="material-symbols-outlined">inventory</span>
-                            <span>Termékek</span>
+                            @if (isOpened)
+                            {
+                                <span>Termékek</span>
+                            }
                         </a>
-
-                        <a href="/admin-requests">
-                            <span class="material-symbols-outlined">assignment</span>
-                            <span>Igénylések</span>
-                        </a>
-                    </div>
-                </Authorized>
-
-                <NotAuthorized>
-                    <div class="nav-menu">
-                        <!-- NORMÁL MENÜ -->
-                        <a href="/#home"><span class="material-symbols-outlined">home</span><span>Főoldal</span></a>
-                        <a href="/#rolunk"><span class="material-symbols-outlined">group</span><span>Rólunk</span></a>
+                    </Authorized>
+                    <NotAuthorized>
+                        @if (isOpened)
+                        {
+                            <span class="section-label">Navigáció</span>
+                        }
+                        <a class="nav-item" href="/#home"><span class="material-symbols-outlined">home</span>@if(isOpened){
+                        <span>Főoldal</span>
+                                                }
+</a>
+                        <a class="nav-item" href="/#rolunk"><span class="material-symbols-outlined">info</span>@if(isOpened){
+                        <span>Rólunk</span>
+                                                }
+</a>
+                        <a class="nav-item" href="/#eredmenyek"><span class="material-symbols-outlined">leaderboard</span>@if(isOpened){
+                        <span>Eredmények</span>
+                                                }
+</a>
+                        <a class="nav-item" href="/#gyik"><span class="material-symbols-outlined">help_outline</span>@if(isOpened){
+                        <span>GYIK</span>
+                                                }
+</a>
+                        <a class="nav-item" href="/#kapcsolat"><span class="material-symbols-outlined">contact_page</span>@if(isOpened){
+                        <span>Kapcsolat</span>
+                                                }
+</a>
 
                         <AuthorizeView Roles="Recipient" Context="recAuth">
                             <Authorized>
-                                <a href="/products">
-                                    <span class="material-symbols-outlined">store</span>
-                                    <span>Termékek</span>
-                                </a>
+                                <div class="nav-divider"></div>
+                                @if (isOpened)
+                                {
+                                    <span class="section-label">Termékek</span>
+                                }
+                                <a class="nav-item @Active("/products")" href="/products"><span class="material-symbols-outlined">storefront</span>@if(isOpened){
+                                <span>Böngészés</span>
+                                                                }
+</a>
+                                <a class="nav-item @Active("/my-requests")" href="/my-requests"><span class="material-symbols-outlined">assignment_turned_in</span>@if(isOpened){
+                                <span>Igényléseim</span>
+                                                                }
+</a>
+                                <a class="nav-item @Active("/chats")" href="/chats"><span class="material-symbols-outlined">forum</span>@if(isOpened){
+                                <span>Chatek</span>
+                                                                }
+</a>
                             </Authorized>
                         </AuthorizeView>
 
                         <AuthorizeView Roles="Donor" Context="donAuth">
                             <Authorized>
-                                <a href="/my-products">
-                                    <span class="material-symbols-outlined">store</span>
-                                    <span>Termékeim</span>
-                                </a>
+                                <div class="nav-divider"></div>
+                                @if (isOpened)
+                                {
+                                    <span class="section-label">Adományozás</span>
+                                }
+                                <a class="nav-item @Active("/my-products")" href="/my-products"><span class="material-symbols-outlined">inventory_2</span>@if(isOpened){
+                                <span>Termékeim</span>
+                                                                }
+</a>
+                                <a class="nav-item @Active("/product-create")" href="/product-create"><span class="material-symbols-outlined">add_circle</span>@if(isOpened){
+                                <span>Új hirdetés</span>
+                                                                }
+</a>
                             </Authorized>
                         </AuthorizeView>
+                    </NotAuthorized>
+                </AuthorizeView>
+            </Authorized>
 
-                        <a href="/#eredmenyek"><span class="material-symbols-outlined">leaderboard</span><span>Eredmények</span></a>
-                        <a href="/#gyik"><span class="material-symbols-outlined">help</span><span>Gyik</span></a>
-                        <a href="/#kapcsolat"><span class="material-symbols-outlined">contact_page</span><span>Kapcsolat</span></a>
-                    </div>
+            <NotAuthorized>
+                @if (isOpened)
+                {
+                    <span class="section-label">Navigáció</span>
+                }
+                <a class="nav-item" href="/#home"><span class="material-symbols-outlined">home</span>@if(isOpened){
+                <span>Főoldal</span>
+                                }
+</a>
+                <a class="nav-item" href="/#rolunk"><span class="material-symbols-outlined">info</span>@if(isOpened){
+                <span>Rólunk</span>
+                                }
+</a>
+                <a class="nav-item" href="/#eredmenyek"><span class="material-symbols-outlined">leaderboard</span>@if(isOpened){
+                <span>Eredmények</span>
+                                }
+</a>
+                <a class="nav-item" href="/#gyik"><span class="material-symbols-outlined">help_outline</span>@if(isOpened){
+                <span>GYIK</span>
+                                }
+</a>
+                <a class="nav-item" href="/#kapcsolat"><span class="material-symbols-outlined">contact_page</span>@if(isOpened){
+                <span>Kapcsolat</span>
+                                }
+</a>
+            </NotAuthorized>
+        </AuthorizeView>
+    </div>
 
-                </NotAuthorized>
-
-            </AuthorizeView>
-
-        </Authorized>
-
-        <NotAuthorized>
-            <div class="nav-menu">
-                <!-- ha nincs bejelentkezve -->
-                <a href="/#home"><span class="material-symbols-outlined">home</span><span>Főoldal</span></a>
-                <a href="/#rolunk"><span class="material-symbols-outlined">group</span><span>Rólunk</span></a>
-                <a href="/#eredmenyek"><span class="material-symbols-outlined">leaderboard</span><span>Eredmények</span></a>
-                <a href="/#gyik"><span class="material-symbols-outlined">help</span><span>Gyik</span></a>
-                <a href="/#kapcsolat"><span class="material-symbols-outlined">contact_page</span><span>Kapcsolat</span></a>
-            </div>
-        </NotAuthorized>
-    </AuthorizeView>
-    @* ALSÓ GOMBOK - Itt történik a varázslat *@
-    <div class="bottom-actions">
+    @* Bottom *@
+    <div class="sidebar-bottom">
         <AuthorizeView>
             <Authorized>
-                @* Ez a rész csak akkor látszik, ha a User be van jelentkezve *@
-                <div class="auth-btn user-display">
-                    <span class="material-symbols-outlined">account_circle</span>
+                <div class="user-card">
+                    <div class="user-avatar">
+                        @{
+                            var uname = context.User.Identity?.Name ?? "?";
+                        }
+                        <span>@(uname.Length > 0 ? uname[0].ToString().ToUpper() : "?")</span>
+                    </div>
                     @if (isOpened)
                     {
-                        @* A 'context' változót az AuthorizeView biztosítja, benne a user nevével *@
-                        <span>@context.User.Identity?.Name</span>
-                        <span>(@(context.User.FindFirst(c => c.Type == System.Security.Claims.ClaimTypes.Role)?.Value ?? "Felhasználó"))</span>
-
+                        <div class="user-info">
+                            <span class="user-name">@uname</span>
+                            <span class="user-role">@(context.User.FindFirst(c => c.Type == System.Security.Claims.ClaimTypes.Role)?.Value ?? "Felhasználó")</span>
+                        </div>
                     }
                 </div>
-
-                <button @onclick="HandleLogout" class="auth-btn logout">
+                <button @onclick="HandleLogout" class="logout-btn">
                     <span class="material-symbols-outlined">logout</span>
                     @if (isOpened)
                     {
@@ -112,18 +173,15 @@
                     }
                 </button>
             </Authorized>
-
             <NotAuthorized>
-                @* Ez a rész csak akkor látszik, ha nincs érvényes munkamenet *@
-                <button @onclick="GoToLogin" class="auth-btn login">
+                <button @onclick="GoToLogin" class="auth-action login-btn">
                     <span class="material-symbols-outlined">login</span>
                     @if (isOpened)
                     {
                         <span>Bejelentkezés</span>
                     }
                 </button>
-
-                <button @onclick="GoToRegister" class="auth-btn register">
+                <button @onclick="GoToRegister" class="auth-action register-btn">
                     <span class="material-symbols-outlined">person_add</span>
                     @if (isOpened)
                     {
@@ -133,23 +191,20 @@
             </NotAuthorized>
         </AuthorizeView>
     </div>
-</div>
+
+</nav>
 
 @code {
     private bool isOpened = true;
     private void ToggleSidebar() => isOpened = !isOpened;
-
     private void GoToLogin() => Navigation.NavigateTo("/login");
     private void GoToRegister() => Navigation.NavigateTo("/register");
-
-    // Kijelentkezés logikája
+    private string Active(string path) =>
+        Navigation.Uri.Contains(path, StringComparison.OrdinalIgnoreCase) ? "active" : "";
     private async Task HandleLogout()
     {
         var provider = (CustomAuthStateProvider)AuthProvider;
-
         await provider.LogoutAsync();
-
-        // Visszaviszünk a főoldalra
         Navigation.NavigateTo("/");
     }
 }

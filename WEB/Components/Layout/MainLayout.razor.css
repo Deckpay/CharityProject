@@ -1,27 +1,66 @@
+/* ── Reset ── */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* ── Lap alap ── */
+html, body {
+    height: 100%;
+    font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    background: #f4f6f9;
+    color: #1a2332;
+}
+
+/* ── Wrapper ── */
+.page-wrapper {
+    height: 100vh;
+    overflow: hidden;
+}
+
+.content-wrapper {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* ── Sidebar tartó ── */
+.sidenav-container {
+    flex-shrink: 0;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+/* ── Fő tartalom ── */
+.main-content {
+    flex: 1;
+    overflow-y: auto;
+    background: #f4f6f9;
+    min-width: 0;
+}
+
+/* ── Blazor hibajelző ── */
 #blazor-error-ui {
-    background: lightyellow;
+    background: #fff3cd;
     bottom: 0;
-    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 -1px 4px rgba(0,0,0,0.15);
     display: none;
     left: 0;
-    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+    padding: 0.6rem 1.25rem 0.7rem;
     position: fixed;
     width: 100%;
-    z-index: 1000;
+    z-index: 2000;
+    font-size: 13px;
+    color: #664d03;
 }
 
-#blazor-error-ui .dismiss {
-    cursor: pointer;
-    position: absolute;
-    right: 0.75rem;
-    top: 0.5rem;
-}
-
-.logo-section-top {
-    display: flex; /* Hogy az ikon és a szöveg egymás mellett maradjon */
-    align-items: center; /* Középre igazítja őket függőlegesen */
-    gap: 10px; /* Távolság az ikon és a szöveg között */
-    text-decoration: none; /* Eltünteti a kék aláhúzást, amit a link adna */
-    color: inherit; /* Megtartja az eredeti szövegszínt */
-    cursor: pointer; /* Mutassa a "kezecskét", hogy tudják: kattintható */
-}
+    #blazor-error-ui .dismiss {
+        cursor: pointer;
+        position: absolute;
+        right: 0.75rem;
+        top: 0.5rem;
+        font-size: 18px;
+    }

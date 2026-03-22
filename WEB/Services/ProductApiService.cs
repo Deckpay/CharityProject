@@ -9,12 +9,8 @@ namespace WEB.Services
     {
         private readonly HttpClient _http;
 
-        public ProductApiService(HttpClient http)
-        {
-            _http = http;
-        }
+        public ProductApiService(HttpClient http) => _http = http;
 
-        // Token kívülről jön – a komponens adja át
         private static HttpRequestMessage CreateAuthRequest(HttpMethod method, string url, string token)
         {
             var request = new HttpRequestMessage(method, url);
@@ -67,21 +63,22 @@ namespace WEB.Services
         public async Task<IEnumerable<ProductRequestDto>> GetMyRequestsAsync(string token)
         {
             var request = CreateAuthRequest(HttpMethod.Get, "Product/my-requests", token);
-            
-
             var response = await _http.SendAsync(request);
             if (!response.IsSuccessStatusCode) return new List<ProductRequestDto>();
             return await response.Content.ReadFromJsonAsync<IEnumerable<ProductRequestDto>>() ?? new List<ProductRequestDto>();
         }
 
+        //  Igénylés törlése
+        public async Task DeleteRequestAsync(int requestId, string token)
+        {
+            var request = CreateAuthRequest(HttpMethod.Delete, $"Product/request/{requestId}", token);
+            await _http.SendAsync(request);
+        }
+
         public async Task<int> ClaimProductAsync(int productId, string token)
         {
             var request = CreateAuthRequest(HttpMethod.Post, $"Product/claim/{productId}", token);
-            Console.WriteLine($"Service - token hossza: {token?.Length ?? 0}");
-            Console.WriteLine($"Service - token eleje: {token?.Substring(0, Math.Min(50, token?.Length ?? 0))}");
             var response = await _http.SendAsync(request);
-
-            Console.WriteLine($"Claim response: {response.StatusCode}");
             if (!response.IsSuccessStatusCode) return 0;
 
             var json = await response.Content.ReadAsStringAsync();

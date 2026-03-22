@@ -1,0 +1,366 @@
+﻿.requests-page {
+    padding: 28px 32px;
+    max-width: 1200px;
+}
+
+/* ── Fejléc ── */
+.page-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 28px;
+}
+
+    .page-header h2 {
+        font-size: 22px;
+        font-weight: 700;
+        color: #1a2332;
+        margin: 0;
+    }
+
+.badge-count {
+    background: #e8f0fe;
+    color: #1d4ed8;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+}
+
+/* ── Skeleton ── */
+.skeleton-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.skeleton-card {
+    background: white;
+    border: 1px solid #e8ecf0;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.sk-line {
+    background: #f0f2f5;
+    border-radius: 4px;
+    animation: shimmer 1.4s infinite;
+}
+
+@keyframes shimmer {
+    0%,100% {
+        opacity: 1
+    }
+
+    50% {
+        opacity: .45
+    }
+}
+
+/* ── Üres állapot ── */
+.empty-state {
+    text-align: center;
+    padding: 80px 20px;
+}
+
+.empty-icon {
+    font-size: 56px;
+    margin-bottom: 16px;
+}
+
+.empty-state h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1a2332;
+    margin-bottom: 8px;
+}
+
+.empty-state p {
+    color: #6b7f94;
+    font-size: 14px;
+    margin-bottom: 24px;
+}
+
+.btn-browse {
+    display: inline-block;
+    padding: 10px 24px;
+    background: #2563eb;
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+/* ── Grid ── */
+.requests-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+/* ── Kártya ── */
+.request-card {
+    background: white;
+    border: 1px solid #e8ecf0;
+    border-radius: 14px;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: box-shadow 0.2s, transform 0.15s;
+}
+
+    .request-card:hover {
+        box-shadow: 0 6px 20px rgba(0,0,0,0.07);
+        transform: translateY(-2px);
+    }
+
+.card-top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Státusz badge */
+.status-badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+
+.st-pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.st-accepted {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.st-rejected {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* Törlés gomb */
+.delete-icon-btn {
+    width: 30px;
+    height: 30px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: #cbd5e1;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, color 0.15s;
+}
+
+    .delete-icon-btn:hover {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+
+    .delete-icon-btn .material-symbols-outlined {
+        font-size: 18px !important;
+    }
+
+.card-product-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a2332;
+}
+
+.card-date {
+    font-size: 12px;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+    .card-date .material-symbols-outlined {
+        font-size: 13px !important;
+    }
+
+/* Chat gomb */
+.btn-chat {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 9px 14px;
+    background: #f0f6ff;
+    color: #2563eb;
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    transition: background 0.15s;
+    margin-top: 4px;
+}
+
+    .btn-chat:hover {
+        background: #dbeafe;
+    }
+
+    .btn-chat .material-symbols-outlined {
+        font-size: 17px !important;
+    }
+
+/* ══════════════════════════════════
+   MODAL — fix középre pozícionálva
+══════════════════════════════════ */
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 25, 35, 0.55);
+    backdrop-filter: blur(3px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    animation: backdropIn 0.2s ease;
+}
+
+@keyframes backdropIn {
+    from {
+        opacity: 0
+    }
+
+    to {
+        opacity: 1
+    }
+}
+
+.modal-card {
+    background: white;
+    border-radius: 20px;
+    padding: 32px 28px 28px;
+    width: 380px;
+    max-width: calc(100vw - 32px);
+    text-align: center;
+    position: relative;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.18);
+    animation: modalPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modalPop {
+    from {
+        transform: scale(0.85) translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-close-btn {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: #f1f5f9;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #64748b;
+    transition: background 0.15s;
+}
+
+    .modal-close-btn:hover {
+        background: #e2e8f0;
+    }
+
+    .modal-close-btn .material-symbols-outlined {
+        font-size: 16px !important;
+    }
+
+.modal-danger-icon {
+    width: 64px;
+    height: 64px;
+    background: #fee2e2;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 18px;
+}
+
+    .modal-danger-icon .material-symbols-outlined {
+        font-size: 30px !important;
+        color: #dc2626;
+    }
+
+.modal-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1a2332;
+    margin-bottom: 8px;
+}
+
+.modal-desc {
+    font-size: 13px;
+    color: #6b7f94;
+    line-height: 1.6;
+    margin-bottom: 24px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-modal-cancel {
+    flex: 1;
+    padding: 11px;
+    border: 1px solid #e2e8f0;
+    background: white;
+    color: #4a5568;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+    .btn-modal-cancel:hover {
+        background: #f8fafc;
+    }
+
+.btn-modal-danger {
+    flex: 1;
+    padding: 11px;
+    background: #dc2626;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: background 0.15s;
+}
+
+    .btn-modal-danger:hover {
+        background: #b91c1c;
+    }
+
+    .btn-modal-danger:disabled {
+        opacity: 0.65;
+        cursor: not-allowed;
+    }
