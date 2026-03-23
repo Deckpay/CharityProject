@@ -40,7 +40,6 @@ namespace Application.Services
                     ProductRequestId = dto.RequestId,
                     RequesterId = request.RequesterId,
                     DonorId = product.DonorId,
-                    IsActive = true,
                     CreatedAt = DateTime.UtcNow
                 };
 

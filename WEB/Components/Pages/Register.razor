@@ -46,18 +46,6 @@
                         <ValidationMessage For="@(() => registerModel.Email)" />
                     </div>
 
-                    <div class="selectForm">
-                        <label>Megye</label>
-                        <InputSelect @bind-Value="registerModel.CountyId" class="form-control">
-                            <option value="0">-- Válassz megyét --</option>
-                            @foreach (var county in counties)
-                            {
-                                <option value="@county.CountyId">@county.CountyName</option>
-                            }
-                        </InputSelect>
-                        <ValidationMessage For="@(() => registerModel.CountyId)" />
-                    </div>
-
                     <div>
                         <label>Jelszó</label>
                         <div class="password-wrapper">
@@ -111,14 +99,7 @@
 
 @code {
     private RegisterDto registerModel = new();
-    private IEnumerable<County> counties = new List<County>();
     private string? errorMessage;
-
-    protected override async Task OnInitializedAsync()
-    {
-        // Betöltjük a megyéket az adatbázisból a lenyíló listához
-        counties = await Lookup.GetCountiesAsync();
-    }
 
     private async Task HandleRegistration()
     {

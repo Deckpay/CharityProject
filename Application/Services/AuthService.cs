@@ -30,7 +30,6 @@ namespace Infrastructure.Services
                 Email = registerDto.Email,
                 FirstName = registerDto.FirstName,
                 LastName = registerDto.LastName,
-                CountyId = registerDto.CountyId, // Itt kasztoljuk vissza az int-et az Enummá:
                 UserRole = (Domain.Enums.UserRole)registerDto.RoleId,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(registerDto.Password),
                 CreatedAt = DateTime.Now,

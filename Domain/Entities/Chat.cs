@@ -12,7 +12,6 @@ namespace Domain.Entities
         public int ProductRequestId { get; set; }
         public int DonorId { get; set; }
         public int RequesterId { get; set; }
-        public bool IsActive { get; set; } = true;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

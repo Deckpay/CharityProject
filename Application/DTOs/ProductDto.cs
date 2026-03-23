@@ -20,7 +20,7 @@ namespace Application.DTOs
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 
-        public DonationStatus ProductSatus { get; set; }
+        public ProductStatus ProductSatus { get; set; }
 
         public int DonorId { get; set; }
 

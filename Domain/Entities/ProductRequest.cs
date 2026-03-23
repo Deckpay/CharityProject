@@ -16,7 +16,6 @@ namespace Domain.Entities
         public int ProductId { get; set; }
         public int RequesterId { get; set; }
         public int RequestStatus { get; set; }
-        public bool IsActive { get; set; }
         public DateTime RequestedAt { get; set; }
         public DateTime? ProcessedAt { get; set; }
     }

@@ -17,10 +17,6 @@ namespace Application.DTOs
 
         [Compare("Password", ErrorMessage = "A két jelszó nem egyezik")]
         public string ConfirmPassword { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "A megye kiválasztása kötelező")]
-        public int CountyId { get; set; }
-
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
 

@@ -19,12 +19,6 @@ namespace Domain.Entities
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
-        // Foreign Keys
-        public int CountyId { get; set; }
-
-        // Navigáció
-        public virtual County County { get; set; } = null!;
-
         // felhasználóknak sok terméke lehet
         public virtual ICollection<Product> Products { get; set; } = new List<Product>();
     }

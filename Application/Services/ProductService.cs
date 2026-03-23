@@ -1,6 +1,7 @@
 ﻿using Application.DTOs;
 using Application.Interfaces;
 using Domain.Entities;
+using Domain.Enums;
 
 namespace Application.Services
 {
@@ -23,8 +24,7 @@ namespace Application.Services
                 ImagePath = productDto.ImagePath,
                 CountyId = productDto.CountyId,
                 CreatedAt = DateTime.Now,
-                IsActive = true,
-                ProductStatus = Domain.Enums.DonationStatus.Active,
+                ProductStatus = Domain.Enums.ProductStatus.Active,
                 DonorId = userId
             };
 
@@ -35,7 +35,7 @@ namespace Application.Services
         public async Task<IEnumerable<ProductDto>> GetProductsAsync()
         {
             var allProducts = await _unitOfWork.Products.GetAllAsync();
-            return allProducts.Where(p => p.IsActive).Select(p => new ProductDto
+            return allProducts.Where(p => p.ProductStatus == ProductStatus.Active).Select(p => new ProductDto
             {
                 ProductId = p.ProductId,
                 ProductName = p.ProductName,
@@ -44,7 +44,7 @@ namespace Application.Services
                 ProductCategoryId = p.ProductCategoryId,
                 CountyId = p.CountyId,
                 DonorId = p.DonorId,
-                IsActive = p.IsActive
+                ProductSatus = p.ProductStatus
             }).ToList();
         }
 
@@ -53,7 +53,7 @@ namespace Application.Services
             var product = await _unitOfWork.Products.GetByIdAsync(id);
             if (product != null)
             {
-                product.IsActive = false;
+                product.ProductStatus = ProductStatus.Deleted;
                 product.UpdatedAt = DateTime.Now;
                 _unitOfWork.Products.Update(product);
                 await _unitOfWork.CompleteAsync();
@@ -70,15 +70,14 @@ namespace Application.Services
 
             //  Csak aktív igénylést vizsgálunk, ha már törölték engedünk újat
             var existing = allRequests.FirstOrDefault(r =>
-                r.ProductId == productId && r.RequesterId == userId && r.IsActive);
+                r.ProductId == productId && r.RequesterId == userId && r.RequestStatus == (int)RequestStatus.Pending);
             if (existing != null) return true;
 
             var newRequest = new ProductRequest
             {
                 ProductId = productId,
                 RequesterId = userId,
-                RequestStatus = 0,
-                IsActive = true,
+                RequestStatus = (int)RequestStatus.Pending,
                 RequestedAt = DateTime.Now
             };
 
@@ -92,14 +91,13 @@ namespace Application.Services
 
             // CSAK aktív igénylések inaktívak (töröltek) nem jelennek meg
             return allRequests
-                .Where(r => r.RequesterId == userId && r.IsActive)
+                .Where(r => r.RequesterId == userId && r.RequestStatus == (int)RequestStatus.Pending)
                 .Select(r => new ProductRequestDto
                 {
                     ProductRequestId = r.ProductRequestId,
                     ProductId = r.ProductId,
                     RequesterId = r.RequesterId,
                     RequestStatus = r.RequestStatus,
-                    IsActive = r.IsActive,
                     RequestedAt = r.RequestedAt
                 });
         }

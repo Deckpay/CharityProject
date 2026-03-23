@@ -28,13 +28,6 @@ namespace Infrastructure.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // 1. Felhasználó és Megye kapcsolata (1:N)
-            modelBuilder.Entity<User>()
-                .HasOne(u => u.County)
-                .WithMany(c => c.Users)
-                .HasForeignKey(u => u.CountyId)
-                .OnDelete(DeleteBehavior.Restrict);
-
             // 2. Termék és Donor (User) kapcsolata (1:N)
             modelBuilder.Entity<Product>()
                 .HasOne(p => p.Donor)
@@ -62,13 +55,7 @@ namespace Infrastructure.Data
                 .WithMany()
                 .HasForeignKey(m => m.SenderId)
                 .OnDelete(DeleteBehavior.Restrict); // nem törlunk uzenetet ha felfuggesztik a felhasználót
-
-                
             });
-
-             
-
-                
 
             // Enum konverzió (Opcionális: Ha szövegként akarnád tárolni az adatbázisban)
             // Itt most hagyjuk alapértelmezett INT-en, ahogy beszéltük.

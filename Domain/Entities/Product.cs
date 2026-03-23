@@ -12,9 +12,7 @@ namespace Domain.Entities
         public string? ProductDescription { get; set; }
         public string? ImagePath { get; set; }
 
-        public DonationStatus ProductStatus { get; set; } = DonationStatus.Active; // Enum használata status ként
-
-        public bool IsActive { get; set; } = true;
+        public ProductStatus ProductStatus { get; set; } = ProductStatus.Active; // Enum használata status ként
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow; // szerveridőt utcnow ban kell tárolni
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 

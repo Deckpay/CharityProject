@@ -1,5 +1,6 @@
 ﻿using Application.DTOs;
 using Application.Interfaces;
+using Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -87,7 +88,7 @@ namespace API.Controllers
 
             var allRequests = await _unitOfWork.ProductRequests.GetAllAsync();
             var request = allRequests
-                .Where(r => r.ProductId == productId && r.RequesterId == userId && r.IsActive)
+                .Where(r => r.ProductId == productId && r.RequesterId == userId && r.RequestStatus == (int)RequestStatus.Pending)
                 .OrderByDescending(r => r.RequestedAt)
                 .FirstOrDefault();
 
@@ -119,7 +120,7 @@ namespace API.Controllers
             if (request.RequesterId != userId) return Forbid();
 
             // törlés
-            request.IsActive = false;
+            request.RequestStatus = (int)RequestStatus.Failed;
             await _unitOfWork.CompleteAsync();
 
             return Ok();
@@ -135,20 +136,19 @@ namespace API.Controllers
 
             var myProducts = await _unitOfWork.Products.GetAllAsync();
             var myProductIds = myProducts
-                .Where(p => p.DonorId == userId && p.IsActive)
+                .Where(p => p.DonorId == userId && p.ProductStatus == ProductStatus.Active)
                 .Select(p => p.ProductId)
                 .ToHashSet();
 
             var allRequests = await _unitOfWork.ProductRequests.GetAllAsync();
             var donorRequests = allRequests
-                .Where(r => myProductIds.Contains(r.ProductId) && r.IsActive)
+                .Where(r => myProductIds.Contains(r.ProductId) && r.RequestStatus == (int)RequestStatus.Pending)
                 .Select(r => new ProductRequestDto
                 {
                     ProductRequestId = r.ProductRequestId,
                     ProductId = r.ProductId,
                     RequesterId = r.RequesterId,
                     RequestStatus = r.RequestStatus,
-                    IsActive = r.IsActive,
                     RequestedAt = r.RequestedAt
                 });
 

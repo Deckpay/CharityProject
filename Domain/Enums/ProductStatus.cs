@@ -1,6 +1,6 @@
 ﻿namespace Domain.Enums
 {
-    public enum DonationStatus
+    public enum ProductStatus
     {
         Active = 1,     // Felajálnva
         Pending = 2,    // Folyamatban
