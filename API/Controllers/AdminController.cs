@@ -49,5 +49,19 @@ namespace API.Controllers
             var products = await _adminService.GetProductsAsync();
             return Ok(products);
         }
+
+        [HttpPut("update-product")]
+        public async Task<IActionResult> UpdateProducts(ProductDto productDto)
+        {
+            await _adminService.UpdateProductAsync(productDto);
+            return Ok();
+        }
+
+        [HttpPut("delete-product/{id}")]
+        public async Task<IActionResult> DeleteProduct(int id)
+        {
+            await _adminService.DeleteProductAsync(id);
+            return Ok();
+        }
     }
 }

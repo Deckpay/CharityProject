@@ -81,13 +81,42 @@ namespace Application.Services
                 ProductName = p.ProductName,
                 ProductDescription = p.ProductDescription,
                 ProductSatus = p.ProductStatus,
-                IsActive = p.IsActive,
                 CreatedAt = p.CreatedAt,
                 UpdatedAt = p.UpdatedAt,
                 DonorId = p.DonorId,
                 ProductCategoryId = p.ProductCategoryId,
                 CountyId = p.CountyId,
             });
+        }
+
+        public async Task UpdateProductAsync(ProductDto productDto)
+        {
+            var product = await _unitOfWork.Products.GetByIdAsync(productDto.ProductId);
+
+            if (product == null) throw new Exception("A termék nem található");
+
+            product.ProductName = productDto.ProductName;
+            product.ProductDescription = productDto.ProductDescription;
+            product.ProductStatus = productDto.ProductSatus;
+            product.CountyId = productDto.CountyId;
+            product.ProductCategoryId = productDto.ProductCategoryId;
+            product.UpdatedAt = DateTime.UtcNow;
+
+            await _unitOfWork.CompleteAsync();
+        }
+
+        public async Task DeleteProductAsync(int id)
+        {
+            var product = await _unitOfWork.Products.GetByIdAsync(id);
+
+            if (product == null)
+            {
+                return;
+            }
+
+            product.ProductStatus = ProductStatus.Deleted;
+
+            await _unitOfWork.CompleteAsync();
         }
     }
 }

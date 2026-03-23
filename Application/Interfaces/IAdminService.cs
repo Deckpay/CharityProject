@@ -11,5 +11,7 @@ namespace Application.Interfaces
         Task UpdateUserAsync(UserDto userDto);
 
         Task<IEnumerable<ProductDto>> GetProductsAsync();
+        Task UpdateProductAsync(ProductDto productDto);
+        Task DeleteProductAsync(int id);
     }
 }

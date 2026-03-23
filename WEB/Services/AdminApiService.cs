@@ -27,15 +27,23 @@ namespace WEB.Services
             await _httpClient.PutAsync($"admin/delete-user/{id}", null);
         }
 
-        public async Task UpdateUserAsync(UserDto user)
+        public async Task UpdateUserAsync(UserDto userDto)
         {
-            await _httpClient.PutAsJsonAsync("admin/update-user", user);
+            await _httpClient.PutAsJsonAsync("admin/update-user", userDto);
         }
 
         public async Task<IEnumerable<ProductDto>> GetProductsAsync()
         {
             var result = await _httpClient.GetFromJsonAsync<IEnumerable<ProductDto>>("admin/products");
             return result ?? new List<ProductDto>();
+        }
+        public async Task UpdateProductAsync(ProductDto productDto)
+        {
+            await _httpClient.PutAsJsonAsync("admin/update-product", productDto);
+        }
+        public async Task DeleteProductAsync(int id)
+        {
+            await _httpClient.PutAsync($"admin/delete-product/{id}", null);
         }
     }
 }

@@ -51,16 +51,78 @@
                         <td>@LookupService.GetUserName(product.DonorId)</td>
                         <td>@LookupService.GetProductCategoryName(product.ProductCategoryId)</td>
                         <td>@LookupService.GetCountyName(product.CountyId)</td>
+                        <td>
+                            <button class="btn btn-secondary btn-sm" @onclick="() => EditProduct(product)">Szerkesztés</button>
+                            <button class="btn btn-danger btn-sm" @onclick="() => DeleteProduct(product.ProductId)">Törlés</button>
+                        </td>
                     </tr>
                 }
             </tbody>
         </table>
     </div>
+
+    @if (showEditModal && editingProduct != null)
+    {
+        <div class="modal-backdrop">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content shadow-lg border-0">
+                    <div class="modal-header text-black">
+                        <h5 class="modal-title">Termékek szerkesztése</h5>
+                        <button type="button" class="btn-close" @onclick="CloseModal"></button>
+                    </div>
+                    <div class="modal-body p-4">
+                        <div class="mb-3">
+                            <label class="form-label text-black">Termék név</label>
+                            <input class="form-control" @bind="editingProduct.ProductName" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-black">Termék leírás</label>
+                            <input class="form-control" @bind="editingProduct.ProductDescription" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-black">Termék kategória</label>
+                            <select class="form-control" @bind="editingProduct.ProductCategoryId">
+                                @foreach (var category in categories)
+                                {
+                                    <option value="@category.ProductCategoryId">@category.ProductCategoryName</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-black">Termék helye</label>
+                            <select class="form-control" @bind="editingProduct.CountyId">
+                                @foreach (var county in counties)
+                                {
+                                    <option value="@county.CountyId">@county.CountyName</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-black">Termék státusz</label>
+                            <select class="form-control" @bind="editingProduct.ProductSatus">
+                                @foreach (var status in Enum.GetValues<ProductStatus>())
+                                {
+                                    <option value="@status">@status</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-primary" @onclick="SaveProduct">Mentés</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
 </div>
 
 @code {
     private List<ProductDto> products = new();
+    private List<ProductCategory> categories = new();
+    private List<County> counties = new();
     private bool isLoading = true;
+    private ProductDto? editingProduct;
+    private bool showEditModal = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -78,7 +140,49 @@
         await LookupService.GetProductCategoriesAsync();
         await LookupService.GetUsersAsync();
 
+        categories = (await LookupService.GetProductCategoriesAsync()).ToList();
+        counties = (await LookupService.GetCountiesAsync()).ToList();
         products = (await AdminService.GetProductsAsync()).ToList();
         isLoading = false;
+    }
+
+    private void EditProduct(ProductDto productDto)
+    {
+        editingProduct = new ProductDto
+        {
+            ProductId = productDto.ProductId,
+            ProductName = productDto.ProductName,
+            ProductDescription = productDto.ProductDescription,
+            ProductCategoryId = productDto.ProductCategoryId,
+            CountyId = productDto.CountyId,
+            ProductSatus = productDto.ProductSatus,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+        showEditModal = true;
+    }
+
+    private async Task SaveProduct()
+    {
+        if (editingProduct == null) return;
+
+        await AdminService.UpdateProductAsync(editingProduct);
+
+        showEditModal = false;
+
+        products = (await AdminService.GetProductsAsync()).ToList();
+    }
+
+    private async Task DeleteProduct(int productId)
+    {
+        await AdminService.DeleteProductAsync(productId);
+
+        products = (await AdminService.GetProductsAsync()).ToList();
+    }
+
+    private void CloseModal()
+    {
+        showEditModal = false;
+        editingProduct = null;
     }
 }
