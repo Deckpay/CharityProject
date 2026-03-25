@@ -13,7 +13,8 @@ namespace WEB.Services
 
         private List<ProductCategory>? _productCategories;
         private List<County>? _counties;
-        private List<User>? _user;
+        private List<User>? _users;
+        private List<Product>? _products;
 
         public async Task<IEnumerable<ProductCategory>> GetProductCategoriesAsync()
         {
@@ -37,12 +38,21 @@ namespace WEB.Services
 
         public async Task<IEnumerable<User>> GetUsersAsync()
         {
-            if (_user == null)
+            if (_users == null)
             {
-                _user = await _httpClient.GetFromJsonAsync<List<User>>("lookup/users") ?? new();
+                _users = await _httpClient.GetFromJsonAsync<List<User>>("lookup/users") ?? new();
             }
 
-            return _user;
+            return _users;
+        }
+        public async Task<IEnumerable<Product>> GetProductsAsync()
+        {
+            if (_products == null)
+            {
+                _products = await _httpClient.GetFromJsonAsync<List<Product>>("lookup/products") ?? new();
+            }
+
+            return _products;
         }
 
         public string GetProductCategoryName(int id) =>
@@ -52,6 +62,8 @@ namespace WEB.Services
             _counties?.FirstOrDefault(c => c.CountyId == id)?.CountyName ?? "Ismeretlen";
 
         public string GetUserName(int id) =>
-            _user?.FirstOrDefault(u => u.UserId == id)?.UserName ?? "Ismeretlen";
+            _users?.FirstOrDefault(u => u.UserId == id)?.UserName ?? "Ismeretlen";
+        public string GetProductName(int id) =>
+            _products?.FirstOrDefault(u => u.ProductId == id)?.ProductName ?? "Ismeretlen";
     }
 }

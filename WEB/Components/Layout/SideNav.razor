@@ -47,6 +47,20 @@
                                 <span>Termékek</span>
                             }
                         </a>
+                        <a class="nav-item @Active("/admin-product-requests")" href="/admin-product-requests">
+                            <span class="material-symbols-outlined">inventory</span>
+                            @if (isOpened)
+                            {
+                                <span>Igénylések</span>
+                            }
+                        </a>
+                        <a class="nav-item @Active("/admin-product-requester-limits")" href="/admin-product-requester-limits">
+                            <span class="material-symbols-outlined">inventory</span>
+                            @if (isOpened)
+                            {
+                                <span>Limitek</span>
+                            }
+                        </a>
                     </Authorized>
                     <NotAuthorized>
                         @if (isOpened)

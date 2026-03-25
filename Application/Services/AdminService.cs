@@ -14,6 +14,7 @@ namespace Application.Services
             _unitOfWork = unitOfWork;
         }
 
+        // user
         public async Task<IEnumerable<UserDto>> GetUsersAsync()
         {
             var users = await _unitOfWork.Users.GetAllAsync();
@@ -72,6 +73,7 @@ namespace Application.Services
             await _unitOfWork.CompleteAsync();
         }
 
+        // product
         public async Task<IEnumerable<ProductDto>> GetProductsAsync()
         {
             var producst = await _unitOfWork.Products.GetAllAsync();
@@ -120,6 +122,7 @@ namespace Application.Services
             await _unitOfWork.CompleteAsync();
         }
 
+        // request
         public async Task<IEnumerable<ProductRequestDto>> GetProductRequestsAsync()
         {
             var requests = await _unitOfWork.ProductRequests.GetAllAsync();
@@ -145,6 +148,15 @@ namespace Application.Services
 
             request.RequestStatus = requestDto.RequestStatus;
 
+            if (requestDto.RequestStatus == RequestStatus.Failed)
+            {
+                request.ProcessedAt = DateTime.UtcNow;
+            }
+            else
+            {
+                request.ProcessedAt = DateTime.MinValue;
+            }
+
             await _unitOfWork.CompleteAsync();
         }
 
@@ -158,10 +170,12 @@ namespace Application.Services
             }
 
             request.RequestStatus = RequestStatus.Failed;
+            request.ProcessedAt = DateTime.UtcNow;
 
             await _unitOfWork.CompleteAsync();
         }
 
+        // limit rule
         public async Task<IEnumerable<RequesterLimitRuleDto>> GetRequesterLimitRules()
         {
             var limitRules = await _unitOfWork.RequesterLimitRules.GetAllAsync();

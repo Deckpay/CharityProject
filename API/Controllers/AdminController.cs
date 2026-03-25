@@ -15,6 +15,7 @@ namespace API.Controllers
             _adminService = adminService;
         }
 
+        // user
         [HttpGet("users")]
         public async Task<IActionResult> GetUsers()
         {
@@ -43,6 +44,7 @@ namespace API.Controllers
             return Ok();
         }
 
+        // product
         [HttpGet("products")]
         public async Task<IActionResult> GetProducts()
         {
@@ -64,6 +66,7 @@ namespace API.Controllers
             return Ok();
         }
 
+        // request
         [HttpGet("product-requests")]
         public async Task<IActionResult> GetProductRequests()
         {
@@ -85,6 +88,7 @@ namespace API.Controllers
             return Ok();
         }
 
+        // limitrule
         [HttpGet("requester-limitrules")]
         public async Task<IActionResult> GetRequesterLimitRules()
         {

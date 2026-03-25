@@ -15,6 +15,7 @@ namespace Application.Services
         private List<County>? _counties;
         private List<ProductCategory>? _productCategories;
         private List<User>? _users;
+        private List<Product>? _products;
                 
         public async Task<IEnumerable<County>> GetCountiesAsync()
         {
@@ -55,5 +56,18 @@ namespace Application.Services
 
         public string GetUserNameString(int id) =>
             _users?.FirstOrDefault(u => u.UserId == id)?.UserName ?? "Ismeretlen";
+
+        public async Task<IEnumerable<Product>> GetProductsAsync()
+        {
+            if (_products == null)
+            {
+                var result = await _unitOfWork.Products.GetAllAsync();
+                _products = result.ToList();
+            }
+            return _products;
+        }
+
+        public string GetProductNameString(int id) =>
+            _products?.FirstOrDefault(u => u.ProductId == id)?.ProductName ?? "Ismeretlen";
     }
 }
