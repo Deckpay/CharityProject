@@ -1,8 +1,8 @@
-Projektünk témája: 
+### Küldetésünk
+Digitális jótékonysági platformunkkal az **okoseszközzel rendelkező**, nehéz sorsú rétegek számára teremtünk közvetlen utat az életkörülményeik javításához.
 
-Digitális jótékonysági platformunkkal az okoseszközzel rendelkező, nehéz sorsú rétegek számára teremtünk közvetlen utat az életkörülményeik javításához.
+---
 
-Készitette
-
-Kemény Benedek
-Papp Bence
+### ✍️ Készítették:
+* **Kemény Benedek**
+* **Papp Bence**
