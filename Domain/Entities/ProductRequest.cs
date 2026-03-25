@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations.Schema;
+using Domain.Enums;
 
 namespace Domain.Entities
 {
@@ -15,7 +16,7 @@ namespace Domain.Entities
         public int ProductRequestId { get; set; }
         public int ProductId { get; set; }
         public int RequesterId { get; set; }
-        public int RequestStatus { get; set; }
+        public RequestStatus RequestStatus { get; set; }
         public DateTime RequestedAt { get; set; }
         public DateTime? ProcessedAt { get; set; }
     }

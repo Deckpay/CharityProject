@@ -1,0 +1,230 @@
+﻿@page "/admin-product-requester-limits"
+@using Application.DTOs
+@using Domain.Entities
+@using Domain.Enums
+@using WEB.Services
+@inject CustomAuthStateProvider AuthStateProvider
+@inject NavigationManager Navigation
+@inject AdminApiService AdminService
+@inject LookupApiService LookupService
+
+<div class="page-container">
+    <h2>Limitek kezelése</h2>
+    <button class="btn" @onclick="() =>CreateProductRequestLimitRule()">Limit hozzáadása</button>
+    <div class="table-container">
+        <table class="table table-hover table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Leírás</th>
+                    <th scope="col">Kategória</th>
+                    <th scope="col">Ismétlődés</th>
+                    <th scope="col">Mennyiség</th>
+                    <th scope="col">Állapot</th>
+                    <th scope="col">Létrehozva</th>
+                    <th scope="col">Modosítva</th>
+                    <th scope="col">Műveletek</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var limitRule in limitRules)
+                {
+                    <tr>
+                        <td>@limitRule.RequesterLimitRuleId</td>
+                        <td>@limitRule.RequesterLimitRuleDescription</td>
+                        <td>@LookupService.GetProductCategoryName(limitRule.RequesterLimitRuleCategoryId)</td>
+                        <td>@TranslatePeriod(limitRule.PeriodType)</td>
+                        <td>@limitRule.MaxQuantity</td>
+                        <td>@(limitRule.IsActive ? "Aktiv" : "Inaktív")</td>
+                        <td>@limitRule.CreatedAt</td>
+                        <td>@limitRule.UpdatedAt</td>
+                        <td>
+                            <button class="btn btn-secondary btn-sm" @onclick="() => EditProductRequestLimitRule(limitRule)">Szerkesztés</button>
+                            <button class="btn btn-danger btn-sm" @onclick="() => DeleteProductRequestLimitRule(limitRule.RequesterLimitRuleId)">Törlés</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        @if (isLoading)
+        {
+            <div class="d-flex justify-content-center my-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Betöltés...</span>
+                </div>
+                <p class="ms-3">betöltés...</p>
+            </div>
+        }
+    </div>
+
+    @if (showEditModal && (editingLimitRule!.RequesterLimitRuleId == 0 ? CreateProductRequestLimitRule : EditProductRequestLimitRule) != null)
+    {
+        <div class="modal-backdrop">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content shadow-lg border-0">
+                    <div class="modal-header text-black">
+                        <h5 class="modal-title">
+                            @(editingLimitRule.RequesterLimitRuleId == 0 ? "Szabály létrehozása" : "Szabály szerkesztése")
+                        </h5>
+                        <button type="button" class="btn-close" @onclick="CloseModal"></button>
+                    </div>
+                    <div class="modal-body p-4">
+                        <div class="mb-3">
+                            <label class="form-label text-black">Leírás</label>
+                            <input class="form-control" @bind="editingLimitRule.RequesterLimitRuleDescription" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-black">Kategória</label>
+                            <select class="form-control" @bind="editingLimitRule.RequesterLimitRuleCategoryId">
+                                @foreach (var category in categories)
+                                {
+                                    <option value="@category.ProductCategoryId">@category.ProductCategoryName</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-black">Ismétlődés</label>
+                            <select class="form-select" @bind="editingLimitRule.PeriodType">
+                                <option value="Weekly">Heti</option>
+                                <option value="Monthly">Havi</option>
+                                <option value="Quarterly">Negyedéves</option>
+                                <option value="Semiannual">Féléves</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-black">Mennyiség</label>
+                            <input type="number" class="form-control" @bind="editingLimitRule.MaxQuantity" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-black">Állapot</label>
+                            <select class="form-select" value="@editingLimitRule.IsActive.ToString().ToLower()" @onchange="HandleStatusChange">
+                                <option value="true" selected="@(editingLimitRule.IsActive == true)">Aktív</option>
+                                <option value="false" selected="@(editingLimitRule.IsActive == false)">Inaktív</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-primary" @onclick="SaveProductRequestLimitRule">Mentés</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private List<RequesterLimitRuleDto> limitRules = new();
+    private List<ProductCategory> categories = new();
+    private List<County> counties = new();
+    private bool isLoading = true;
+    private RequesterLimitRuleDto? editingLimitRule;
+    private bool showEditModal = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+
+        if (authState.User?.Identities == null ||
+            !authState.User.Identity!.IsAuthenticated ||
+            !authState.User.IsInRole("Admin"))
+        {
+            Navigation.NavigateTo("/login");
+            return;
+        }
+
+        await LookupService.GetCountiesAsync();
+        await LookupService.GetProductCategoriesAsync();
+        await LookupService.GetUsersAsync();
+
+        categories = (await LookupService.GetProductCategoriesAsync()).ToList();
+        counties = (await LookupService.GetCountiesAsync()).ToList();
+        limitRules = (await AdminService.GetRequesterLimitRulesAsync()).ToList();
+        isLoading = false;
+    }
+
+    private void EditProductRequestLimitRule(RequesterLimitRuleDto limitRuleDto)
+    {
+        editingLimitRule = new RequesterLimitRuleDto
+        {
+            RequesterLimitRuleId = limitRuleDto.RequesterLimitRuleId,
+            RequesterLimitRuleDescription = limitRuleDto.RequesterLimitRuleDescription,
+            RequesterLimitRuleCategoryId = limitRuleDto.RequesterLimitRuleCategoryId,
+            PeriodType = limitRuleDto.PeriodType,
+            MaxQuantity = limitRuleDto.MaxQuantity,
+            IsActive = limitRuleDto.IsActive,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+        showEditModal = true;
+    }
+
+    private void CreateProductRequestLimitRule()
+    {
+        editingLimitRule = new RequesterLimitRuleDto
+        {
+            RequesterLimitRuleId = 0,
+            RequesterLimitRuleDescription ="",
+            RequesterLimitRuleCategoryId = 0,
+            PeriodType = "Monthly",
+            MaxQuantity = 0,
+            IsActive = true,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+        showEditModal = true;
+    }
+
+    private async Task SaveProductRequestLimitRule()
+    {
+        if (editingLimitRule == null) return;
+
+        if (editingLimitRule.RequesterLimitRuleId == 0)
+        {
+            // ÚJ LÉTREHOZÁSA
+            await AdminService.CreateRequesterLimitRuleAsync(editingLimitRule);
+        }
+        else
+        {
+            // MEGLÉVŐ FRISSÍTÉSE
+            await AdminService.UpdateRequesterLimitRuleAsync(editingLimitRule);
+        }
+
+        showEditModal = false;
+
+        limitRules = (await AdminService.GetRequesterLimitRulesAsync()).ToList();
+    }
+
+    private async Task DeleteProductRequestLimitRule(int limitRuleId)
+    {
+        await AdminService.DeleteRequesterLimitRuleAsync(limitRuleId);
+
+        limitRules = (await AdminService.GetRequesterLimitRulesAsync()).ToList();
+    }
+
+    private void CloseModal()
+    {
+        showEditModal = false;
+        editingLimitRule = null;
+    }
+
+    private string TranslatePeriod(string? period)
+    {
+        return period switch
+        {
+            "Weekly" => "Heti",
+            "Monthly" => "Havi",
+            "Quarterly" => "Negyedéves",
+            "Semiannual" => "Féléves",
+            _ => period ?? "Nincs megadva"
+        };
+    }
+
+    private void HandleStatusChange(ChangeEventArgs e)
+    {
+        if (bool.TryParse(e.Value?.ToString(), out bool result))
+        {
+            editingLimitRule!.IsActive = result;
+        }
+    }
+}

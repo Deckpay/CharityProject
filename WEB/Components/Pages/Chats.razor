@@ -1,5 +1,6 @@
 ﻿@page "/chats"
 @using Application.DTOs
+@using Domain.Enums
 @using WEB.Services
 @inject NavigationManager Navigation
 @inject ChatApiService ChatService
@@ -67,8 +68,8 @@
                     : conv.LastMessage;
                 }
                 var timeStr = conv.LastMessageTime.HasValue ? FormatTime(conv.LastMessageTime.Value) : string.Empty;
-                var statusCls = "status-pill " + GetStatusClass(conv.Status);
-                var statusTxt = GetStatusText(conv.Status);
+                var statusCls = "status-pill " + conv.Status;
+                var statusTxt = conv.Status;
                 var rowCls = deletingConvId == conv.RequestId ? "conv-row conv-deleting" : "conv-row";
 
                 <div class="@rowCls" @onclick="() => Navigation.NavigateTo(chatUrl)">
@@ -150,7 +151,7 @@
     {
         public int RequestId { get; set; }
         public string ProductName { get; set; } = string.Empty;
-        public int Status { get; set; }
+        public RequestStatus Status { get; set; }
         public string? LastMessage { get; set; }
         public DateTime? LastMessageTime { get; set; }
         public int UnreadCount { get; set; }

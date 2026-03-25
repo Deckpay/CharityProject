@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,8 +12,8 @@ namespace Application.DTOs
         public int ProductRequestId { get; set; }
         public int ProductId { get; set; }
         public int RequesterId { get; set; }
-        public int RequestStatus { get; set; }
-        public bool IsActive { get; set; }
+        public RequestStatus RequestStatus { get; set; }
         public DateTime RequestedAt { get; set; }
+        public DateTime ProcessedAt { get; set; }
     }
 }

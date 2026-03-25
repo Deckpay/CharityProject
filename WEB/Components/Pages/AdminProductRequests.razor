@@ -1,0 +1,150 @@
+﻿@page "/admin-product-requests"
+@using Application.DTOs
+@using Domain.Entities
+@using Domain.Enums
+@using WEB.Services
+@inject CustomAuthStateProvider AuthStateProvider
+@inject NavigationManager Navigation
+@inject AdminApiService AdminService
+@inject LookupApiService LookupService
+
+<div class="page-container">
+    <h2>Termék igénylések kezelése</h2>
+    <div class="table-container">
+        <table class="table table-hover table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Termék Név</th>
+                    <th scope="col">Igénylő</th>
+                    <th scope="col">Állapot</th>
+                    <th scope="col">Létrehozva</th>
+                    <th scope="col">Végbement</th>
+                    <th scope="col">Műveletek</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var request in requests)
+                {
+                    <tr>
+                        <td>@request.ProductRequestId</td>
+                        <td>@LookupService.GetProductName(request.ProductId)</td>
+                        <td>@LookupService.GetUserName(request.RequesterId)</td>
+                        <td>@request.RequestStatus</td>
+                        <td>@request.RequestedAt</td>
+                        <td>@request.ProcessedAt</td>
+                        <td>
+                            <button class="btn btn-secondary btn-sm" @onclick="() => EditProductRequest(request)">Szerkesztés</button>
+                            <button class="btn btn-danger btn-sm" @onclick="() => DeleteProductRequest(request.ProductRequestId)">Törlés</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="d-flex justify-content-center my-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Betöltés...</span>
+            </div>
+            <p class="ms-3">betöltés...</p>
+        </div>
+    }
+
+    @if (showEditModal && editingProductRequest != null)
+    {
+        <div class="modal-backdrop">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content shadow-lg border-0">
+                    <div class="modal-header text-black">
+                        <h5 class="modal-title">Termékek szerkesztése</h5>
+                        <button type="button" class="btn-close" @onclick="CloseModal"></button>
+                    </div>
+                    <div class="modal-body p-4">
+                        <div class="mb-3">
+                            <label class="form-label text-black">Igénylés státusz</label>
+                            <select class="form-control" @bind="editingProductRequest.RequestStatus">
+                                @foreach (var status in Enum.GetValues<RequestStatus>())
+                                {
+                                    <option value="@status">@status</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-primary" @onclick="SaveProductRequest">Mentés</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private List<ProductRequestDto> requests = new();
+    private List<ProductCategory> categories = new();
+    private List<County> counties = new();
+    private bool isLoading = true;
+    private ProductRequestDto? editingProductRequest;
+    private bool showEditModal = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+
+        if (authState.User?.Identities == null ||
+            !authState.User.Identity!.IsAuthenticated ||
+            !authState.User.IsInRole("Admin"))
+        {
+            Navigation.NavigateTo("/login");
+            return;
+        }
+
+        await LookupService.GetCountiesAsync();
+        await LookupService.GetProductCategoriesAsync();
+        await LookupService.GetUsersAsync();
+        await LookupService.GetProductsAsync();
+
+        categories = (await LookupService.GetProductCategoriesAsync()).ToList();
+        counties = (await LookupService.GetCountiesAsync()).ToList();
+        requests = (await AdminService.GetProductsRequestsAsync()).ToList();
+        isLoading = false;
+    }
+
+    private void EditProductRequest(ProductRequestDto requestDto)
+    {
+        editingProductRequest = new ProductRequestDto
+        {
+            ProductRequestId = requestDto.ProductRequestId,
+            RequestStatus = requestDto.RequestStatus
+        };
+
+        showEditModal = true;
+    }
+
+    private async Task SaveProductRequest()
+    {
+        if (editingProductRequest == null) return;
+
+        await AdminService.UpdateProductRequestAsync(editingProductRequest);
+
+        showEditModal = false;
+
+        requests = (await AdminService.GetProductsRequestsAsync()).ToList();
+    }
+
+    private async Task DeleteProductRequest(int productRequestId)
+    {
+        await AdminService.DeleteProductRequestAsync(productRequestId);
+
+        requests = (await AdminService.GetProductsRequestsAsync()).ToList();
+    }
+
+    private void CloseModal()
+    {
+        showEditModal = false;
+        editingProductRequest = null;
+    }
+}

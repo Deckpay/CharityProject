@@ -15,6 +15,7 @@ namespace API.Controllers
             _adminService = adminService;
         }
 
+        // user
         [HttpGet("users")]
         public async Task<IActionResult> GetUsers()
         {
@@ -43,6 +44,7 @@ namespace API.Controllers
             return Ok();
         }
 
+        // product
         [HttpGet("products")]
         public async Task<IActionResult> GetProducts()
         {
@@ -61,6 +63,57 @@ namespace API.Controllers
         public async Task<IActionResult> DeleteProduct(int id)
         {
             await _adminService.DeleteProductAsync(id);
+            return Ok();
+        }
+
+        // request
+        [HttpGet("product-requests")]
+        public async Task<IActionResult> GetProductRequests()
+        {
+            var requests = await _adminService.GetProductRequestsAsync();
+            return Ok(requests);
+        }
+
+        [HttpPut("update-product-requests")]
+        public async Task<IActionResult> UpdateProductRequests(ProductRequestDto requestDto)
+        {
+            await _adminService.UpdateProductRequestAsync(requestDto);
+            return Ok();
+        }
+
+        [HttpPut("delete-product-requests/{id}")]
+        public async Task<IActionResult> DeleteProductRequests(int id)
+        {
+            await _adminService.DeleteProductRequestAsync(id);
+            return Ok();
+        }
+
+        // limitrule
+        [HttpGet("requester-limitrules")]
+        public async Task<IActionResult> GetRequesterLimitRules()
+        {
+            var limitRules = await _adminService.GetRequesterLimitRules();
+            return Ok(limitRules);
+        }
+
+        [HttpPost("create-requester-limitrule")]
+        public async Task<IActionResult> CreateRequesertLimitRule(RequesterLimitRuleDto limitRuleDto)
+        {
+            await _adminService.CreateRequesterLimitRule(limitRuleDto);
+            return Ok();
+        }
+
+        [HttpPut("update-requester-limitrule")]
+        public async Task<IActionResult> UpdateRequesertLimitRule(RequesterLimitRuleDto limitRuleDto)
+        {
+            await _adminService.UpdateRequesterLimitRule(limitRuleDto);
+            return Ok();
+        }
+
+        [HttpPut("delete-requester-limitrule/{id}")]
+        public async Task<IActionResult> DeleteRequesterLimitRule(int id)
+        {
+            await _adminService.DeleteRequesterLimitRule(id);
             return Ok();
         }
     }

@@ -34,5 +34,12 @@ namespace API.Controllers
             var users = await _unitOfWork.Users.GetAllAsync();
             return Ok(users);
         }
+
+        [HttpGet("products")]
+        public async Task<IActionResult> GetProducts()
+        {
+            var products = await _unitOfWork.Products.GetAllAsync();
+            return Ok(products);
+        }
     }
 }
