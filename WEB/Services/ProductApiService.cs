@@ -60,42 +60,6 @@ namespace WEB.Services
             await _http.SendAsync(request);
         }
 
-        public async Task<IEnumerable<ProductRequestDto>> GetMyRequestsAsync(string token)
-        {
-            var request = CreateAuthRequest(HttpMethod.Get, "Product/my-requests", token);
-            var response = await _http.SendAsync(request);
-            if (!response.IsSuccessStatusCode) return new List<ProductRequestDto>();
-            return await response.Content.ReadFromJsonAsync<IEnumerable<ProductRequestDto>>() ?? new List<ProductRequestDto>();
-        }
-
-        // Donor: az ő termékeihez beérkezett igénylések
-        public async Task<IEnumerable<ProductRequestDto>> GetDonorRequestsAsync(string token)
-        {
-            var request = CreateAuthRequest(HttpMethod.Get, "Product/donor-requests", token);
-            var response = await _http.SendAsync(request);
-            if (!response.IsSuccessStatusCode) return new List<ProductRequestDto>();
-            return await response.Content.ReadFromJsonAsync<IEnumerable<ProductRequestDto>>() ?? new List<ProductRequestDto>();
-        }
-
-        //  Igénylés törlése
-        public async Task DeleteRequestAsync(int requestId, string token)
-        {
-            var request = CreateAuthRequest(HttpMethod.Delete, $"Product/request/{requestId}", token);
-            await _http.SendAsync(request);
-        }
-
-        public async Task<int> ClaimProductAsync(int productId, string token)
-        {
-            var request = CreateAuthRequest(HttpMethod.Post, $"Product/claim/{productId}", token);
-            var response = await _http.SendAsync(request);
-            if (!response.IsSuccessStatusCode) return 0;
-
-            var json = await response.Content.ReadAsStringAsync();
-            var doc = JsonDocument.Parse(json);
-            if (doc.RootElement.TryGetProperty("requestId", out var prop))
-                return prop.GetInt32();
-
-            return 0;
-        }
+       
     }
 }

@@ -14,7 +14,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<CharityDbContext>(options =>
     options.UseSqlServer(connectionString));
 
-// Add services to the container.
+//adatbázis műveletek regisztrálása
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -23,6 +23,12 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<JwtTokenGenerator>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<ILookupService, LookupService>();
+builder.Services.AddScoped<IChatRepository, ChatRepository>();
+builder.Services.AddScoped<IChatService, ChatService>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+builder.Services.AddScoped<IProductRequestService, ProductRequestService>();
+
 
 // --- DINAMIKUS CORS BEÁLLÍTÁS (Módosítva) ---
 // Megpróbáljuk kiolvasni az appsettings-ből, ha nincs ott, a 7189-et használjuk alapértelmezettként
@@ -88,15 +94,7 @@ builder.Services.AddSwaggerGen(c => {
 
 });
 
-// adatbázis elérése
-builder.Services.AddDbContext<CharityDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-//adatbázis műveletek regisztrálása
-builder.Services.AddScoped<IChatRepository, ChatRepository>();
-builder.Services.AddScoped<IChatService, ChatService>();
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
-builder.Services.AddScoped<IChatService, ChatService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

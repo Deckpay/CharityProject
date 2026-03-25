@@ -4,6 +4,7 @@
 @using WEB.Services
 @inject NavigationManager Navigation
 @inject ProductApiService ProductService
+@inject ProductRequestApiService ProductRequestService
 @inject CustomAuthStateProvider AuthStateProvider
 @inject LocalStorageService LocalStorage
 
@@ -114,7 +115,7 @@
         token = await LocalStorage.GetItemAsync<string>("authToken") ?? "";
         try
         {
-            requests = (await ProductService.GetMyRequestsAsync(token)).ToList();
+            requests = (await ProductRequestService.GetMyRequestsAsync(token)).ToList();
             products = (await ProductService.GetProductsAsync()).ToList();
         }
         catch (Exception ex) { Console.WriteLine($"Hiba: {ex.Message}"); }
@@ -131,7 +132,7 @@
         isDeleting = true;
         try
         {
-            await ProductService.DeleteRequestAsync(deletingId.Value, token);
+            await ProductRequestService.DeleteRequestAsync(deletingId.Value, token);
             requests.RemoveAll(r => r.ProductRequestId == deletingId.Value);
         }
         catch (Exception ex) { Console.WriteLine($"Törlési hiba: {ex.Message}"); }

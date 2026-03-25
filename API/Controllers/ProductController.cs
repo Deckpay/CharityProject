@@ -12,59 +12,30 @@ namespace API.Controllers
     public class ProductController : ControllerBase
     {
         private readonly IProductService _productService;
-        private readonly IUnitOfWork _unitOfWork;
 
-        public ProductController(IProductService productService, IUnitOfWork unitOfWork)
+        public ProductController(IProductService productService)
         {
             _productService = productService;
-            _unitOfWork = unitOfWork;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
-        {
-            var products = await _productService.GetProductsAsync();
-            return Ok(products);
-        }
+        public async Task<IActionResult> GetAll() => Ok(await _productService.GetProductsAsync());
 
         [Authorize]
         [HttpGet("my-products")]
         public async Task<IActionResult> GetMyProducts()
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userIdClaim)) return Unauthorized();
-
-            int userId = int.Parse(userIdClaim);
-            var allProducts = await _unitOfWork.Products.GetAllAsync();
-            var myProducts = allProducts.Where(p => p.DonorId == userId);
-            return Ok(myProducts);
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+            return Ok(await _productService.GetProductsByDonorAsync(userId));
         }
 
         [Authorize]
         [HttpPost]
         public async Task<IActionResult> Create([FromForm] ProductDto dto, IFormFile imageFile)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (userId == null) return Unauthorized();
-
-            if (imageFile != null && imageFile.Length > 0)
-            {
-                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "products");
-                if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
-
-                var fileName = $"{Guid.NewGuid()}{Path.GetExtension(imageFile.FileName)}";
-                var filePath = Path.Combine(uploadsFolder, fileName);
-
-                using var stream = new FileStream(filePath, FileMode.Create);
-                await imageFile.CopyToAsync(stream);
-
-                dto.ImagePath = "/images/products/" + fileName;
-            }
-
-            var success = await _productService.CreateProductAsync(dto, int.Parse(userId));
-            if (!success) return BadRequest("Nem sikerült menteni");
-
-            return Ok();
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+            var success = await _productService.CreateProductAsync(dto, userId, imageFile);
+            return success ? Ok() : BadRequest("Hiba a mentés során.");
         }
 
         [Authorize]
@@ -75,89 +46,6 @@ namespace API.Controllers
             return Ok();
         }
 
-        [Authorize]
-        [HttpPost("claim/{productId}")]
-        public async Task<IActionResult> Claim(int productId)
-        {
-            var nameIdentifier = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(nameIdentifier)) return Unauthorized("A felhasználó nem található");
-
-            var userId = int.Parse(nameIdentifier);
-            var success = await _productService.ClaimProductAsync(productId, userId);
-            if (!success) return BadRequest("Hiba keletkezett az igénylés során");
-
-            var allRequests = await _unitOfWork.ProductRequests.GetAllAsync();
-            var request = allRequests
-                .Where(r => r.ProductId == productId && r.RequesterId == userId && r.RequestStatus == (int)RequestStatus.Pending)
-                .OrderByDescending(r => r.RequestedAt)
-                .FirstOrDefault();
-
-            if (request == null) return BadRequest("Igénylés nem található");
-
-            return Ok(new { requestId = request.ProductRequestId });
-        }
-
-        [Authorize]
-        [HttpGet("my-requests")]
-        public async Task<IActionResult> GetMyRequests()
-        {
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-            var requests = await _productService.GetMyRequestsAsync(userId);
-            return Ok(requests);
-        }
-
-        //  Igénylés törlése 
-        [Authorize]
-        [HttpDelete("request/{requestId}")]
-        public async Task<IActionResult> DeleteRequest(int requestId)
-        {
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-
-            var request = await _unitOfWork.ProductRequests.GetByIdAsync(requestId);
-            if (request == null) return NotFound("Igénylés nem található");
-
-            // Csak a saját igénylését törölheti
-            if (request.RequesterId != userId) return Forbid();
-
-            // törlés
-            request.RequestStatus = (int)RequestStatus.Failed;
-            await _unitOfWork.CompleteAsync();
-
-            return Ok();
-        }
-
-
-        // Donor: az ő termékeihez beérkező igénylések listája
-        [Authorize]
-        [HttpGet("donor-requests")]
-        public async Task<IActionResult> GetDonorRequests()
-        {
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-
-            var myProducts = await _unitOfWork.Products.GetAllAsync();
-            var myProductIds = myProducts
-                .Where(p => p.DonorId == userId && p.ProductStatus == ProductStatus.Active)
-                .Select(p => p.ProductId)
-                .ToHashSet();
-
-            var allRequests = await _unitOfWork.ProductRequests.GetAllAsync();
-            var donorRequests = allRequests
-                .Where(r => myProductIds.Contains(r.ProductId) && r.RequestStatus == (int)RequestStatus.Pending)
-                .Select(r => new ProductRequestDto
-                {
-                    ProductRequestId = r.ProductRequestId,
-                    ProductId = r.ProductId,
-                    RequesterId = r.RequesterId,
-                    RequestStatus = r.RequestStatus,
-                    RequestedAt = r.RequestedAt
-                });
-
-            return Ok(donorRequests);
-        }
-
-        // Igénylés törlése (soft delete) – csak a saját igénylését törölheti
-        
-        
 
     }
 }

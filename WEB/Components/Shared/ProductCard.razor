@@ -3,6 +3,7 @@
 @using WEB.Services
 @inject IConfiguration Configuration
 @inject ProductApiService ProductService
+@inject ProductRequestApiService ProductRequestService
 @inject NavigationManager Navigation
 @inject LocalStorageService LocalStorage
 
@@ -76,7 +77,7 @@
             var rawToken = await LocalStorage.GetItemAsync<string>("authToken") ?? "";
             var token = rawToken.Trim('"');
             Console.WriteLine($"Claim token: '{(string.IsNullOrEmpty(token) ? "ÜRES" : "VAN")}'");
-            var requestId = await ProductService.ClaimProductAsync(Product.ProductId, token);
+            var requestId = await ProductRequestService.ClaimProductAsync(Product.ProductId, token);
             if (requestId > 0)
                 Navigation.NavigateTo($"/chat/{requestId}");
             else

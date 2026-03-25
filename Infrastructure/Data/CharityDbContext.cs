@@ -4,7 +4,7 @@ using Application.Interfaces;
 
 namespace Infrastructure.Data
 {
-    public class CharityDbContext : DbContext, IApplicationDbcontext
+    public class CharityDbContext : DbContext
     {
         // A konstruktoron keresztül kapja meg a beállításokat (pl. Connection String)
         public CharityDbContext(DbContextOptions options) : base(options)

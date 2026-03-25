@@ -47,6 +47,11 @@ builder.Services.AddHttpClient<LookupApiService>(client =>
 })
 .AddHttpMessageHandler<TokenHandler>();
 
+builder.Services.AddHttpClient<ProductRequestApiService>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl);
+});
+
 builder.Services.AddScoped<CustomAuthStateProvider>(sp =>
     (CustomAuthStateProvider)sp.GetRequiredService<AuthenticationStateProvider>());
 
@@ -56,6 +61,7 @@ builder.Services.AddScoped<LocalStorageService>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
 builder.Services.AddAuthorizationCore();
 builder.Services.AddCascadingAuthenticationState();
+
 
 // Register cookie authentication but suppress automatic redirect on challenge so
 // Blazor auth uses the CustomAuthStateProvider and HTTP requests get 401s

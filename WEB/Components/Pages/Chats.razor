@@ -4,6 +4,7 @@
 @inject NavigationManager Navigation
 @inject ChatApiService ChatService
 @inject ProductApiService ProductService
+@inject ProductRequestApiService ProductRequestService
 @inject CustomAuthStateProvider AuthStateProvider
 @inject LocalStorageService LocalStorage
 
@@ -192,9 +193,9 @@
             IEnumerable<ProductRequestDto> requests;
 
             if (isDonor)
-                requests = await ProductService.GetDonorRequestsAsync(token);
+                requests = await ProductRequestService.GetDonorRequestsAsync(token);
             else
-                requests = await ProductService.GetMyRequestsAsync(token);
+                requests = await ProductRequestService.GetMyRequestsAsync(token);
 
             var result = new List<ConversationVm>();
             foreach (var req in requests.OrderByDescending(r => r.RequestedAt))
@@ -244,7 +245,7 @@
         StateHasChanged();
         try
         {
-            await ProductService.DeleteRequestAsync(deletingConvId.Value, token);
+            await ProductRequestService.DeleteRequestAsync(deletingConvId.Value, token);
             conversations.RemoveAll(c => c.RequestId == deletingConvId.Value);
         }
         catch (Exception ex)

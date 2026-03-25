@@ -1,15 +1,17 @@
 ﻿using Application.DTOs;
 using Domain.Entities;
+using Microsoft.AspNetCore.Http;
 
 namespace Application.Interfaces
 {
     public interface IProductService
     {
-        Task<bool> CreateProductAsync(ProductDto productDto, int userId);
         Task<IEnumerable<ProductDto>> GetProductsAsync();
+        Task<IEnumerable<ProductDto>> GetProductsByDonorAsync(int userId);
+        Task<bool> CreateProductAsync(ProductDto productDto, int userId, IFormFile imageFile);
         Task DeleteProductAsync(int id);
-        Task<IEnumerable<ProductRequestDto>> GetMyRequestsAsync(int userId);
 
-        Task<bool> ClaimProductAsync(int productId, int requestId);
+
+
     }
 }
