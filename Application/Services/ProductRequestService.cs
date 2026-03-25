@@ -25,7 +25,7 @@ namespace Application.Services
             if (product == null || product.DonorId == userId) return 0;
 
             var allRequests = await _unitOfWork.ProductRequests.GetAllAsync();
-            var existing = allRequests.FirstOrDefault(r => r.ProductId == productId && r.RequesterId == userId && r.RequestStatus == (int)RequestStatus.Pending);
+            var existing = allRequests.FirstOrDefault(r => r.ProductId == productId && r.RequesterId == userId && r.RequestStatus == RequestStatus.Pending);
 
             if (existing != null) return existing.ProductRequestId;
 
@@ -33,7 +33,7 @@ namespace Application.Services
             {
                 ProductId = productId,
                 RequesterId = userId,
-                RequestStatus = (int)RequestStatus.Pending,
+                RequestStatus = RequestStatus.Pending,
                 RequestedAt = DateTime.Now
             };
 
@@ -46,7 +46,7 @@ namespace Application.Services
         public async Task<IEnumerable<ProductRequestDto>> GetMyRequestsAsync(int userId)
         {
             var requests = await _unitOfWork.ProductRequests.GetAllAsync();
-            return requests.Where(r => r.RequesterId == userId && r.RequestStatus == (int)RequestStatus.Pending)
+            return requests.Where(r => r.RequesterId == userId && r.RequestStatus == RequestStatus.Pending)
                            .Select(MapToRequestDto);
         }
 
@@ -55,7 +55,7 @@ namespace Application.Services
             var request = await _unitOfWork.ProductRequests.GetByIdAsync(requestId);
             if (request == null || request.RequesterId != userId) return false;
 
-            request.RequestStatus = (int)RequestStatus.Failed;
+            request.RequestStatus = RequestStatus.Failed;
             return await _unitOfWork.CompleteAsync() > 0;
         }
 
@@ -66,7 +66,7 @@ namespace Application.Services
                                          .Select(p => p.ProductId).ToHashSet();
 
             var requests = await _unitOfWork.ProductRequests.GetAllAsync();
-            return requests.Where(r => myProductIds.Contains(r.ProductId) && r.RequestStatus == (int)RequestStatus.Pending)
+            return requests.Where(r => myProductIds.Contains(r.ProductId) && r.RequestStatus == RequestStatus.Pending)
                            .Select(MapToRequestDto);
         }
 
