@@ -46,8 +46,8 @@
             {
                 <div class="request-card">
                     <div class="card-top-row">
-                        <span class="status-badge @GetStatusClass(req.RequestStatus)">
-                            @GetStatusText(req.RequestStatus)
+                        <span class="status-badge @req.RequestStatus">
+                            @req.RequestStatus
                         </span>
                         <button class="delete-icon-btn" @onclick="() => AskDelete(req.ProductRequestId)"
                                 title="Törlés">
@@ -140,8 +140,7 @@
 
     private string GetProductName(int id) =>
         products.FirstOrDefault(p => p.ProductId == id)?.ProductName ?? $"Termék #{id}";
-    private string GetStatusText(int s) => s switch { 0 => "Függőben", 1 => "Elfogadva", 2 => "Elutasítva", _ => "?" };
-    private string GetStatusClass(int s) => s switch { 0 => "st-pending", 1 => "st-accepted", 2 => "st-rejected", _ => "" };
+
     private Dictionary<string, object> GetDeleteBtnAttrs() =>
         isDeleting ? new Dictionary<string, object> { { "disabled", "disabled" } }
                    : new Dictionary<string, object>();

@@ -1,5 +1,6 @@
 ﻿using Application.DTOs;
 using Application.Interfaces;
+using Domain.Entities;
 using Domain.Enums;
 
 namespace Application.Services
@@ -115,6 +116,48 @@ namespace Application.Services
             }
 
             product.ProductStatus = ProductStatus.Deleted;
+
+            await _unitOfWork.CompleteAsync();
+        }
+
+        public async Task<IEnumerable<ProductRequestDto>> GetProductRequestsAsync()
+        {
+            var requests = await _unitOfWork.ProductRequests.GetAllAsync();
+
+            if (requests == null) throw new Exception("Az igénylés nem található");
+
+            return requests.Select(p => new ProductRequestDto
+            {
+                ProductRequestId = p.ProductRequestId,
+                ProductId = p.ProductId,
+                RequesterId = p.RequesterId,
+                RequestStatus = p.RequestStatus,
+                RequestedAt = p.RequestedAt,
+                ProcessedAt = p.ProcessedAt ?? DateTime.MinValue
+            });
+        }
+
+        public async Task UpdateProductRequestAsync(ProductRequestDto requestDto)
+        {
+            var request = await _unitOfWork.ProductRequests.GetByIdAsync(requestDto.ProductRequestId);
+
+            if (request == null) throw new Exception("Az igénylés nem található");
+
+            request.RequestStatus = requestDto.RequestStatus;
+
+            await _unitOfWork.CompleteAsync();
+        }
+
+        public async Task DeleteProductRequestAsync(int id)
+        {
+            var request = await _unitOfWork.ProductRequests.GetByIdAsync(id);
+
+            if (request == null)
+            {
+                return;
+            }
+
+            request.RequestStatus = RequestStatus.Failed;
 
             await _unitOfWork.CompleteAsync();
         }

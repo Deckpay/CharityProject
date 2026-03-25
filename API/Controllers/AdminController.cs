@@ -63,5 +63,32 @@ namespace API.Controllers
             await _adminService.DeleteProductAsync(id);
             return Ok();
         }
+
+        [HttpGet("product-requests")]
+        public async Task<IActionResult> GetProductRequests()
+        {
+            var requests = await _adminService.GetProductRequestsAsync();
+            return Ok(requests);
+        }
+
+        [HttpPut("update-product-requests")]
+        public async Task<IActionResult> UpdateProductRequests(ProductRequestDto requestDto)
+        {
+            await _adminService.UpdateProductRequestAsync(requestDto);
+            return Ok();
+        }
+
+        [HttpPut("delete-product-requests/{id}")]
+        public async Task<IActionResult> DeleteProductRequests(int id)
+        {
+            await _adminService.DeleteProductRequestAsync(id);
+            return Ok();
+        }
+
+        [HttpPost("create-request-limitrule")]
+        public async Task<IActionResult> CreateRequestLimitRule()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

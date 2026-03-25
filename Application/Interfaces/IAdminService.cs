@@ -6,12 +6,14 @@ namespace Application.Interfaces
     {
         Task<IEnumerable<UserDto>> GetUsersAsync();
         Task BanUserAsync(int id);
-
         Task DeleteUserAsync(int id);
         Task UpdateUserAsync(UserDto userDto);
-
         Task<IEnumerable<ProductDto>> GetProductsAsync();
         Task UpdateProductAsync(ProductDto productDto);
         Task DeleteProductAsync(int id);
+        Task<IEnumerable<ProductRequestDto>> GetProductRequestsAsync();
+        Task UpdateProductRequestAsync(ProductRequestDto requestDto);
+        Task DeleteProductRequestAsync(int id);
+
     }
 }

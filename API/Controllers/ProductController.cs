@@ -88,7 +88,7 @@ namespace API.Controllers
 
             var allRequests = await _unitOfWork.ProductRequests.GetAllAsync();
             var request = allRequests
-                .Where(r => r.ProductId == productId && r.RequesterId == userId && r.RequestStatus == (int)RequestStatus.Pending)
+                .Where(r => r.ProductId == productId && r.RequesterId == userId && r.RequestStatus == RequestStatus.Pending)
                 .OrderByDescending(r => r.RequestedAt)
                 .FirstOrDefault();
 
@@ -120,7 +120,7 @@ namespace API.Controllers
             if (request.RequesterId != userId) return Forbid();
 
             // törlés
-            request.RequestStatus = (int)RequestStatus.Failed;
+            request.RequestStatus = RequestStatus.Failed;
             await _unitOfWork.CompleteAsync();
 
             return Ok();
@@ -142,7 +142,7 @@ namespace API.Controllers
 
             var allRequests = await _unitOfWork.ProductRequests.GetAllAsync();
             var donorRequests = allRequests
-                .Where(r => myProductIds.Contains(r.ProductId) && r.RequestStatus == (int)RequestStatus.Pending)
+                .Where(r => myProductIds.Contains(r.ProductId) && r.RequestStatus == RequestStatus.Pending)
                 .Select(r => new ProductRequestDto
                 {
                     ProductRequestId = r.ProductRequestId,

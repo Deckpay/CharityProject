@@ -70,14 +70,14 @@ namespace Application.Services
 
             //  Csak aktív igénylést vizsgálunk, ha már törölték engedünk újat
             var existing = allRequests.FirstOrDefault(r =>
-                r.ProductId == productId && r.RequesterId == userId && r.RequestStatus == (int)RequestStatus.Pending);
+                r.ProductId == productId && r.RequesterId == userId && r.RequestStatus == RequestStatus.Pending);
             if (existing != null) return true;
 
             var newRequest = new ProductRequest
             {
                 ProductId = productId,
                 RequesterId = userId,
-                RequestStatus = (int)RequestStatus.Pending,
+                RequestStatus = RequestStatus.Pending,
                 RequestedAt = DateTime.Now
             };
 
@@ -91,7 +91,7 @@ namespace Application.Services
 
             // CSAK aktív igénylések inaktívak (töröltek) nem jelennek meg
             return allRequests
-                .Where(r => r.RequesterId == userId && r.RequestStatus == (int)RequestStatus.Pending)
+                .Where(r => r.RequesterId == userId && r.RequestStatus == RequestStatus.Pending)
                 .Select(r => new ProductRequestDto
                 {
                     ProductRequestId = r.ProductRequestId,
