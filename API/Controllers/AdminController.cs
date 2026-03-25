@@ -85,10 +85,32 @@ namespace API.Controllers
             return Ok();
         }
 
-        [HttpPost("create-request-limitrule")]
-        public async Task<IActionResult> CreateRequestLimitRule()
+        [HttpGet("requester-limitrules")]
+        public async Task<IActionResult> GetRequesterLimitRules()
         {
-            throw new NotImplementedException();
+            var limitRules = await _adminService.GetRequesterLimitRules();
+            return Ok(limitRules);
+        }
+
+        [HttpPost("create-requester-limitrule")]
+        public async Task<IActionResult> CreateRequesertLimitRule(RequesterLimitRuleDto limitRuleDto)
+        {
+            await _adminService.CreateRequesterLimitRule(limitRuleDto);
+            return Ok();
+        }
+
+        [HttpPut("update-requester-limitrule")]
+        public async Task<IActionResult> UpdateRequesertLimitRule(RequesterLimitRuleDto limitRuleDto)
+        {
+            await _adminService.UpdateRequesterLimitRule(limitRuleDto);
+            return Ok();
+        }
+
+        [HttpPut("delete-requester-limitrule/{id}")]
+        public async Task<IActionResult> DeleteRequesterLimitRule(int id)
+        {
+            await _adminService.DeleteRequesterLimitRule(id);
+            return Ok();
         }
     }
 }

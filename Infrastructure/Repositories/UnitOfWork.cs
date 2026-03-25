@@ -15,6 +15,10 @@ namespace Infrastructure.Repositories
         public IGenericRepository<User> Users { get; private set; }
         public IGenericRepository<ProductCategory> Categories { get; private set; }
         public IGenericRepository<County> Counties { get; private set; }
+        public IGenericRepository<Chat> Chats { get; private set; }
+        public IGenericRepository<ChatMessage> ChatMessages { get; private set; }
+        public IGenericRepository<ProductRequest> ProductRequests { get; private set; }
+        public IGenericRepository<RequesterLimitRule> RequesterLimitRules { get; private set; }
 
         public UnitOfWork(CharityDbContext context)
         {
@@ -28,6 +32,7 @@ namespace Infrastructure.Repositories
             Chats = new GenericRepository<Chat>(_context);
             ChatMessages = new GenericRepository<ChatMessage>(_context);
             ProductRequests = new GenericRepository<ProductRequest>(_context);
+            RequesterLimitRules = new GenericRepository<RequesterLimitRule>(_context);
         }
 
         // Ez a metódus az "indítógomb": egyszerre ment el mindent az adatbázisba
@@ -35,10 +40,6 @@ namespace Infrastructure.Repositories
         {
             return await _context.SaveChangesAsync();
         }
-        public IGenericRepository<Chat> Chats { get; private set; }
-        public IGenericRepository<ChatMessage> ChatMessages { get; private set; }
-        public IGenericRepository<ProductRequest> ProductRequests { get; private set; }
-
 
         // Felszabadítjuk az erőforrásokat, ha végeztünk
         public void Dispose()

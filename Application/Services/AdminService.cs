@@ -161,5 +161,71 @@ namespace Application.Services
 
             await _unitOfWork.CompleteAsync();
         }
+
+        public async Task<IEnumerable<RequesterLimitRuleDto>> GetRequesterLimitRules()
+        {
+            var limitRules = await _unitOfWork.RequesterLimitRules.GetAllAsync();
+
+            if (limitRules == null) throw new Exception("A szabály nem található");
+
+            return limitRules.Select(r => new RequesterLimitRuleDto
+            {
+                RequesterLimitRuleId = r.RequesterLimitRuleId,
+                RequesterLimitRuleCategoryId = r.RequesterLimitRuleCategoryId,
+                PeriodType = r.PeriodType,
+                MaxQuantity = r.MaxQuantity,
+                RequesterLimitRuleDescription = r.RequesterLimitRuleDescription,
+                IsActive = r.IsActive,
+                CreatedAt = r.CreatedAt,
+                UpdatedAt = r.UpdatedAt
+            });
+        }
+
+        public async Task CreateRequesterLimitRule(RequesterLimitRuleDto limitRuleDto)
+        {
+            var limitRule = new RequesterLimitRule
+            {
+                RequesterLimitRuleCategoryId = limitRuleDto.RequesterLimitRuleCategoryId,
+                PeriodType = limitRuleDto.PeriodType,
+                MaxQuantity = limitRuleDto.MaxQuantity,
+                RequesterLimitRuleDescription = limitRuleDto.RequesterLimitRuleDescription,
+                IsActive = limitRuleDto.IsActive,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+
+            await _unitOfWork.RequesterLimitRules.AddAsync(limitRule);
+            await _unitOfWork.CompleteAsync();
+        }
+
+        public async Task UpdateRequesterLimitRule(RequesterLimitRuleDto limitRuleDto)
+        {
+            var limitRule = await _unitOfWork.RequesterLimitRules.GetByIdAsync(limitRuleDto.RequesterLimitRuleId);
+
+            if (limitRule == null) throw new Exception("Az igénylés nem található");
+
+            limitRule.RequesterLimitRuleCategoryId = limitRuleDto.RequesterLimitRuleCategoryId;
+            limitRule.RequesterLimitRuleDescription = limitRuleDto.RequesterLimitRuleDescription;
+            limitRule.MaxQuantity = limitRuleDto.MaxQuantity;
+            limitRule.PeriodType = limitRuleDto.PeriodType;
+            limitRule.IsActive = limitRuleDto.IsActive;
+            limitRule.UpdatedAt = DateTime.UtcNow;
+
+            await _unitOfWork.CompleteAsync();
+        }
+
+        public async Task DeleteRequesterLimitRule(int id)
+        {
+            var limitRule = await _unitOfWork.RequesterLimitRules.GetByIdAsync(id);
+
+            if (limitRule == null)
+            {
+                return;
+            }
+
+            limitRule.IsActive = false;
+
+            await _unitOfWork.CompleteAsync();
+        }
     }
 }

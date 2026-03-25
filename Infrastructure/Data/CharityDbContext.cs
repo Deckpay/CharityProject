@@ -16,12 +16,11 @@ namespace Infrastructure.Data
         public DbSet<Product> Products { get; set; } = null!;
         public DbSet<ProductCategory> ProductCategories { get; set; } = null!;
         public DbSet<County> Counties { get; set; } = null!;
-
         public DbSet<ChatMessage> ChatMessages { get; set; } = null!;
-
         public DbSet<Product> Requests { get; set; } = null!;
         public DbSet<Chat> Chats { get; set; } = null!;
         public DbSet<ProductRequest> ProductRequests { get; set; }
+        public DbSet<RequesterLimitRule> RequesterLimitRule { get; set; }
 
         // Ez a metódus felel az adatbázis finomhangolásáért (Fluent API)
         protected override void OnModelCreating(ModelBuilder modelBuilder)
