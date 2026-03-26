@@ -1,0 +1,85 @@
+﻿/* Ez a div fogja adni az oldal hátterét */
+.create-product-bg {
+    background-color: #7a98a3; /* Itt állítsd be a kívánt háttérszínt (pl. világos szürkéskék) */
+    min-height: 100vh; /* Legalább a képernyő magassága legyen */
+    width: 100%; /* Teljes szélesség */
+    margin: 0;
+    padding: 0;
+    /* Ha azt akarod, hogy a MainLayout paddingje ne zavarjon be: */
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+    /* Mivel absolute lett a háttér, a container-nek kell egy kis igazítás, 
+   hogy ne csússzon rá a menüre (ha van) */
+    .create-product-bg .container {
+        position: relative;
+        z-index: 1;
+    }
+
+/* A kártyád színe a képed alapján maradjon a sötétebb */
+.product-card {
+    background-color: #46788a;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    padding: 30px;
+    border-top: 5px solid #4e73df;
+}
+
+    /* Fontos: A szövegek legyenek fehérek a sötét kártyán! */
+    .product-card h3,
+    .product-card p,
+    .product-card .form-label {
+        color: #ffffff !important;
+    }
+.btn-primary-custom {
+    background-color: #4e73df;
+    background-image: linear-gradient(180deg, #4e73df 10%, #224abe 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    font-weight: 600;
+    box-shadow: 0 4px 6px rgba(78, 115, 223, 0.2);
+    transition: all 0.2s ease;
+}
+
+    .btn-primary-custom:hover {
+        background-color: #224abe;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(34, 74, 190, 0.3);
+        color: white;
+    }
+
+/* Mégse gomb - Egy lágy, pasztell narancs/vörös, ami jelzi a megszakítást, de nem agresszív */
+.btn-cancel {
+    background-color: #fff5f5;
+    color: #e53e3e;
+    border: 2px solid #feb2b2;
+    border-radius: 8px;
+    padding: 12px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+    .btn-cancel:hover {
+        background-color: #fff5f5;
+        color: #c53030;
+        border-color: #fc8181;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(229, 62, 62, 0.1);
+    }
+
+/* Input mezők kiemelése, ha aktívak */
+.custom-input:focus {
+    border-color: #4e73df;
+    background-color: #f8faff;
+}
+
+/* A képfeltöltő wrapper színesítése */
+.file-upload-wrapper {
+    background-color: #fdfdfd;
+    border: 2px dashed #cbd5e0;
+    color: #4a5568;
+}

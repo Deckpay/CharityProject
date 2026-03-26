@@ -14,71 +14,122 @@
 @inject LocalStorageService LocalStorage
 @rendermode InteractiveServer
 
-<h3>ProductCreate</h3>
+<div class="create-product-bg">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="product-card">
+                <div class="product-card-header text-center">
+                    <h3><i class="bi bi-plus-circle me-2"></i>Új termék hirdetése</h3>
+                    <p class="text-muted">Töltsd ki az adatokat a termék felvételéhez</p>
+                </div>
 
-<EditForm Model="@productDto" OnValidSubmit="HandleSubmit">
-    <div>
-        <label>Termék Neve</label>
-        <InputText @bind-Value="productDto.ProductName" placeholder="Pl.:Mosógép" />
+                <div class="product-card-body">
+                    <EditForm Model="@productDto" OnValidSubmit="HandleSubmit">
+                        <DataAnnotationsValidator />
+
+                        @if (showSuccessMessage)
+                        {
+                            <div class="alert alert-success d-flex align-items-center mb-4" role="alert">
+                                <i class="bi bi-check-circle-fill me-2"></i>
+                                <div><strong>Siker!</strong> A termék hirdetése sikeresen feladva.</div>
+                            </div>
+                        }
+
+                        @if (!string.IsNullOrEmpty(errorMessage))
+                        {
+                            <div class="alert alert-danger d-flex align-items-center mb-4" role="alert">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                <div>@errorMessage</div>
+                            </div>
+                        }
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Termék Neve</label>
+                            <InputText @bind-Value="productDto.ProductName" class="form-control custom-input" placeholder="Pl.: Mosógép" />
+                            <ValidationMessage For="@(() => productDto.ProductName)" class="text-danger small" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Leírás</label>
+                            <InputTextArea @bind-Value="productDto.ProductDescription" class="form-control custom-input" rows="3" placeholder="Írd le a termék részleteit..." />
+                            <ValidationMessage For="@(() => productDto.ProductDescription)" class="text-danger small" />
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Kategória</label>
+                                <InputSelect @bind-Value="productDto.ProductCategoryId" class="form-select custom-input">
+                                    <option value="0" disabled selected>-- Válassz --</option>
+                                    @foreach (var cat in categories)
+                                    {
+                                        <option value="@cat.ProductCategoryId">@cat.ProductCategoryName</option>
+                                    }
+                                </InputSelect>
+                                <ValidationMessage For="@(() => productDto.ProductCategoryId)" class="text-danger small" />
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Megye</label>
+                                <InputSelect @bind-Value="productDto.CountyId" class="form-select custom-input">
+                                    <option value="0" disabled selected>-- Válassz --</option>
+                                    @foreach (var county in counties)
+                                    {
+                                        <option value="@county.CountyId">@county.CountyName</option>
+                                    }
+                                </InputSelect>
+                                <ValidationMessage For="@(() => productDto.CountyId)" class="text-danger small" />
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Kép feltöltése</label>
+                            <div class="file-upload-wrapper">
+                                <InputFile OnChange="OnFileSelected" class="form-control" id="fileInput" />
+                                @if (!string.IsNullOrEmpty(selectedFileName))
+                                {
+                                    <div class="selected-file-name mt-2 small text-primary">
+                                        <i class="bi bi-image me-1"></i> Kiválasztva: @selectedFileName
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mt-4">
+                            @* MÉGSE GOMB *@
+                            <div class="col-sm-6 text-start">
+                                <button type="button" 
+                                        class="btn btn-cancel w-100 py-2" 
+                                        @onclick="Cancel" 
+                                        disabled="@isSubmitting">
+                                    <i class="bi bi-x-circle me-1"></i> Mégse
+                                </button>
+                            </div>
+
+                            @* BEKÜLDÉS GOMB *@
+                            <div class="col-sm-6 text-end">
+                                <button type="submit" 
+                                        class="btn btn-primary-custom w-100 py-2" 
+                                        disabled="@isSubmitting">
+                                    @if (isSubmitting)
+                                    {
+                                        <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                                        <span>Mentés...</span>
+                                    }
+                                    else
+                                    {
+                                        <span><i class="bi bi-check2-circle me-1"></i> Termék beküldése</span>
+                                    }
+                                </button>
+                            </div>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+            </div>
+        </div>
     </div>
-    <div>
-        <label>Leírás</label>
-        <InputText @bind-Value="productDto.ProductDescription" placeholder="Írd le a termék részleteit..." />
-    </div>
-    <div>
-        @* KATEGÓRIA VÁLASZTÓ *@
-        <div>
-            <label>Kategória</label>
-            <InputSelect @bind-Value="productDto.ProductCategoryId">
-                <option value="0">-- Válassz --</option>
-                @foreach (var cat in categories)
-                {
-                    <option value="@cat.ProductCategoryId">@cat.ProductCategoryName</option>
-                }
-            </InputSelect>
-            <div><ValidationMessage For="@(() => productDto.ProductCategoryId)" /></div>
-        </div>
-
-        @* MEGYE VÁLASZTÓ *@
-        <div>
-            <label>Megye</label>
-            <InputSelect @bind-Value="productDto.CountyId">
-                <option value="0">-- Válassz --</option>
-                @foreach (var county in counties)
-                {
-                    <option value="@county.CountyId">@county.CountyName</option>
-                }
-            </InputSelect>
-            <div><ValidationMessage For="@(() => productDto.CountyId)" /></div>
-        </div>
-
-        <div>
-            <label>Kép</label>
-            <InputFile OnChange="OnFileSelected" />
-            @if (!string.IsNullOrEmpty(selectedFileName))
-            {
-                <div>Válaszott fájl: @selectedFileName</div>
-            }
-        </div>
-    </div>
-
-    @if (showSuccessMessage)
-    {
-        <div class="alert alert-success" style="background-color: #d4edda; color: #155724; padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px solid #c3e6cb;">
-            <strong>Siker!</strong> A termék hirdetése sikeresen feladva.
-        </div>
-    }
-
-    @if (!string.IsNullOrEmpty(errorMessage))
-    {
-        <div class="alert alert-danger" style="background-color: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px solid #f5c6cb;">
-            @errorMessage
-        </div>
-    }
-    <div>
-        <button type="submit" disabled="@isSubmitting">@(isSubmitting ? "Mentés..." : "Termék beküldése")</button>
-    </div>
-</EditForm>
+</div>
 
 @code {
     private ProductDto productDto = new();
@@ -154,9 +205,9 @@
                 showSuccessMessage = true;
                 productDto = new(); // reset
                 selectedFileName = null;
-                //Navigation.NavigateTo("/"); // Vagy a sikeres oldaladra
+                await Task.Delay(1500); // Várunk 5 másodpercet
+                Navigation.NavigateTo("/my-products"); // Vagy a sikeres oldaladra
                 // StateHasChanged(); // Frissítjük a felületet
-                // await Task.Delay(5000); // Várunk 5 másodpercet
                 // StateHasChanged(); // Eltüntetjük az üzenetet
             }
             else
@@ -172,5 +223,22 @@
         {
             isSubmitting = false;
         }
+    }
+    
+    private async void Cancel()
+    {
+        // Adatok törlése/alaphelyzetbe állítása
+        productDto = new ProductDto(); 
+        imageFile = null;
+        selectedFileName = null;
+        errorMessage = null;
+        showSuccessMessage = false;
+
+        // Ha maradsz az oldalon, értesítjük a Blazort a változásról
+        StateHasChanged();
+
+        await Task.Delay(1500); // Várunk 5 másodpercet
+        // Visszanavigálunk a termékek listájára (vagy bárhova máshová)
+        Navigation.NavigateTo("/my-products"); 
     }
 }

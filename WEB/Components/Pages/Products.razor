@@ -11,66 +11,119 @@
 @inject CustomAuthStateProvider AuthStateProvider
 @inject LookupApiService Lookup
 
-<div class="container mt-4">
-    <h3 class="mb-4">Termékek böngészése</h3>
+<div class="page-background-fix">
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-12">
 
-    @if (isLoading)
-    {
-        <div class="d-flex justify-content-center my-5">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Betöltés...</span>
-            </div>
-            <p class="ms-3">Termékek betöltése...</p>
-        </div>
-    }
+                <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+                    <h2 class="page-title">Termékek böngészése</h2>
+                </div>
 
-    <div class="card mb-4 p-3 shadow-sm bg-light">
-        <div class="row g-3">
-            <div class="col-md-4">
-                <label class="form-label font-weight-bold">Keresés névben vagy leírásban</label>
-                <input type="text" class="form-control" @bind="searchQuery" @bind:event="oninput" placeholder="Írd be a keresett szót..." />
-            </div>
-            <div class="col-md-4">
-                <label class="form-label font-weight-bold">Kategória</label>
-                <select class="form-select" @bind="selectedCategoryId">
-                    <option value="0">Összes kategória</option>
-                    @foreach (var cat in categories)
+                <!-- SZŰRŐ -->
+                <div class="filter-card shadow mb-5">
+                    <div class="row g-3 align-items-end">
+
+                        <div class="col-xl-4 col-lg-12">
+                            <label class="filter-label">Keresés</label>
+                            <div class="custom-input-group">
+                                <span class="group-icon"><i class="bi bi-search"></i></span>
+                                <input type="text"
+                                       class="clean-input"
+                                       @bind="searchQuery"
+                                       @bind:event="oninput"
+                                       @onkeyup="ResetPagination"
+                                       placeholder="Név vagy leírás..." />
+                            </div>
+                        </div>
+
+                        <div class="col-xl-4 col-md-6">
+                            <label class="filter-label">Kategória</label>
+                            <div class="custom-input-group">
+                                <select class="clean-input"
+                                        @bind="selectedCategoryId"
+                                        >
+                                    <option value="0">Összes kategória</option>
+                                    @foreach (var cat in categories)
+                                    {
+                                        <option value="@cat.ProductCategoryId">@cat.ProductCategoryName</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-4 col-md-6">
+                            <label class="filter-label">Megye</label>
+                            <div class="custom-input-group">
+                                <select class="clean-input"
+                                        @bind="selectedCountyId"
+                                        >
+                                    <option value="0">Összes megye</option>
+                                    @foreach (var county in counties)
+                                    {
+                                        <option value="@county.CountyId">@county.CountyName</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                @if (isLoading)
+                {
+                    <div class="d-flex justify-content-center my-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Betöltés...</span>
+                        </div>
+                        <p class="ms-3">Termékek betöltése...</p>
+                    </div>
+                }
+
+                <!-- DETAIL MODAL -->
+                <ProductDetailModal @ref="productModal" />
+
+                <!-- TERMÉKEK -->
+                <div class="product-grid">
+                    @if (PaginatedProducts.Any())
                     {
-                        <option value="@cat.ProductCategoryId">@cat.ProductCategoryName</option>
+                        @foreach (var product in PaginatedProducts)
+                        {
+                            <ProductCard Product="product"
+                                         CategoryName="@GetCategoryName(product.ProductCategoryId)"
+                                         CountyName="@GetCountyName(product.CountyId)"
+                                         OnDetails="ShowProductDetails" />
+                        }
                     }
-                </select>
-            </div>
-            <div class="col-md-4">
-                <label class="form-label font-weight-bold">Megye</label>
-                <select class="form-select" @bind="selectedCountyId">
-                    <option value="0">Összes megye</option>
-                    @foreach (var county in counties)
-                    {
-                        <option value="@county.CountyId">@county.CountyName</option>
-                    }
-                </select>
+                </div>
+
+                <!-- LAPOZÁS -->
+                @if (TotalPages > 1)
+                {
+                    <div class="pagination-wrapper mt-5">
+                        <button class="pag-btn" @onclick="PrevPage" disabled="@(currentPage == 1)">
+                            <i class="bi bi-chevron-left"></i>
+                        </button>
+
+                        <div class="page-numbers">
+                            @for (int i = 1; i <= TotalPages; i++)
+                            {
+                                var p = i;
+                                <button class="page-num @(currentPage == p ? "active" : "")"
+                                        @onclick="() => ChangePage(p)">
+                                    @p
+                                </button>
+                            }
+                        </div>
+
+                        <button class="pag-btn" @onclick="NextPage" disabled="@(currentPage == TotalPages)">
+                            <i class="bi bi-chevron-right"></i>
+                        </button>
+                    </div>
+                }
+
             </div>
         </div>
-    </div>
-
-    <div class="product-grid">
-        @if (FilteredProducts.Any())
-        {
-            @foreach (var product in FilteredProducts)
-            {
-                <ProductCard 
-                    Product="product"
-                    CategoryName="@GetCategoryName(product.ProductCategoryId)"
-                    CountyName="@GetCountyName(product.CountyId)" 
-                />
-            }
-        }
-        else
-        {
-            <div class="col-12 text-center py-5">
-                <p class="text-muted">Nincs a feltételeknek megfelelő termék.</p>
-            </div>
-        }
     </div>
 </div>
 
@@ -83,6 +136,34 @@
     private int selectedCategoryId = 0;
     private int selectedCountyId = 0;
     private bool isLoading = true;
+
+     private int currentPage = 1;
+    private int pageSize = 20; // 30 elem / oldal
+
+    private IEnumerable<ProductDto> PaginatedProducts =>
+        FilteredProducts
+        .OrderByDescending(p => p.CreatedAt)
+        .Skip((currentPage - 1) * pageSize)
+        .Take(pageSize);
+
+    private int TotalPages =>
+        (int)Math.Ceiling((double)FilteredProducts.Count() / pageSize);
+
+    private void ResetPagination() => currentPage = 1;
+
+    private void NextPage()
+    {
+        if (currentPage < TotalPages)
+            currentPage++;
+    }
+
+    private void PrevPage()
+    {
+        if (currentPage > 1)
+            currentPage--;
+    }
+
+    private void ChangePage(int p) => currentPage = p;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -137,4 +218,15 @@
 
     private string GetCategoryName(int id) => categories.FirstOrDefault(c => c.ProductCategoryId == id)?.ProductCategoryName ?? "Egyéb";
     private string GetCountyName(int id) => counties.FirstOrDefault(c => c.CountyId == id)?.CountyName ?? "Ismeretlen";
+
+    private ProductDetailModal productModal;
+
+    private void ShowProductDetails(ProductDto product)
+    {
+        productModal.Show(
+            product,
+            GetCategoryName(product.ProductCategoryId),
+            GetCountyName(product.CountyId)
+        );
+    }
 }
