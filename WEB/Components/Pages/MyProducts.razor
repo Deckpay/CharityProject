@@ -1,130 +1,69 @@
 ﻿@page "/my-products"
 @using Application.DTOs
-@using Application.Interfaces
-@using Application.Services
 @using Domain.Entities
 @using Microsoft.AspNetCore.Authorization
 @using WEB.Components.Shared
 @using WEB.Services
+
 @inject NavigationManager Navigation
-@inject AuthApiService AuthService
 @inject ProductApiService productService
 @inject CustomAuthStateProvider AuthStateProvider
 @inject LookupApiService Lookup
 @inject LocalStorageService LocalStorage
 
-<div class="page-background-fix">
-    <div class="container py-5">
-        <div class="row">
-            <div class="col-12">
+<div class="container py-5">
 
-                <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-                    <h2 class="page-title">Termékek böngészése</h2>
-                    <button class="btn btn-add-product" @onclick='() => Navigation.NavigateTo("/add-product")'>
-                        <i class="bi bi-plus-lg"></i> Termék feladása
-                    </button>
-                </div>
+    <h2 class="mb-4">Termékek</h2>
 
-                <!-- SZŰRŐ -->
-                <div class="filter-card shadow mb-5">
-                    <div class="row g-3 align-items-end">
+    <!-- EDIT MODAL -->
+    @if (showEditModal && editingProduct != null)
+    {
+        <div class="modal-backdrop">
+            <div class="modal-content p-4">
 
-                        <div class="col-xl-4 col-lg-12">
-                            <label class="filter-label">Keresés</label>
-                            <div class="custom-input-group">
-                                <span class="group-icon"><i class="bi bi-search"></i></span>
-                                <input type="text"
-                                       class="clean-input"
-                                       @bind="searchQuery"
-                                       @bind:event="oninput"
-                                       @onkeyup="ResetPagination"
-                                       placeholder="Név vagy leírás..." />
-                            </div>
-                        </div>
+                <h4>Szerkesztés</h4>
 
-                        <div class="col-xl-4 col-md-6">
-                            <label class="filter-label">Kategória</label>
-                            <div class="custom-input-group">
-                                <select class="clean-input"
-                                        @bind="selectedCategoryId"
-                                        >
-                                    <option value="0">Összes kategória</option>
-                                    @foreach (var cat in categories)
-                                    {
-                                        <option value="@cat.ProductCategoryId">@cat.ProductCategoryName</option>
-                                    }
-                                </select>
-                            </div>
-                        </div>
+                <input class="form-control mb-2" @bind="editingProduct.ProductName" />
+                <input class="form-control mb-2" @bind="editingProduct.ProductDescription" />
 
-                        <div class="col-xl-4 col-md-6">
-                            <label class="filter-label">Megye</label>
-                            <div class="custom-input-group">
-                                <select class="clean-input"
-                                        @bind="selectedCountyId"
-                                        >
-                                    <option value="0">Összes megye</option>
-                                    @foreach (var county in counties)
-                                    {
-                                        <option value="@county.CountyId">@county.CountyName</option>
-                                    }
-                                </select>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
-                <ProductDetailModal @ref="productModal" />
-
-                <!-- TERMÉKEK -->
-                <div class="product-grid">
-                    @if (PaginatedProducts.Any())
+                <select class="form-control mb-2" @bind="editingProduct.ProductCategoryId">
+                    @foreach (var c in categories)
                     {
-                        @foreach (var product in PaginatedProducts)
-                        {
-                            <ProductCard Product="product"
-                                         CategoryName="@GetCategoryName(product.ProductCategoryId)"
-                                         CountyName="@GetCountyName(product.CountyId)"
-                                         OnDetails="ShowProductDetails" />
-                        }
+                        <option value="@c.ProductCategoryId">@c.ProductCategoryName</option>
                     }
-                    else
+                </select>
+
+                <select class="form-control mb-2" @bind="editingProduct.CountyId">
+                    @foreach (var c in counties)
                     {
-                        <p>Nincs találat.</p>
+                        <option value="@c.CountyId">@c.CountyName</option>
                     }
-                </div>
+                </select>
 
-
-
-                <!-- LAPOZÁS -->
-                @if (TotalPages > 1)
-                {
-                    <div class="pagination-wrapper mt-5">
-                        <button class="pag-btn" @onclick="PrevPage" disabled="@(currentPage == 1)">
-                            <i class="bi bi-chevron-left"></i>
-                        </button>
-
-                        <div class="page-numbers">
-                            @for (int i = 1; i <= TotalPages; i++)
-                            {
-                                var p = i;
-                                <button class="page-num @(currentPage == p ? "active" : "")"
-                                        @onclick="() => ChangePage(p)">
-                                    @p
-                                </button>
-                            }
-                        </div>
-
-                        <button class="pag-btn" @onclick="NextPage" disabled="@(currentPage == TotalPages)">
-                            <i class="bi bi-chevron-right"></i>
-                        </button>
-                    </div>
-                }
+                <button class="btn btn-success me-2" @onclick="SaveProduct">Mentés</button>
+                <button class="btn btn-secondary" @onclick="CloseModal">Bezárás</button>
 
             </div>
         </div>
+    }
+
+    <!-- DETAIL MODAL -->
+    <ProductDetailModal @ref="productModal" />
+
+    <!-- LISTA -->
+    <div class="row">
+        @foreach (var product in allProducts)
+        {
+            <div class="col-md-4 mb-4">
+                <ProductCard Product="product"
+                             CategoryName="@GetCategoryName(product.ProductCategoryId)"
+                             CountyName="@GetCountyName(product.CountyId)"
+                             OnDetails="ShowProductDetails"
+                             OnEdit="OpenEditModal" />
+            </div>
+        }
     </div>
+
 </div>
 
 @code {
@@ -132,99 +71,81 @@
     private List<ProductCategory> categories = new();
     private List<County> counties = new();
 
-    private string searchQuery = "";
-    private int selectedCategoryId = 0;
-    private int selectedCountyId = 0;
-    private bool isLoading = true;
+    private ProductDetailModal? productModal;
+
+    private ProductDto? editingProduct;
+    private bool showEditModal = false;
+
     private string token = "";
 
-    private int currentPage = 1;
-    private int pageSize = 20; // 30 elem / oldal
-
-    private IEnumerable<ProductDto> PaginatedProducts =>
-        FilteredProducts
-        .OrderByDescending(p => p.CreatedAt)
-        .Skip((currentPage - 1) * pageSize)
-        .Take(pageSize);
-
-    private int TotalPages =>
-        (int)Math.Ceiling((double)FilteredProducts.Count() / pageSize);
-
-    private void ResetPagination() => currentPage = 1;
-
-    private void NextPage()
+    protected override async Task OnInitializedAsync()
     {
-        if (currentPage < TotalPages)
-            currentPage++;
-    }
+        token = await LocalStorage.GetItemAsync<string>("authToken") ?? "";
 
-    private void PrevPage()
-    {
-        if (currentPage > 1)
-            currentPage--;
-    }
+        allProducts = (await productService.GetMyProductsAsync(token)).ToList();
 
-    private void ChangePage(int p) => currentPage = p;
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            token = await LocalStorage.GetItemAsync<string>("authToken") ?? "";
-            // 1. Megvárjuk, amíg a Provider beolvassa a tokent a LocalStorage-ból
-            // Ez feltölti a TokenStore-t is!
-            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-
-            if (authState.User?.Identity == null || !authState.User.Identity.IsAuthenticated || !authState.User.IsInRole("Donor"))
-            {
-                Navigation.NavigateTo("/login");
-                return;
-            }
-
-            // 2. Csak ezután hívjuk meg az API-t
-            try
-            {
-                allProducts = (await productService.GetMyProductsAsync(token)).ToList();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Hiba a betöltésnél: {ex.Message}");
-            }
-
-            await LoadFilters();
-            isLoading = false;
-            StateHasChanged(); // Frissítjük a UI-t
-        }
-    }
-
-
-    private async Task LoadProducts() => allProducts = (await productService.GetProductsAsync()).ToList();
-    private async Task LoadFilters()
-    {
         categories = (await Lookup.GetProductCategoriesAsync()).ToList();
         counties = (await Lookup.GetCountiesAsync()).ToList();
     }
 
-    // A keresési logika
-    private IEnumerable<ProductDto> FilteredProducts => allProducts.Where(p =>
-        (string.IsNullOrWhiteSpace(searchQuery) ||
-         p.ProductName.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) ||
-         (p.ProductDescription?.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) ?? false)) &&
-        (selectedCategoryId == 0 || p.ProductCategoryId == selectedCategoryId) &&
-        (selectedCountyId == 0 || p.CountyId == selectedCountyId)
-    );
+    // -------------------------
+    // EDIT MODAL
+    // -------------------------
+    private void OpenEditModal(ProductDto product)
+    {
+        editingProduct = new ProductDto
+        {
+            ProductId = product.ProductId,
+            ProductName = product.ProductName,
+            ProductDescription = product.ProductDescription,
+            ProductCategoryId = product.ProductCategoryId,
+            CountyId = product.CountyId,
+            ProductSatus = product.ProductSatus
+        };
 
-    private string GetCategoryName(int id) => categories.FirstOrDefault(c => c.ProductCategoryId == id)?.ProductCategoryName ?? "Egyéb";
-    private string GetCountyName(int id) => counties.FirstOrDefault(c => c.CountyId == id)?.CountyName ?? "Ismeretlen";
+        showEditModal = true;
+    }
 
-    private ProductDetailModal productModal;
+    private void CloseModal()
+    {
+        showEditModal = false;
+        editingProduct = null;
+    }
 
+    private async Task SaveProduct()
+    {
+        if (editingProduct == null) return;
+
+        await productService.UpdateProductAsync(editingProduct);
+
+        var existing = allProducts.First(x => x.ProductId == editingProduct.ProductId);
+
+        existing.ProductName = editingProduct.ProductName;
+        existing.ProductDescription = editingProduct.ProductDescription;
+        existing.ProductCategoryId = editingProduct.ProductCategoryId;
+        existing.CountyId = editingProduct.CountyId;
+
+        CloseModal();
+    }
+
+    // -------------------------
+    // DETAIL MODAL
+    // -------------------------
     private void ShowProductDetails(ProductDto product)
     {
-        productModal.Show(
+        productModal?.Show(
             product,
             GetCategoryName(product.ProductCategoryId),
             GetCountyName(product.CountyId)
         );
     }
+
+    // -------------------------
+    // HELPERS
+    // -------------------------
+    private string GetCategoryName(int id) =>
+        categories.FirstOrDefault(c => c.ProductCategoryId == id)?.ProductCategoryName ?? "Egyéb";
+
+    private string GetCountyName(int id) =>
+        counties.FirstOrDefault(c => c.CountyId == id)?.CountyName ?? "Ismeretlen";
 }

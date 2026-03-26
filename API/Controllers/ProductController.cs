@@ -1,5 +1,6 @@
 ﻿using Application.DTOs;
 using Application.Interfaces;
+using Application.Services;
 using Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -36,6 +37,13 @@ namespace API.Controllers
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
             var success = await _productService.CreateProductAsync(dto, userId, imageFile);
             return success ? Ok() : BadRequest("Hiba a mentés során.");
+        }
+
+        [HttpPut("update-product")]
+        public async Task<IActionResult> UpdateProducts(ProductDto productDto)
+        {
+            await _productService.UpdateProductAsync(productDto);
+            return Ok();
         }
 
         [Authorize]

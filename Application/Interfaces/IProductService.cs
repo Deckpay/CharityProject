@@ -9,6 +9,7 @@ namespace Application.Interfaces
         Task<IEnumerable<ProductDto>> GetProductsAsync();
         Task<IEnumerable<ProductDto>> GetProductsByDonorAsync(int userId);
         Task<bool> CreateProductAsync(ProductDto productDto, int userId, IFormFile imageFile);
+        Task UpdateProductAsync(ProductDto productDto);
         Task DeleteProductAsync(int id);
 
 

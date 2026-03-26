@@ -54,6 +54,11 @@ namespace WEB.Services
             return await response.Content.ReadFromJsonAsync<IEnumerable<ProductDto>>() ?? new List<ProductDto>();
         }
 
+        public async Task UpdateProductAsync(ProductDto productDto)
+        {
+            await _http.PutAsJsonAsync("Product/update-product", productDto);
+        }
+
         public async Task DeleteProductAsync(int id, string token)
         {
             var request = CreateAuthRequest(HttpMethod.Delete, $"Product/{id}", token);

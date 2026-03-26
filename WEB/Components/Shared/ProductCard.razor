@@ -2,7 +2,6 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @using WEB.Services
 @inject IConfiguration Configuration
-@inject ProductApiService ProductService
 @inject ProductRequestApiService ProductRequestService
 @inject NavigationManager Navigation
 @inject LocalStorageService LocalStorage
@@ -14,7 +13,7 @@
         <div class="image-container">
             @if (!string.IsNullOrEmpty(Product.ImagePath))
             {
-                <img src="@imageUrl" alt="Product.ProductName" class="main-product-img" />
+                <img src="@imageUrl" alt="@Product.ProductName" class="main-product-img" />
             }
             else
             {
@@ -58,6 +57,7 @@
                 }
             </Authorized>
         </AuthorizeView>
+
         <AuthorizeView Roles="Donor">
             <Authorized>
                 @if (claimError)
@@ -66,8 +66,8 @@
                 }
                 else
                 {
-                    <button class="claim-action-btn" @onclick="EditProduct" disabled="@isClaiming">
-                        @(isClaiming ? "FOLYAMATBAN..." : "Szerkesztés")
+                    <button class="claim-action-btn" @onclick="() => OnEdit.InvokeAsync(Product)">
+                        Szerkesztés
                     </button>
                 }
             </Authorized>
@@ -80,6 +80,7 @@
     [Parameter] public string CategoryName { get; set; } = "Egyéb";
     [Parameter] public string CountyName { get; set; } = "Ismeretlen";
     [Parameter] public EventCallback<ProductDto> OnDetails { get; set; }
+    [Parameter] public EventCallback<ProductDto> OnEdit { get; set; }
 
     private bool isClaiming = false;
     private bool claimError = false;
@@ -102,16 +103,14 @@
         {
             var rawToken = await LocalStorage.GetItemAsync<string>("authToken") ?? "";
             var token = rawToken.Trim('"');
-            Console.WriteLine($"Claim token: '{(string.IsNullOrEmpty(token) ? "ÜRES" : "VAN")}'");
             var requestId = await ProductRequestService.ClaimProductAsync(Product.ProductId, token);
             if (requestId > 0)
                 Navigation.NavigateTo($"/chat/{requestId}");
             else
                 claimError = true;
         }
-        catch (Exception ex)
+        catch
         {
-            Console.WriteLine($"Claim hiba: {ex.Message}");
             claimError = true;
         }
         finally
@@ -120,20 +119,12 @@
         }
     }
 
-    private async Task EditProduct()
+    private string GetStatusName(string? status) => status switch
     {
-
-    }
-
-    private string GetStatusName(string? status)
-    {
-        return status switch
-        {
-            "Active" => "Aktív",
-            "Pending" => "Folyamatban",
-            "Completed" => "Befejezett",
-            "Deleted" => "Törölt",
-            _ => "Ismeretlen"
-        };
-    }
+        "Active" => "Aktív",
+        "Pending" => "Folyamatban",
+        "Completed" => "Befejezett",
+        "Deleted" => "Törölt",
+        _ => "Ismeretlen"
+    };
 }
