@@ -7,42 +7,67 @@
 @inject NavigationManager Navigation
 @inject LocalStorageService LocalStorage
 
-<div class="product-card">
-    <div class="image-wrapper">
-        <div class="image-box">
+<div class="modern-product-card">
+    <div class="card-header-section">
+        <div class="status-badge">@GetStatusName(Product.ProductSatus.ToString())</div>
+
+        <div class="image-container">
             @if (!string.IsNullOrEmpty(Product.ImagePath))
             {
-                <img src="@imageUrl" alt="@Product.ProductName" />
+                <img src="@imageUrl" alt="Product.ProductName" class="main-product-img" />
             }
             else
             {
-                <span>Nincs kép</span>
+                <div class="no-image-placeholder">Nincs kép</div>
             }
         </div>
     </div>
-    <div class="card-body">
-        <h3 class="product-title">@Product.ProductName</h3>
-        <p class="product-description">
-            @((Product.ProductDescription?.Length > 110)
-                        ? Product.ProductDescription.Substring(0, 107) + "..."
-                        : Product.ProductDescription)
-        </p>
-    </div>
-    <div class="card-footer">
-        <div class="tags">
-            <span class="tag category">@CategoryName</span>
-            <span class="tag county">@CountyName</span>
+
+    <div class="card-content-section">
+        <div class="content-left">
+            <h3 class="product-name-title">@Product.ProductName</h3>
+            <div class="product-details-link" @onclick="() => OnDetails.InvokeAsync(Product)">
+                Részletek →
+            </div>
         </div>
+
+        <div class="content-right">
+            <div class="info-item">
+                <span class="info-label">KATEGÓRIA</span>
+                <span class="info-value">@CategoryName</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">HELYSZÍN</span>
+                <span class="info-value">@CountyName</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-action-footer">
         <AuthorizeView Roles="Recipient">
             <Authorized>
                 @if (claimError)
                 {
-                    <span class="btn-error-msg">❌ Hiba történt</span>
+                    <span class="error-text">❌ Hiba történt</span>
                 }
                 else
                 {
-                    <button class="details-btn" @onclick="ClaimProduct" disabled="@isClaiming">
-                        @(isClaiming ? "⏳ Folyamatban..." : "Igénylés")
+                    <button class="claim-action-btn" @onclick="ClaimProduct" disabled="@isClaiming">
+                        @(isClaiming ? "FOLYAMATBAN..." : "IGÉNYLÉS")
+                    </button>
+                }
+            </Authorized>
+        </AuthorizeView>
+        <AuthorizeView Roles="Donor">
+            <Authorized>
+                @if (claimError)
+                {
+                    <span class="error-text">❌ Hiba történt</span>
+                }
+                else
+                {
+                    <button class="claim-action-btn" @onclick="EditProduct" disabled="@isClaiming">
+                        @(isClaiming ? "FOLYAMATBAN..." : "Szerkesztés")
                     </button>
                 }
             </Authorized>
@@ -54,6 +79,7 @@
     [Parameter] public ProductDto Product { get; set; } = new();
     [Parameter] public string CategoryName { get; set; } = "Egyéb";
     [Parameter] public string CountyName { get; set; } = "Ismeretlen";
+    [Parameter] public EventCallback<ProductDto> OnDetails { get; set; }
 
     private bool isClaiming = false;
     private bool claimError = false;
@@ -92,5 +118,22 @@
         {
             isClaiming = false;
         }
+    }
+
+    private async Task EditProduct()
+    {
+
+    }
+
+    private string GetStatusName(string? status)
+    {
+        return status switch
+        {
+            "Active" => "Aktív",
+            "Pending" => "Folyamatban",
+            "Completed" => "Befejezett",
+            "Deleted" => "Törölt",
+            _ => "Ismeretlen"
+        };
     }
 }

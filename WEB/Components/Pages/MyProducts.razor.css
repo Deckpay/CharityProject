@@ -1,5 +1,195 @@
-﻿.product-grid {
+﻿/* =========================
+   1. HÁTTÉR
+========================= */
+.page-background-fix {
+    min-height: 100vh;
+    width: 100%;
+    background: linear-gradient(135deg, #cfd9e6 0%, #9fb3c8 100%);
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+/* =========================
+   2. LAYOUT
+========================= */
+.container {
+    max-width: 1300px; /* kicsit szélesebb */
+    margin: 0 auto;
+}
+
+.page-title {
+    font-family: 'Rubik', sans-serif;
+    font-weight: 800;
+    color: #1e222d;
+}
+
+/* =========================
+   3. FILTER CARD
+========================= */
+.filter-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    border: 1px solid rgba(0,0,0,0.05);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+.filter-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #627d98;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: block;
+}
+
+/* =========================
+   4. INPUT GROUP
+========================= */
+.custom-input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: #f0f4f8;
+    border-radius: 14px;
+    padding: 6px 14px;
+    border: 2px solid transparent;
+    transition: all 0.25s ease;
+}
+
+.custom-input-group:hover {
+    background: #e6edf5;
+}
+
+/* FOCUS */
+.custom-input-group:focus-within {
+    border-color: #00a8ff;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(0, 168, 255, 0.15);
+}
+
+/* ICON */
+.group-icon {
+    color: #00a8ff;
+    margin-right: 10px;
+}
+
+/* =========================
+   5. INPUT / SELECT
+========================= */
+.clean-input {
+    border: none;
+    background: transparent;
+    width: 100%;
+    padding: 10px 0;
+    outline: none;
+    color: #102a43;
+    font-weight: 500;
+}
+
+/* SELECT RESET */
+select.clean-input {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+    padding-right: 30px;
+}
+
+/* CUSTOM NYÍL */
+.custom-input-group::after {
+    content: "";
+    position: absolute;
+    right: 12px;
+    width: 18px;
+    height: 18px;
+    pointer-events: none;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* =========================
+   6. GOMB
+========================= */
+.btn-add-product {
+    background: #00a8ff;
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+.btn-add-product:hover {
+    background: #0086cc;
+    transform: translateY(-2px);
+}
+
+/* =========================
+   7. GRID (FIXELVE)
+========================= */
+.product-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 24px;
+}
+
+/* =========================
+   8. PAGINATION
+========================= */
+.pagination-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+}
+
+.page-numbers {
+    display: flex;
+    gap: 8px;
+}
+
+.page-num {
+    border: none;
+    background: white;
+    color: #334e68;
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: 0.2s;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.page-num:hover {
+    background: #00a8ff;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.page-num.active {
+    background: #00a8ff;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0,168,255,0.4);
+}
+
+.pag-btn {
+    border: none;
+    background: white;
+    padding: 10px 14px;
+    border-radius: 10px;
+    transition: 0.2s;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.pag-btn:hover:not(:disabled) {
+    background: #00a8ff;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.pag-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
 }

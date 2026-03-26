@@ -1,0 +1,90 @@
+﻿@inject LookupApiService LookupService
+@inject IConfiguration Configuration
+
+@if (IsVisible)
+{
+    <div class="modal-backdrop">
+        <div class="modal-content modal-flex">
+            <button class="modal-close" @onclick="Close">×</button>
+
+            @if (Product != null)
+            {
+                <!-- KÉP -->
+                <div class="modal-left">
+                    @if (!string.IsNullOrEmpty(Product.ImagePath))
+                    {
+                        <img src="@imageUrl" alt="@Product.ProductName" />
+                    }
+                    else
+                    {
+                        <div class="no-image-placeholder">Nincs kép</div>
+                    }
+                </div>
+
+                <!-- ADATOK -->
+                <div class="modal-right">
+                    <span class="badge-category">
+                        @LookupService.GetProductCategoryName(Product.ProductCategoryId)
+                    </span>
+
+                    <h2>@Product.ProductName</h2>
+
+                    <p class="description">
+                        @Product.ProductDescription
+                    </p>
+
+                    <div class="info-row">
+                        <span class="info-label">📍 Megye</span>
+                        <span class="info-value">@LookupService.GetCountyName(Product.CountyId)</span>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <button class="primary-btn">Kapcsolatfelvétel</button>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    // Nullable Propertyk
+    [Parameter] public ProductDto Product { get; set; } = new();  // ? hozzáadva
+    [Parameter] public string CategoryName { get; set; } = "";
+    [Parameter] public string CountyName { get; set; } = "";
+
+    private List<ProductCategory> categories = new();
+    private List<County> counties = new();
+    private bool isLoading = true;
+    public bool IsVisible { get; private set; } = false;
+    private string imageUrl = "";
+
+    // Ha van szülői @ref
+    private ProductDetailModal? productModal;   // nullable
+
+    protected override async Task OnInitializedAsync()
+    {
+        categories = (await LookupService.GetProductCategoriesAsync()).ToList();
+        counties = (await LookupService.GetCountiesAsync()).ToList();
+        isLoading = false;
+    }
+
+    public void Show(ProductDto product, string categoryName, string countyName)
+    {
+        Product = product;
+        CategoryName = categoryName;
+        CountyName = countyName;
+
+        var apiBase = Configuration["ApiSettings:BaseUrl"] ?? "";
+        var staticBase = apiBase.Replace("/api/", "").Replace("/api", "").TrimEnd('/');
+        var path = Product.ImagePath ?? "";
+        if (!path.StartsWith("/")) path = "/" + path;
+
+        imageUrl = staticBase + path;
+
+        IsVisible = true;
+        StateHasChanged();
+    }
+
+    private void Close() => IsVisible = false;
+}

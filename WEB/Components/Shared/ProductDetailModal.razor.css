@@ -1,0 +1,144 @@
+﻿.modal-content {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    animation: fadeIn 0.25s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+/* FLEX */
+.modal-flex {
+    display: flex;
+    max-width: 950px;
+    width: 95%;
+}
+
+/* BAL OLDAL - KÉP */
+.modal-left {
+    flex: 1;
+    background: #f5f7fa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+    .modal-left img {
+        max-width: 100%;
+        max-height: 420px;
+        border-radius: 14px;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+        .modal-left img:hover {
+            transform: scale(1.03);
+        }
+
+/* JOBB OLDAL */
+.modal-right {
+    flex: 1;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+    /* CÍM */
+    .modal-right h2 {
+        font-size: 1.9rem;
+        font-weight: 700;
+        margin: 0;
+        color: #1e222d;
+    }
+
+/* LEÍRÁS */
+.description {
+    color: #52606d;
+    line-height: 1.5;
+}
+
+/* BADGE */
+.badge-category {
+    background: #00a8ff;
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 6px 10px;
+    border-radius: 999px;
+    width: fit-content;
+}
+
+/* INFO ROW */
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: #334e68;
+}
+
+/* DIVIDER */
+.divider {
+    height: 1px;
+    background: #e1e8ed;
+    margin: 10px 0;
+}
+
+/* BUTTON */
+.primary-btn {
+    background: #00a8ff;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+    .primary-btn:hover {
+        background: #0086cc;
+        transform: translateY(-2px);
+    }
+
+/* CLOSE */
+.modal-close {
+    position: absolute;
+    top: 14px;
+    right: 18px;
+    font-size: 1.6rem;
+    background: white;
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+/* BACKDROP */
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+    .modal-flex {
+        flex-direction: column;
+    }
+
+    .modal-left img {
+        max-height: 280px;
+    }
+}
