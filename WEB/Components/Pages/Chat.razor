@@ -2,6 +2,7 @@
 @using Application.DTOs
 @using WEB.Services
 @inject ChatApiService ChatService
+@inject ProductRequestApiService ProductRequestService
 @inject CustomAuthStateProvider AuthStateProvider
 @inject LocalStorageService LocalStorage
 @inject NavigationManager Navigation
@@ -20,6 +21,12 @@
             <span>@RequestId</span>
         </div>
         <div class="header-info">
+            @if (!isChatLocked && isUserTheDonor)
+            {
+                <button type="button" class="btn-complete" @onclick="OpenStatusModal">
+                    Átadás lezárása
+                </button>
+            }
             <span class="header-title">Igénylés #@RequestId</span>
             <span class="header-sub">@(isLoading ? "betöltés..." : $"{messages.Count} üzenet")</span>
         </div>
@@ -49,6 +56,7 @@
             string? lastDate = null;
             foreach (var msg in messages)
             {
+                if (msg.Content.StartsWith("[Rendszer]")) continue;
                 bool isMe = msg.SenderId == currentUserId;
                 string dateLabel = msg.SentAt.ToLocalTime().ToString("yyyy. MM. dd.");
 
@@ -56,6 +64,16 @@
                 {
                     lastDate = dateLabel;
                     <div class="date-divider"><span>@dateLabel</span></div>
+                }
+
+                @* speciális rendszerüzenet *@
+                if (msg.Content.StartsWith("[RENDSZER]"))
+                {
+                    <div class="system-event-row">
+                        @* Levágjuk a technikai szöveget, csak a lényeget mutatjuk *@
+                        <span>@msg.Content.Replace("[RENDSZER]: ", "")</span>
+                    </div>
+                    continue;
                 }
 
                 <div class="msg-row @(isMe ? "row-me" : "row-other")">
@@ -81,7 +99,32 @@
         <div @ref="scrollAnchor"></div>
     </main>
 
-    @* ── Hibaüzenet ── *@
+    @if (showStatusModal)
+    {
+        <div class="status-overlay">
+            <div class="status-card">
+                <h3>Termékem átadása</h3>
+                <div class="status-buttons">
+                    <button class="btn btn-success" @onclick='() => CompleteAction("sikeres")'>SIKERES</button>
+                    <button class="btn btn-danger" @onclick='() => CompleteAction("sikertelen")'>SIKERTELEN</button>
+                    <button class="btn btn-outline-secondary" @onclick="() => showStatusModal = false">Mégsem</button>
+                </div>
+            </div>
+        </div>
+    }
+
+    @* Lezáró banner, ha vége az akciónak *@
+    @if (isChatLocked)
+    {
+        <div class="lock-banner">
+            <p>Köszönjük a részvételt!</p>
+            <div class="badge @(actionResult == "SIKERES" ? "bg-success" : "bg-danger")">
+                AZ AKCIÓ @actionResult VOLT
+            </div>
+        </div>
+    }
+
+    @* Hibaüzenet *@
     @if (!string.IsNullOrEmpty(errorMessage))
     {
         <div class="error-bar">
@@ -91,24 +134,27 @@
     }
 
     @* ── Beviteli sáv ── *@
-    <footer class="chat-footer">
-        <div class="input-row">
-            <textarea class="msg-input"
-                      placeholder="Írj üzenetet..."
-                      rows="1"
-                      @bind="newMessage"
-                      @bind:event="oninput"
-                      @onkeydown="HandleKeyDown"
-                      disabled="@isSending" />
-            <button class="send-btn @(CanSend ? "send-active" : "")"
-                    @onclick="SendMessage"
-                    disabled="@(!CanSend)">
-                <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
-                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
-                </svg>
-            </button>
-        </div>
-    </footer>
+    @if (!isChatLocked)
+    {
+        <footer class="chat-footer">
+            <div class="input-row">
+                <textarea class="msg-input"
+                          placeholder="Írj üzenetet..."
+                          rows="1"
+                          @bind="newMessage"
+                          @bind:event="oninput"
+                          @onkeydown="HandleKeyDown"
+                          disabled="@(isSending ? "disabled" : null)" />
+                <button class="send-btn @(CanSend ? "send-active" : "")"
+                        @onclick="SendMessage"
+                        disabled="@(!CanSend ? "disabled" : null)">
+                    <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+                    </svg>
+                </button>
+            </div>
+        </footer>
+    }
 </div>
 
 @code {
@@ -124,8 +170,18 @@
     private ElementReference scrollAnchor;
     private ElementReference messagesEndRef;
     private PeriodicTimer? _timer;
+    private bool showStatusModal = false;
+    private bool isChatLocked = false;
+    private string actionResult = string.Empty;
+    private bool isUserTheDonor = false;
 
     private bool CanSend => !isSending && !string.IsNullOrWhiteSpace(newMessage);
+
+    private void OpenStatusModal()
+    {
+        showStatusModal = true;
+        StateHasChanged();
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -141,6 +197,7 @@
             currentUserId = await AuthStateProvider.GetCurrentUserIdAsync();
             token = await LocalStorage.GetItemAsync<string>("authToken") ?? "";
 
+            await CheckUserPermissions();
             await LoadMessages();
             isLoading = false;
             StateHasChanged();
@@ -155,11 +212,34 @@
         try
         {
             messages = await ChatService.GetHistoryAsync(RequestId, token);
+            await CheckUserPermissions();
+
+            var systemMsg = messages.FirstOrDefault(m => m.Content.Contains("[RENDSZER]"));
+            if (systemMsg != null)
+            {
+                isChatLocked = true;
+                actionResult = systemMsg.Content.Contains("SIKERES") ? "SIKERES" : "SIKERTELEN";
+            }
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Chat betöltési hiba: {ex.Message}");
             errorMessage = "Nem sikerült betölteni az üzeneteket.";
+        }
+    }
+
+    private async Task CheckUserPermissions()
+    {
+        currentUserId = await AuthStateProvider.GetCurrentUserIdAsync();
+        if (messages != null && messages.Any())
+        {
+            // Az üzenetben most már benne van a DonorId (az API-ból)
+            var firstMsg = messages.FirstOrDefault();
+            if (firstMsg != null)
+            {
+                isUserTheDonor = (firstMsg.DonorId == currentUserId);
+                Console.WriteLine($"DEBUG: Felhasználó: {currentUserId} | Donor: {firstMsg.DonorId} | Egyezik: {isUserTheDonor}");
+            }
         }
     }
 
@@ -172,6 +252,41 @@
             await InvokeAsync(StateHasChanged);
             await ScrollToBottom();
         }
+    }
+
+    private async Task CompleteAction(string result)
+    {
+        var isSuccess = result == "sikeres";
+        actionResult = result.ToUpper();
+        showStatusModal = false;
+        isChatLocked = true;
+
+        // 1. Rendszerüzenet a chatbe
+        var systemMsg = $"[RENDSZER]: Az átadás állapota: {actionResult}";
+        try
+        {
+            await ChatService.SendMessageAsync(RequestId, systemMsg, token);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Rendszerüzenet hiba: {ex.Message}");
+        }
+
+        // 2. Termék + igénylés státusz frissítése az API-n
+        try
+        {
+            var ok = await ProductRequestService.CompleteRequestAsync(RequestId, isSuccess, token);
+            if (!ok)
+                errorMessage = "Figyelem: az igénylés lezárása nem sikerült teljesen.";
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Lezárási hiba: {ex.Message}");
+            errorMessage = "Nem sikerült lezárni az igénylést.";
+        }
+
+        await LoadMessages();
+        StateHasChanged();
     }
 
     private async Task SendMessage()

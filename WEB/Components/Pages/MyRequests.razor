@@ -7,6 +7,7 @@
 @inject ProductRequestApiService ProductRequestService
 @inject CustomAuthStateProvider AuthStateProvider
 @inject LocalStorageService LocalStorage
+@implements IDisposable
 
 <div class="requests-page">
     <div class="page-header">
@@ -104,23 +105,52 @@
     private bool isDeleting = false;
     private int? deletingId = null;
     private string token = "";
+    private PeriodicTimer? _timer; // polling timer
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!firstRender) return;
+
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
         if (authState.User?.Identity == null || !authState.User.Identity.IsAuthenticated)
-        { Navigation.NavigateTo("/login"); return; }
+        {
+            Navigation.NavigateTo("/login");
+            return;
+        }
 
         token = await LocalStorage.GetItemAsync<string>("authToken") ?? "";
+
         try
         {
             requests = (await ProductRequestService.GetMyRequestsAsync(token)).ToList();
             products = (await ProductService.GetProductsAsync()).ToList();
         }
         catch (Exception ex) { Console.WriteLine($"Hiba: {ex.Message}"); }
+
         isLoading = false;
         StateHasChanged();
+
+        // Polling indítása: 5 másodpercenként újratölti az igényléseket
+        // Ha a donor lezárja az átadást, a Pending→Failed/Completed változás
+        // miatt az igénylés automatikusan eltűnik a listából
+        _ = StartPollingAsync();
+    }
+
+    private async Task StartPollingAsync()
+    {
+        _timer = new PeriodicTimer(TimeSpan.FromSeconds(5));
+        while (await _timer.WaitForNextTickAsync())
+        {
+            try
+            {
+                requests = (await ProductRequestService.GetMyRequestsAsync(token)).ToList();
+                await InvokeAsync(StateHasChanged);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Polling hiba: {ex.Message}");
+            }
+        }
     }
 
     private void AskDelete(int id) { deletingId = id; showConfirm = true; }
@@ -145,4 +175,7 @@
     private Dictionary<string, object> GetDeleteBtnAttrs() =>
         isDeleting ? new Dictionary<string, object> { { "disabled", "disabled" } }
                    : new Dictionary<string, object>();
+
+    // Timer cleanup az oldal elhagyásakor
+    public void Dispose() => _timer?.Dispose();
 }

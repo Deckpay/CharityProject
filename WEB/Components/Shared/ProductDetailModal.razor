@@ -47,25 +47,15 @@
 
 @code {
     // Nullable Propertyk
-    [Parameter] public ProductDto Product { get; set; } = new();  // ? hozzáadva
+    [Parameter] public ProductDto Product { get; set; } = new();
     [Parameter] public string CategoryName { get; set; } = "";
     [Parameter] public string CountyName { get; set; } = "";
 
-    private List<ProductCategory> categories = new();
-    private List<County> counties = new();
-    private bool isLoading = true;
     public bool IsVisible { get; private set; } = false;
     private string imageUrl = "";
 
     // Ha van szülői @ref
-    private ProductDetailModal? productModal;   // nullable
-
-    protected override async Task OnInitializedAsync()
-    {
-        categories = (await LookupService.GetProductCategoriesAsync()).ToList();
-        counties = (await LookupService.GetCountiesAsync()).ToList();
-        isLoading = false;
-    }
+    // (isLoading és productModal mezők eltávolítva — nem voltak használva)
 
     public void Show(ProductDto product, string categoryName, string countyName)
     {

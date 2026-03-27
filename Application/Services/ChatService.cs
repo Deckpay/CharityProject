@@ -82,6 +82,7 @@ namespace Application.Services
                     Id = m.ChatMessageId,
                     RequestId = requestId,
                     SenderId = m.SenderId,
+                    DonorId = chat.DonorId,
                     SenderName = allUsers.FirstOrDefault(u => u.UserId == m.SenderId)?.UserName ?? "Ismeretlen",
                     Content = m.Content,
                     SentAt = m.Timestamp,

@@ -6,14 +6,14 @@
 @inject NavigationManager Navigation
 @inject LocalStorageService LocalStorage
 
-<div class="modern-product-card">
+<div class="modern-product-card @(isClaimed ? "card-claimed" : "")">
     <div class="card-header-section">
         <div class="status-badge">@GetStatusName(Product.ProductSatus.ToString())</div>
 
         <div class="image-container">
             @if (!string.IsNullOrEmpty(Product.ImagePath))
             {
-                <img src="@imageUrl" alt="@Product.ProductName" class="main-product-img" />
+                <img src="@imageUrl" alt="@Product.ProductName" class="main-product-img @(isClaimed ? "img-dimmed" : "")" />
             }
             else
             {
@@ -49,9 +49,25 @@
                 {
                     <span class="error-text">❌ Hiba történt</span>
                 }
+                else if (isMyActiveClaim)
+                {
+                    @* Ez a user már igényelte – elhalványult gomb + chat link *@
+                    <button class="claim-action-btn btn-claimed" disabled="disabled">
+                        ⏳ Igénylés alatt
+                    </button>
+                    <a href="/chat/@activeRequestId" class="chat-link-small">Chat megnyitása →</a>
+                }
+                else if (isClaimedByOther)
+                {
+                    @* Más user már igényelte – nem elérhető *@
+                    <button class="claim-action-btn btn-claimed" disabled="disabled">
+                        🔒 Már igényelve
+                    </button>
+                }
                 else
                 {
-                    <button class="claim-action-btn" @onclick="ClaimProduct" disabled="@isClaiming">
+                    <button class="claim-action-btn" @onclick="ClaimProduct"
+                            disabled="@(isClaiming ? "disabled" : null)">
                         @(isClaiming ? "FOLYAMATBAN..." : "IGÉNYLÉS")
                     </button>
                 }
@@ -84,6 +100,10 @@
 
     private bool isClaiming = false;
     private bool claimError = false;
+    private bool isMyActiveClaim = false;    // ennek a usernek van aktív igénylése
+    private bool isClaimedByOther = false;   // más usernek van aktív igénylése
+    private bool isClaimed => isMyActiveClaim || isClaimedByOther;
+    private int activeRequestId = 0;
     private string imageUrl = "";
 
     protected override void OnParametersSet()
@@ -93,6 +113,24 @@
         var path = Product.ImagePath ?? "";
         if (!path.StartsWith("/")) path = "/" + path;
         imageUrl = staticBase + path;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var token = await LocalStorage.GetItemAsync<string>("authToken") ?? "";
+        if (string.IsNullOrEmpty(token)) return;
+
+        // Lekérdezzük: van-e ennek a usernek aktív igénylése erre a termékre
+        activeRequestId = await ProductRequestService.GetActiveRequestIdForProductAsync(Product.ProductId, token);
+        isMyActiveClaim = activeRequestId > 0;
+
+        // Ha a usernek nincs saját igénylése, megnézzük, hogy más igényelte-e már
+        // Ezt onnan tudjuk meg, hogy a ClaimProductAsync 0-t ad vissza foglalt terméknél
+        // Egy külön endpoint-ot használunk: is-claimed
+        if (!isMyActiveClaim)
+        {
+            isClaimedByOther = await ProductRequestService.IsProductClaimedAsync(Product.ProductId, token);
+        }
     }
 
     private async Task ClaimProduct()
@@ -105,9 +143,19 @@
             var token = rawToken.Trim('"');
             var requestId = await ProductRequestService.ClaimProductAsync(Product.ProductId, token);
             if (requestId > 0)
+            {
+                activeRequestId = requestId;
+                isMyActiveClaim = true;
+                StateHasChanged();
                 Navigation.NavigateTo($"/chat/{requestId}");
+            }
             else
-                claimError = true;
+            {
+                // 0 visszatérés = foglalt vagy más hiba
+                isClaimedByOther = true;
+                claimError = false;
+                StateHasChanged();
+            }
         }
         catch
         {

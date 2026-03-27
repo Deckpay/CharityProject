@@ -18,6 +18,7 @@ namespace WEB.Services
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             return request;
         }
+
         public async Task<IEnumerable<ProductRequestDto>> GetMyRequestsAsync(string token)
         {
             var request = CreateAuthRequest(HttpMethod.Get, "ProductRequest/my-requests", token);
@@ -55,6 +56,48 @@ namespace WEB.Services
                 return prop.GetInt32();
 
             return 0;
+        }
+
+        // Donor lezárja az igénylést. success=true → sikeres, false → sikertelen átadás.
+        public async Task<bool> CompleteRequestAsync(int requestId, bool success, string token)
+        {
+            var request = CreateAuthRequest(
+                HttpMethod.Post,
+                $"ProductRequest/complete/{requestId}?success={success.ToString().ToLower()}",
+                token);
+            var response = await _http.SendAsync(request);
+            return response.IsSuccessStatusCode;
+        }
+
+        // Megkeresi, hogy az adott termékre van-e már aktív (Pending) igénylés a bejelentkezett usertől.
+        public async Task<int> GetActiveRequestIdForProductAsync(int productId, string token)
+        {
+            var request = CreateAuthRequest(
+                HttpMethod.Get,
+                $"ProductRequest/active-for-product/{productId}",
+                token);
+            var response = await _http.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode) return 0;
+
+            var json = await response.Content.ReadAsStringAsync();
+            using var doc = JsonDocument.Parse(json);
+            if (doc.RootElement.TryGetProperty("requestId", out var prop))
+                return prop.GetInt32();
+
+            return 0;
+        }
+
+        // Megkeresi, hogy az adott termékre van-e már aktív igénylés BÁRKI által.
+        // true → foglalt (más user már igényelte), false → szabad
+        public async Task<bool> IsProductClaimedAsync(int productId, string token)
+        {
+            var request = CreateAuthRequest(
+                HttpMethod.Get,
+                $"ProductRequest/is-claimed/{productId}",
+                token);
+            var response = await _http.SendAsync(request);
+            return response.IsSuccessStatusCode; // 200 = foglalt, 404 = szabad
         }
     }
 }
