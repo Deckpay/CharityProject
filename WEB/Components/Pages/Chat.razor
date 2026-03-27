@@ -12,24 +12,26 @@
 
     @* ── Fejléc ── *@
     <header class="chat-header">
-        <button class="back-btn" @onclick='() => Navigation.NavigateTo("/my-requests")'>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="15 18 9 12 15 6" />
-            </svg>
-        </button>
-        <div class="header-avatar">
-            <span>@RequestId</span>
+        <div class="header-mainpart">
+            <button class="back-btn" @onclick='() => Navigation.NavigateTo("/my-requests")'>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6" />
+                </svg>
+            </button>
+            <div class="header-avatar">
+                <span>@RequestId</span>
+            </div>
+            <div class="header-info">
+                <span class="header-title">Igénylés #@RequestId</span>
+                <span class="header-sub">@(isLoading ? "betöltés..." : $"{messages.Count} üzenet")</span>
+            </div> 
         </div>
-        <div class="header-info">
-            @if (!isChatLocked && isUserTheDonor)
-            {
-                <button type="button" class="btn-complete" @onclick="OpenStatusModal">
-                    Átadás lezárása
-                </button>
-            }
-            <span class="header-title">Igénylés #@RequestId</span>
-            <span class="header-sub">@(isLoading ? "betöltés..." : $"{messages.Count} üzenet")</span>
-        </div>
+        @if (!isChatLocked && isUserTheDonor)
+        {
+            <button type="button" class="btn-complete" @onclick="OpenStatusModal">
+                   Átadás lezárása
+            </button>
+        }
     </header>
 
     @* ── Üzenetlista ── *@
@@ -69,10 +71,16 @@
                 @* speciális rendszerüzenet *@
                 if (msg.Content.StartsWith("[RENDSZER]"))
                 {
-                    <div class="system-event-row">
-                        @* Levágjuk a technikai szöveget, csak a lényeget mutatjuk *@
-                        <span>@msg.Content.Replace("[RENDSZER]: ", "")</span>
+                    <div class="system-event-row" style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 30px 0; gap: 10px; width: 100%;">
+                        <span class="badge @(msg.Content.Contains("SIKERES"))"
+                              style="padding: 12px 24px; font-size: 1rem; border-radius: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
+                            @msg.Content.Replace("[RENDSZER]: ", "")
+                        </span>
+                        <span style="color: #6c757d; font-size: 0.9rem; font-weight: 500;">
+                            Köszönjük a részvételt!
+                        </span>
                     </div>
+                    
                     continue;
                 }
 
@@ -117,10 +125,8 @@
     @if (isChatLocked)
     {
         <div class="lock-banner">
-            <p>Köszönjük a részvételt!</p>
-            <div class="badge @(actionResult == "SIKERES" ? "bg-success" : "bg-danger")">
-                AZ AKCIÓ @actionResult VOLT
-            </div>
+            
+            
         </div>
     }
 
