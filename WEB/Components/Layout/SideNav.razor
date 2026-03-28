@@ -271,6 +271,9 @@
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!firstRender) return;
+
+        Navigation.LocationChanged += OnLocationChanged;
+
         var token = await Storage.GetItemAsync<string>("authToken") ?? "";
         
         if (!string.IsNullOrEmpty(token))
@@ -280,6 +283,16 @@
             _ = StartPollingAsync(token);
         }
         
+    }
+
+    private async void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        var token = await Storage.GetItemAsync<string>("authToken") ?? "";
+        if (!string.IsNullOrEmpty(token))
+        {
+            unreadCount = await ChatService.GetUnreadCountAsync(token);
+            await InvokeAsync(StateHasChanged);
+        }
     }
 
     private async Task StartPollingAsync(string token)
@@ -292,7 +305,11 @@
         }
     }
 
-    public void Dispose() => _timer?.Dispose();
+    public void Dispose()
+    {
+        Navigation.LocationChanged -= OnLocationChanged;
+        _timer?.Dispose();
+    }
 
     private void ToggleSidebar() => isOpened = !isOpened;
     private void GoToLogin() => Navigation.NavigateTo("/login");

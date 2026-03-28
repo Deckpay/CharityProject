@@ -219,11 +219,11 @@
     private string GetCategoryName(int id) => categories.FirstOrDefault(c => c.ProductCategoryId == id)?.ProductCategoryName ?? "Egyéb";
     private string GetCountyName(int id) => counties.FirstOrDefault(c => c.CountyId == id)?.CountyName ?? "Ismeretlen";
 
-    private ProductDetailModal productModal;
+    private ProductDetailModal? productModal;
 
     private void ShowProductDetails(ProductDto product)
     {
-        productModal.Show(
+        productModal?.Show(
             product,
             GetCategoryName(product.ProductCategoryId),
             GetCountyName(product.CountyId)

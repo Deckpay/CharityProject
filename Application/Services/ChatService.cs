@@ -162,14 +162,17 @@ namespace Application.Services
             var allMessages = await _unitOfWork.ChatMessages.GetAllAsync();
             var unread = allMessages
                 .Where(m => m.ChatId == chat.ChatId && m.SenderId != currentUserId && !m.IsRead)
+                .Select(m=> m.ChatMessageId)
                 .ToList();
 
             Console.WriteLine($"MarkAsAllRead: {unread.Count} olvasatlan üzenet, chatId={chat.ChatId}");
 
             if (!unread.Any()) return;
 
-            foreach (var msg in unread)
+            foreach (var  id in unread)
             {
+                var msg = await _unitOfWork.ChatMessages.GetByIdAsync(id);
+                if (msg == null) continue;
                 msg.IsRead = true;
                 msg.ReadAt = DateTime.UtcNow;
                 _unitOfWork.ChatMessages.Update(msg); // EZ HIÁNYZOTT

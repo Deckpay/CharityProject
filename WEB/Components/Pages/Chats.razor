@@ -165,6 +165,7 @@
     private int currentUserId = 0;
     private string token = string.Empty;
     private bool isDonor = false;
+    
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -208,6 +209,8 @@
                 try { msgs = await ChatService.GetHistoryAsync(req.ProductRequestId, token); }
                 catch { }
 
+                
+                
                 var last = msgs.Count > 0 ? msgs[msgs.Count - 1] : null;
                 result.Add(new ConversationVm
                 {
