@@ -110,13 +110,28 @@
 
     @if (showStatusModal)
     {
-        <div class="status-overlay">
-            <div class="status-card">
-                <h3>Termékem átadása</h3>
-                <div class="status-buttons">
-                    <button class="btn btn-success" @onclick='() => CompleteAction("sikeres")'>SIKERES</button>
-                    <button class="btn btn-danger" @onclick='() => CompleteAction("sikertelen")'>SIKERTELEN</button>
-                    <button class="btn btn-outline-secondary" @onclick="() => showStatusModal = false">Mégsem</button>
+        <div class="status-modal-container">
+            <div class="status-card-v2">
+                <div class="status-header">
+                    <div class="status-icon">🔄</div>
+                    <h3>Átadás lezárása</h3>
+                    <p>Kérjük, jelöld meg a tranzakció kimenetelét!</p>
+                </div>
+
+                <div class="status-buttons-grid">
+                    <button class="status-btn btn-success-modern" @onclick='() => CompleteAction("sikeres")'>
+                        <span class="btn-icon">✓</span>
+                        <span class="btn-text">Sikeres</span>
+                    </button>
+
+                    <button class="status-btn btn-danger-modern" @onclick='() => CompleteAction("sikertelen")'>
+                        <span class="btn-icon">✕</span>
+                        <span class="btn-text">Sikertelen</span>
+                    </button>
+
+                    <button class="status-btn btn-cancel-modern" @onclick="() => showStatusModal = false">
+                        <span class="btn-text">Mégsem</span>
+                    </button>
                 </div>
             </div>
         </div>
