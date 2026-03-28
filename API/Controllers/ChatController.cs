@@ -38,5 +38,29 @@ namespace API.Controllers
 
             return Ok(history);
         }
+
+        [HttpGet("info/{requestId}")]
+        public async Task<IActionResult> GetChatInfo(int requestId)
+        {
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var info = await _chatService.GetChatINfoAsync(requestId, userId);
+            return Ok(info);
+        }
+
+        [HttpGet("unread-count")]
+        public async Task<IActionResult> GetUnreadCount()
+        {
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var count = await _chatService.GetTotalUnreadCountAsync(userId);
+            return Ok(count); // simán int-et ad vissza, nem objektumot
+        }
+
+        [HttpPost("mark-read/{requestId}")]
+        public async Task<IActionResult> MarkAsAllRead(int requestId)
+        {
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            await _chatService.MarkAsAllReadAsync(requestId,userId);
+            return Ok();
+        }
     }
 }

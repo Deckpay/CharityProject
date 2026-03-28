@@ -25,7 +25,9 @@ namespace Application.Services
         public async Task<IEnumerable<ProductDto>> GetProductsByDonorAsync(int userId)
         {
             var products = await _unitOfWork.Products.GetAllAsync();
-            return products.Where(p => p.DonorId == userId && p.ProductStatus != ProductStatus.Deleted)
+            return products.Where(p => p.DonorId == userId 
+                && p.ProductStatus != ProductStatus.Deleted
+                && p.ProductStatus != ProductStatus.Completed)
                            .Select(MapToDto);
         }
 

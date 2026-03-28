@@ -74,6 +74,10 @@ namespace Application.Services
             var allMessages = await _unitOfWork.ChatMessages.GetAllAsync();
             var allUsers = await _unitOfWork.Users.GetAllAsync();
 
+            // Ha a bejelentkezett user donor a másik fél az igénylő és forditva
+            var otherPartyId = (currentUserId == chat.DonorId) ? chat.RequesterId : chat.DonorId;
+            var otherPartyName = allUsers.FirstOrDefault(u => u.UserId == otherPartyId)?.UserName ?? "Ismeretlen";
+
             return allMessages
                 .Where(m => m.ChatId == chat.ChatId)
                 .OrderBy(m => m.Timestamp)
@@ -84,6 +88,7 @@ namespace Application.Services
                     SenderId = m.SenderId,
                     DonorId = chat.DonorId,
                     SenderName = allUsers.FirstOrDefault(u => u.UserId == m.SenderId)?.UserName ?? "Ismeretlen",
+                    OtherPartyName = otherPartyName,
                     Content = m.Content,
                     SentAt = m.Timestamp,
                     IsRead = m.IsRead
@@ -100,6 +105,78 @@ namespace Application.Services
                 message.ReadAt = DateTime.UtcNow;
                 await _unitOfWork.CompleteAsync();
             }
+        }
+
+        public async Task<ChatInfoDto> GetChatINfoAsync(int requestId, int currentUserId)
+        {
+            var request = await _unitOfWork.ProductRequests.GetByIdAsync(requestId);
+            if (request == null)
+                return new ChatInfoDto { OtherPartyName = "Ismeretlen" };
+
+            var product = await _unitOfWork.Products.GetByIdAsync(request.ProductId);
+            if (product == null)
+                return new ChatInfoDto { OtherPartyName = "Ismeretlen" };
+
+            var allUsers = await _unitOfWork.Users.GetAllAsync();
+
+            var otherPartyId = (currentUserId == product.DonorId)
+                ? request.RequesterId
+                : product.DonorId;
+
+            var otherPartyName = allUsers.FirstOrDefault(u => u.UserId == otherPartyId)?.UserName
+                                 ?? "Ismeretlen";
+
+            return new ChatInfoDto { OtherPartyName = otherPartyName };
+        }
+
+        // olvasatlan uzenetek számolása
+        public async Task<int> GetTotalUnreadCountAsync(int currentUserId)
+        {
+            var allMesages = await _unitOfWork.ChatMessages.GetAllAsync();
+            var allChats = await _unitOfWork.Chats.GetAllAsync();
+
+            // csak azokat a caheteket vesszük ahol a user résztvevő
+            var userChatIds = allChats
+                .Where(c => c.DonorId == currentUserId || c.RequesterId == currentUserId)
+                .Select(c => c.ChatId)
+                .ToHashSet();
+
+            return allMesages.Count(m =>
+                userChatIds.Contains(m.ChatId) &&
+                !m.IsRead &&
+                m.SenderId != currentUserId
+
+            );
+        }
+
+        public async Task MarkAsAllReadAsync(int requestId, int currentUserId)
+        {
+            var allChats = await _unitOfWork.Chats.GetAllAsync();
+            var chat = allChats.FirstOrDefault(c => c.ProductRequestId == requestId);
+            if (chat == null)
+            {
+                Console.WriteLine($"MarkAsAllRead: chat nem található requestId={requestId}");
+                return;
+            } 
+
+            var allMessages = await _unitOfWork.ChatMessages.GetAllAsync();
+            var unread = allMessages
+                .Where(m => m.ChatId == chat.ChatId && m.SenderId != currentUserId && !m.IsRead)
+                .ToList();
+
+            Console.WriteLine($"MarkAsAllRead: {unread.Count} olvasatlan üzenet, chatId={chat.ChatId}");
+
+            if (!unread.Any()) return;
+
+            foreach (var msg in unread)
+            {
+                msg.IsRead = true;
+                msg.ReadAt = DateTime.UtcNow;
+                _unitOfWork.ChatMessages.Update(msg); // EZ HIÁNYZOTT
+            }
+
+            var saved = await _unitOfWork.CompleteAsync();
+            Console.WriteLine($"MarkAsAllRead: {saved} sor mentve");
         }
     }
 }

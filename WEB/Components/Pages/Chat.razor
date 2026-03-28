@@ -19,10 +19,10 @@
                 </svg>
             </button>
             <div class="header-avatar">
-                <span>@RequestId</span>
+                <span>@(otherPartyName ?.Length > 0 ? otherPartyName[0].ToString().ToUpper() : "?")</span>
             </div>
             <div class="header-info">
-                <span class="header-title">Igénylés #@RequestId</span>
+                <span class="header-title">@(string.IsNullOrEmpty(otherPartyName) ? $"Igénylés #{RequestId}": otherPartyName)</span>
                 <span class="header-sub">@(isLoading ? "betöltés..." : $"{messages.Count} üzenet")</span>
             </div> 
         </div>
@@ -180,6 +180,7 @@
     private bool isChatLocked = false;
     private string actionResult = string.Empty;
     private bool isUserTheDonor = false;
+    private string otherPartyName = string.Empty;
 
     private bool CanSend => !isSending && !string.IsNullOrWhiteSpace(newMessage);
 
@@ -203,8 +204,16 @@
             currentUserId = await AuthStateProvider.GetCurrentUserIdAsync();
             token = await LocalStorage.GetItemAsync<string>("authToken") ?? "";
 
-            await CheckUserPermissions();
-            await LoadMessages();
+            // Párhuzamosan kérjük le a pertner nevét
+            var infoTask = ChatService.GetChatINfoAsync(RequestId, token);
+            var messagesTask = LoadMessages();
+
+            await Task.WhenAll(infoTask, messagesTask);
+
+            var info = await infoTask;
+            if (info != null)
+                otherPartyName = info.OtherPartyName;
+
             isLoading = false;
             StateHasChanged();
             await ScrollToBottom();
@@ -220,12 +229,20 @@
             messages = await ChatService.GetHistoryAsync(RequestId, token);
             await CheckUserPermissions();
 
+            // OtherPartyName kiolvasása
+            var firstMsg = messages.FirstOrDefault();
+            if (firstMsg != null)
+                otherPartyName = firstMsg.OtherPartyName;
+
             var systemMsg = messages.FirstOrDefault(m => m.Content.Contains("[RENDSZER]"));
             if (systemMsg != null)
             {
                 isChatLocked = true;
                 actionResult = systemMsg.Content.Contains("SIKERES") ? "SIKERES" : "SIKERTELEN";
             }
+
+            // Beérkezett üzenetek megjelölése
+            await ChatService.MarkAsReadAllAsync(RequestId, token);
         }
         catch (Exception ex)
         {

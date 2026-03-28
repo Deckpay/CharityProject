@@ -1,6 +1,8 @@
 ﻿using Application.DTOs;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text.Json.Nodes;
+using System.Text.Json;
 
 namespace WEB.Services
 {
@@ -76,6 +78,39 @@ namespace WEB.Services
                 return await response.Content.ReadFromJsonAsync<ProductDto>();
             }
             return null;
+        }
+
+        public async Task<ChatInfoDto?> GetChatINfoAsync(int requestId, string token)
+        {
+            var request = CreateAuthRequest(HttpMethod.Get, $"Chat/info/{requestId}", token);
+            var response = await _http.SendAsync(request);
+            if (!response.IsSuccessStatusCode) return null;
+            return await response.Content.ReadFromJsonAsync<ChatInfoDto>();
+        }
+
+
+        public async Task<int> GetUnreadCountAsync(string token)
+        {
+            try
+            {
+                var request = CreateAuthRequest(HttpMethod.Get, "Chat/unread-count", token);
+                var response = await _http.SendAsync(request);
+                if (!response.IsSuccessStatusCode) return 0;
+                var raw = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"unread-count raw response: '{raw}'");
+                return int.Parse(raw);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"GetUnreadCountAsync hiba: {ex.Message}");
+                return 0;
+            }
+        }
+
+        public async Task MarkAsReadAllAsync(int requestId, string token)
+        {
+            var request = CreateAuthRequest(HttpMethod.Post, $"Chat/mark-read/{requestId}", token);
+            await _http.SendAsync(request);
         }
     }
 }

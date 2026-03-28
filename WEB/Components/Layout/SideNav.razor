@@ -3,7 +3,9 @@
 @inject NavigationManager Navigation
 @inject AuthenticationStateProvider AuthProvider
 @inject LocalStorageService Storage
+@inject ChatApiService ChatService
 @rendermode InteractiveServer
+@implements IDisposable
 
 <nav class="sidebar @(isOpened ? "sidebar-opened" : "sidebar-closed")">
 
@@ -67,26 +69,41 @@
                         {
                             <span class="section-label">Navigáció</span>
                         }
-                        <a class="nav-item" href="/#home"><span class="material-symbols-outlined">home</span>@if(isOpened){
-                        <span>Főoldal</span>
-                                                }
-</a>
-                        <a class="nav-item" href="/#rolunk"><span class="material-symbols-outlined">info</span>@if(isOpened){
-                        <span>Rólunk</span>
-                                                }
-</a>
-                        <a class="nav-item" href="/#eredmenyek"><span class="material-symbols-outlined">leaderboard</span>@if(isOpened){
-                        <span>Eredmények</span>
-                                                }
-</a>
-                        <a class="nav-item" href="/#gyik"><span class="material-symbols-outlined">help_outline</span>@if(isOpened){
-                        <span>GYIK</span>
-                                                }
-</a>
-                        <a class="nav-item" href="/#kapcsolat"><span class="material-symbols-outlined">contact_page</span>@if(isOpened){
-                        <span>Kapcsolat</span>
-                                                }
-</a>
+                        <a class="nav-item" href="/#home">
+                            <span class="material-symbols-outlined">home</span>
+                            @if (isOpened)
+                            {
+                                <span>Főoldal</span>
+                            }
+                        </a>
+                        <a class="nav-item" href="/#rolunk">
+                            <span class="material-symbols-outlined">info</span>
+                            @if (isOpened)
+                            {
+                                <span>Rólunk</span>
+                            }
+                        </a>
+                        <a class="nav-item" href="/#eredmenyek">
+                            <span class="material-symbols-outlined">leaderboard</span>
+                            @if (isOpened)
+                            {
+                                <span>Eredmények</span>
+                            }
+                        </a>
+                        <a class="nav-item" href="/#gyik">
+                            <span class="material-symbols-outlined">help_outline</span>
+                            @if (isOpened)
+                            {
+                                <span>GYIK</span>
+                            }
+                        </a>
+                        <a class="nav-item" href="/#kapcsolat">
+                            <span class="material-symbols-outlined">contact_page</span>
+                            @if (isOpened)
+                            {
+                                <span>Kapcsolat</span>
+                            }
+                        </a>
 
                         <AuthorizeView Roles="Recipient" Context="recAuth">
                             <Authorized>
@@ -95,18 +112,31 @@
                                 {
                                     <span class="section-label">Termékek</span>
                                 }
-                                <a class="nav-item @Active("/products")" href="/products"><span class="material-symbols-outlined">storefront</span>@if(isOpened){
-                                <span>Böngészés</span>
-                                                                }
-</a>
-                                <a class="nav-item @Active("/my-requests")" href="/my-requests"><span class="material-symbols-outlined">assignment_turned_in</span>@if(isOpened){
-                                <span>Igényléseim</span>
-                                                                }
-</a>
-                                <a class="nav-item @Active("/chats")" href="/chats"><span class="material-symbols-outlined">forum</span>@if(isOpened){
-                                <span>Chatek</span>
-                                                                }
-</a>
+                                <a class="nav-item @Active("/products")" href="/products">
+                                    <span class="material-symbols-outlined">storefront</span>
+                                    @if (isOpened)
+                                    {
+                                        <span>Böngészés</span>
+                                    }
+                                </a>
+                                <a class="nav-item @Active("/my-requests")" href="/my-requests">
+                                    <span class="material-symbols-outlined">assignment_turned_in</span>
+                                    @if (isOpened)
+                                    {
+                                        <span>Igényléseim</span>
+                                    }
+                                </a>
+                                <a class="nav-item @Active("/chats")" href="/chats">
+                                    <span class="material-symbols-outlined">forum</span>
+                                    @if (isOpened)
+                                    {
+                                        <span>Chatek</span>
+                                    }
+                                    @if (unreadCount > 0)
+                                    {
+                                        <span class="nav-badge">@(unreadCount > 9 ? "9+" : unreadCount.ToString())</span>
+                                    }
+                                </a>
                             </Authorized>
                         </AuthorizeView>
 
@@ -117,14 +147,24 @@
                                 {
                                     <span class="section-label">Adományozás</span>
                                 }
-                                <a class="nav-item @Active("/my-products")" href="/my-products"><span class="material-symbols-outlined">inventory_2</span>@if(isOpened){
-                                <span>Termékeim</span>
-                                                                }
-</a>
-                                <a class="nav-item @Active("/chats")" href="/chats"><span class="material-symbols-outlined">forum</span>@if(isOpened){
-                                <span>Chatek</span>
-                                                                }
-</a>
+                                <a class="nav-item @Active("/my-products")" href="/my-products">
+                                    <span class="material-symbols-outlined">inventory_2</span>
+                                    @if (isOpened)
+                                    {
+                                        <span>Termékeim</span>
+                                    }
+                                </a>
+                                <a class="nav-item @Active("/chats")" href="/chats">
+                                    <span class="material-symbols-outlined">forum</span>
+                                    @if (isOpened)
+                                    {
+                                        <span>Chatek</span>
+                                    }
+                                    @if (unreadCount > 0)
+                                    {
+                                        <span class="nav-badge">@(unreadCount > 9 ? "9+" : unreadCount.ToString())</span>
+                                    }
+                                </a>
                             </Authorized>
                         </AuthorizeView>
                     </NotAuthorized>
@@ -136,26 +176,41 @@
                 {
                     <span class="section-label">Navigáció</span>
                 }
-                <a class="nav-item" href="/#home"><span class="material-symbols-outlined">home</span>@if(isOpened){
-                <span>Főoldal</span>
-                                }
-</a>
-                <a class="nav-item" href="/#rolunk"><span class="material-symbols-outlined">info</span>@if(isOpened){
-                <span>Rólunk</span>
-                                }
-</a>
-                <a class="nav-item" href="/#eredmenyek"><span class="material-symbols-outlined">leaderboard</span>@if(isOpened){
-                <span>Eredmények</span>
-                                }
-</a>
-                <a class="nav-item" href="/#gyik"><span class="material-symbols-outlined">help_outline</span>@if(isOpened){
-                <span>GYIK</span>
-                                }
-</a>
-                <a class="nav-item" href="/#kapcsolat"><span class="material-symbols-outlined">contact_page</span>@if(isOpened){
-                <span>Kapcsolat</span>
-                                }
-</a>
+                <a class="nav-item" href="/#home">
+                    <span class="material-symbols-outlined">home</span>
+                    @if (isOpened)
+                    {
+                        <span>Főoldal</span>
+                    }
+                </a>
+                <a class="nav-item" href="/#rolunk">
+                    <span class="material-symbols-outlined">info</span>
+                    @if (isOpened)
+                    {
+                        <span>Rólunk</span>
+                    }
+                </a>
+                <a class="nav-item" href="/#eredmenyek">
+                    <span class="material-symbols-outlined">leaderboard</span>
+                    @if (isOpened)
+                    {
+                        <span>Eredmények</span>
+                    }
+                </a>
+                <a class="nav-item" href="/#gyik">
+                    <span class="material-symbols-outlined">help_outline</span>
+                    @if (isOpened)
+                    {
+                        <span>GYIK</span>
+                    }
+                </a>
+                <a class="nav-item" href="/#kapcsolat">
+                    <span class="material-symbols-outlined">contact_page</span>
+                    @if (isOpened)
+                    {
+                        <span>Kapcsolat</span>
+                    }
+                </a>
             </NotAuthorized>
         </AuthorizeView>
     </div>
@@ -210,6 +265,35 @@
 
 @code {
     private bool isOpened = true;
+    private int unreadCount = 0;
+    private PeriodicTimer? _timer;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        var token = await Storage.GetItemAsync<string>("authToken") ?? "";
+        
+        if (!string.IsNullOrEmpty(token))
+        {
+            unreadCount = await ChatService.GetUnreadCountAsync(token);
+            StateHasChanged();
+            _ = StartPollingAsync(token);
+        }
+        
+    }
+
+    private async Task StartPollingAsync(string token)
+    {
+        _timer = new PeriodicTimer(TimeSpan.FromSeconds(5));
+        while (await _timer.WaitForNextTickAsync())
+        {
+            unreadCount = await ChatService.GetUnreadCountAsync(token);
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    public void Dispose() => _timer?.Dispose();
+
     private void ToggleSidebar() => isOpened = !isOpened;
     private void GoToLogin() => Navigation.NavigateTo("/login");
     private void GoToRegister() => Navigation.NavigateTo("/register");
@@ -217,6 +301,7 @@
         Navigation.Uri.Contains(path, StringComparison.OrdinalIgnoreCase) ? "active" : "";
     private async Task HandleLogout()
     {
+        _timer?.Dispose();
         var provider = (CustomAuthStateProvider)AuthProvider;
         await provider.LogoutAsync();
         Navigation.NavigateTo("/");
