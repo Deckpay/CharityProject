@@ -44,7 +44,7 @@
                         <td>@product.ProductId.</td>
                         <td>@product.ProductName</td>
                         <td>@product.ProductDescription</td>
-                        <td>@product.ProductSatus</td>
+                        <td>@product.ProductStatus</td>
                         <td>@product.CreatedAt</td>
                         <td>@product.UpdatedAt</td>
                         <td>@LookupService.GetUserName(product.DonorId)</td>
@@ -98,7 +98,7 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label text-black">Termék státusz</label>
-                            <select class="form-control" @bind="editingProduct.ProductSatus">
+                            <select class="form-control" @bind="editingProduct.ProductStatus">
                                 @foreach (var status in Enum.GetValues<ProductStatus>())
                                 {
                                     <option value="@status">@status</option>
@@ -154,7 +154,7 @@
             ProductDescription = productDto.ProductDescription,
             ProductCategoryId = productDto.ProductCategoryId,
             CountyId = productDto.CountyId,
-            ProductSatus = productDto.ProductSatus,
+            ProductStatus = productDto.ProductStatus,
             UpdatedAt = DateTime.UtcNow
         };
 

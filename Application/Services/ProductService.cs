@@ -72,7 +72,7 @@ namespace Application.Services
 
             product.ProductName = productDto.ProductName;
             product.ProductDescription = productDto.ProductDescription;
-            product.ProductStatus = productDto.ProductSatus;
+            product.ProductStatus = productDto.ProductStatus;
             product.CountyId = productDto.CountyId;
             product.ProductCategoryId = productDto.ProductCategoryId;
             product.UpdatedAt = DateTime.UtcNow;
@@ -101,7 +101,7 @@ namespace Application.Services
             ProductCategoryId = p.ProductCategoryId,
             CountyId = p.CountyId,
             DonorId = p.DonorId,
-            ProductSatus = p.ProductStatus
+            ProductStatus = p.ProductStatus
         };
 
 

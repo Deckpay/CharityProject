@@ -18,19 +18,19 @@ namespace Application.DTOs
         public bool IsActive { get; set; }
 
         public DateTime CreatedAt { get; set; }
+
         public DateTime UpdatedAt { get; set; }
 
-        public ProductStatus ProductSatus { get; set; }
+        public ProductStatus ProductStatus { get; set; }
 
         public int DonorId { get; set; }
 
-        [Required(ErrorMessage = "Kategória választása kötelező")]
+        [Required]
+        [Range(1, int.MaxValue, ErrorMessage = "Kategória választása kötelező")]
         public int ProductCategoryId { get; set; }
 
-        [Required(ErrorMessage = "Megye választása kötelező")]
+        [Required]
+        [Range(1, int.MaxValue, ErrorMessage = "Megye választása kötelező")]
         public int CountyId { get; set; }
-
-        // A DonorId-t nem a DTO-ban kérjük be, azt majd a bejelentkezett 
-        // felhasználóból vesszük ki a szerveren!
     }
 }

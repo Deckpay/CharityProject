@@ -8,7 +8,7 @@
 
 <div class="modern-product-card @(isClaimed ? "card-claimed" : "")">
     <div class="card-header-section">
-        <div class="status-badge">@GetStatusName(Product.ProductSatus.ToString())</div>
+        <div class="status-badge">@GetStatusName(Product.ProductStatus.ToString())</div>
 
         <div class="image-container">
             @if (!string.IsNullOrEmpty(Product.ImagePath))
