@@ -1,171 +1,119 @@
-﻿/* ══════════════════════════════════════════
-   SIDEBAR ALAP
-══════════════════════════════════════════ */
+﻿/* ══════════════════════════════════════════════════════════
+   CHARITY APP - VÉGLEGESÍTETT SIDEBAR (ALL-IN-ONE)
+   Javítások: Gomb alul, Felső rés csökkentve, Toggle fix
+   ══════════════════════════════════════════════════════════ */
+
+/* 1. SZÜLŐ KONTEÉNEREK FIXÁLÁSA (hogy a 100% magasság működjön) */
+.page-wrapper {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.content-wrapper {
+    display: flex;
+    flex: 1; /* Kitölti a maradék helyet a header alatt */
+    overflow: hidden;
+}
+
+.sidenav-container {
+    height: 100%;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 100;
+}
+
+/* 2. SIDEBAR ALAPSTRUKTÚRA */
 .sidebar {
     position: relative;
     background: #0f1923;
     color: #c8d3e0;
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    height: 100%;
+    width: 220px;
     transition: width 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
+    box-sizing: border-box;
     overflow: hidden;
-    border-right: 1px solid rgba(255,255,255,0.06);
-    flex-shrink: 0;
-}
-
-.sidebar-opened {
-    width: 240px;
 }
 
 .sidebar-closed {
     width: 68px;
 }
 
-/* ══════════════════════════════════════════
-   LOGÓ
-══════════════════════════════════════════ */
-.sidebar-logo {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 0 16px;
-    height: 64px;
-    text-decoration: none;
-    color: white;
-    flex-shrink: 0;
-    overflow: hidden;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
+/* Az ikon forgatása */
+.rotate-icon {
+    transition: transform 0.3s ease;
 }
 
-.logo-icon {
-    width: 36px;
-    height: 36px;
-    background: linear-gradient(135deg, #2563eb, #3b82f6);
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
+.is-mirror {
+    transform: rotate(180deg); /* Megfordítja a nyilat, ha zárva van */
 }
 
-    .logo-icon .material-symbols-outlined {
-        font-size: 20px !important;
-        color: white;
-        min-width: unset;
-    }
-
-.logo-text {
-    font-size: 15px;
-    font-weight: 700;
-    color: white;
-    white-space: nowrap;
-    letter-spacing: -0.2px;
+/* Ha a sidebar csukva van, a gombot középre igazítjuk */
+.sidebar-closed .toggle-btn {
+    right: 50%; /* Középre igazítás csukott állapotban */
+    transform: translateX(50%);
+    top: 15px;
 }
 
-/* ══════════════════════════════════════════
-   TOGGLE GOMB
-══════════════════════════════════════════ */
+/* 3. NYITÓ/CSUKÓ GOMB (Toggle) */
 .toggle-btn {
     position: absolute;
-    top: 20px;
-    right: -14px;
+    top: 20px; /* Pontosan az első menüpont magasságában */
+    right: 10px;
     width: 28px;
     height: 28px;
     background: #1e2d3d;
-    border: 1.5px solid rgba(255,255,255,0.12);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    z-index: 200;
-    color: #7a90a8;
-    transition: background 0.2s, color 0.2s;
-    padding: 0;
+    z-index: 1001;
+    color: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    transition: transform 0.2s ease, right 0.28s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s;
 }
 
-    .toggle-btn:hover {
-        background: #2563eb;
-        color: white;
-        border-color: #2563eb;
-    }
-
-.toggle-icon {
-    font-size: 18px !important;
-    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-    min-width: unset !important;
+.toggle-btn:hover {
+    background: #2563eb;
 }
 
-.rotate-180 {
-    transform: rotate(180deg);
-}
-
-/* ══════════════════════════════════════════
-   ELVÁLASZTÓ
-══════════════════════════════════════════ */
-.nav-divider {
-    height: 1px;
-    background: rgba(255,255,255,0.06);
-    margin: 4px 0;
-    flex-shrink: 0;
-}
-
-/* ══════════════════════════════════════════
-   NAVIGÁCIÓ SZEKCIÓ
-══════════════════════════════════════════ */
-.nav-section {
-    flex: 1;
-    padding: 8px 0;
+/* 4. NAVIGÁCIÓS TARTALOM (Középső rész) */
+.nav-scroll {
+    flex: 1; /* Ez engedi a margin-top: auto-t az alján */
     overflow-y: auto;
-    overflow-x: hidden;
+    padding-top: 15px; /* Minimális felső hely a Navigáció feliratnak */
+    padding-bottom: 20px;
 }
 
-    .nav-section::-webkit-scrollbar {
-        width: 3px;
-    }
-
-    .nav-section::-webkit-scrollbar-thumb {
-        background: rgba(255,255,255,0.1);
-        border-radius: 3px;
-    }
-
-.nav-section-label {
+/* Szekció feliratok (Navigáció, Adományozás) */
+.section-label {
     display: block;
-    font-size: 10px;
-    font-weight: 600;
+    padding: 20px 20px 10px;
+    font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 1px;
-    color: #4a5e72;
-    padding: 12px 20px 4px;
-    white-space: nowrap;
-    overflow: hidden;
+    color: #4f5e71;
+    font-weight: 600;
 }
 
-/* ══════════════════════════════════════════
-   NAV ITEM (külön komponensként kezeljük,
-   de a CSS itt van definiálva)
-══════════════════════════════════════════ */
 .nav-item {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 9px 16px;
+    padding: 10px 16px;
     margin: 2px 8px;
     border-radius: 8px;
-    text-decoration: none;
     color: #8a9bb0;
+    text-decoration: none;
     font-size: 13.5px;
-    font-weight: 500;
-    white-space: nowrap;
-    overflow: visible;
-    position:static;
-    transition: background 0.15s, color 0.15s;
+    transition: 0.2s;
     cursor: pointer;
-    border: none;
-    background: none;
-    width: calc(100% - 16px);
-    box-sizing: border-box;
 }
 
     .nav-item:hover {
@@ -173,198 +121,188 @@
         color: #7eb3ff;
     }
 
-    .nav-item.active,
-    .nav-item:focus-within {
+    .nav-item.active {
         background: rgba(37, 99, 235, 0.18);
         color: #60a5fa;
     }
 
-    .nav-item .material-symbols-outlined {
-        font-size: 20px !important;
-        min-width: 20px;
-        flex-shrink: 0;
-        color: inherit;
-        transition: color 0.15s;
-    }
-
-.nav-item-label {
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-/* Összecsukott állapot — ikonközépre */
-.sidebar-closed .nav-item {
-    justify-content: center;
-    padding: 9px 0;
-    margin: 2px 10px;
-    width: calc(100% - 20px);
-}
-
-/* ══════════════════════════════════════════
-   ALSÓ PROFIL SÁV
-══════════════════════════════════════════ */
+/* 5. ALSÓ RÉSZ (Profil + Kijelentkezés) - FIXEN ALUL */
 .sidebar-bottom {
-    padding: 12px 8px;
-    border-top: 1px solid rgba(255,255,255,0.06);
+    margin-top: auto; /* Ez tolja le a legaljára */
+    padding: 16px 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    background: #0f1923;
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    flex-shrink: 0;
+    gap: 8px;
+    flex-shrink: 0; /* Ne engedje összenyomni kicsi képernyőn */
 }
 
-/* ── User kártya ── */
 .user-card {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 8px 10px;
-    border-radius: 8px;
-    background: rgba(255,255,255,0.04);
-    margin-bottom: 4px;
+    gap: 12px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 10px;
     overflow: hidden;
-}
-
-.user-card-collapsed {
-    justify-content: center;
-    padding: 8px 0;
 }
 
 .user-avatar {
     width: 32px;
     height: 32px;
-    border-radius: 8px;
     background: linear-gradient(135deg, #2563eb, #7c3aed);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 13px;
-    font-weight: 700;
     color: white;
+    border-radius: 6px;
     flex-shrink: 0;
 }
 
-.user-info {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    min-width: 0;
-}
-
-.user-name {
-    font-size: 13px;
-    font-weight: 600;
-    color: #e2e8f0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.user-role {
-    font-size: 11px;
-    color: #4a6380;
-    white-space: nowrap;
-}
-
-/* ── Kijelentkezés gomb ── */
 .logout-btn {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 8px 12px;
-    border-radius: 8px;
-    background: transparent;
+    gap: 12px;
+    padding: 10px 14px;
     border: none;
-    color: #6b7f94;
-    font-size: 13px;
-    font-weight: 500;
+    border-radius: 8px;
     cursor: pointer;
-    width: 100%;
-    transition: background 0.15s, color 0.15s;
-    white-space: nowrap;
-    overflow: hidden;
+    background: rgba(239, 68, 68, 0.1) !important;
+    color: #f87171 !important;
+    font-size: 13.5px;
+    font-weight: 500;
+    transition: 0.2s;
 }
 
     .logout-btn:hover {
-        background: rgba(239, 68, 68, 0.12);
-        color: #f87171;
+        background: rgba(239, 68, 68, 0.2) !important;
     }
 
-    .logout-btn .material-symbols-outlined {
-        font-size: 18px !important;
-        flex-shrink: 0;
-        min-width: unset;
-    }
-
-.logout-btn-icon {
-    justify-content: center;
-    padding: 8px 0;
+/* 6. CSUKOTT ÁLLAPOT KORREKCIÓI (Closed) */
+.sidebar-closed .nav-scroll {
+    padding-top: 40px; /* Csukva kell a hely, hogy az első ikon ne legyen a toggle alatt */
 }
 
-/* ── Auth gombok (bejelentkezés / regisztráció) ── */
-.auth-action {
-    display: flex;
+.sidebar-closed .section-label,
+.sidebar-closed .nav-item span:not(.material-symbols-outlined),
+.sidebar-closed .user-info {
+    display: none !important;
+}
+
+.sidebar-closed .nav-item {
+    justify-content: center;
+    padding: 10px 0;
+    margin: 4px 10px;
+}
+
+.sidebar-closed .sidebar-bottom {
+    padding: 16px 0;
     align-items: center;
-    gap: 10px;
-    padding: 9px 14px;
-    border-radius: 8px;
-    border: none;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    width: 100%;
-    transition: all 0.15s;
-    white-space: nowrap;
-    overflow: hidden;
 }
 
-    .auth-action .material-symbols-outlined {
-        font-size: 18px !important;
-        flex-shrink: 0;
-        min-width: unset;
-    }
+.sidebar-closed .user-card {
+    background: transparent;
+    padding: 0;
+}
 
-.auth-action-icon {
+.sidebar-closed .logout-btn {
     justify-content: center;
-    padding: 9px 0;
+    width: 42px;
+    padding: 10px 0;
+    margin: 0 auto;
 }
 
-.login-btn {
-    background: #2563eb;
-    color: white;
-}
-
-    .login-btn:hover {
-        background: #1d4ed8;
-    }
-
-.register-btn {
-    background: rgba(255,255,255,0.06);
-    color: #8a9bb0;
-}
-
-    .register-btn:hover {
-        background: rgba(255,255,255,0.1);
-        color: #c8d3e0;
-    }
-
-
-.nav-item {
-    position: relative;
-}
-
-.nav-badge {
-    margin-left: auto;
-    background: #e53935;
-    color: white;
-    font-size: 0.65rem;
-    font-weight: 700;
-    min-width: 18px;
-    height: 18px;
-    border-radius: 9px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 5px;
-    line-height: 1;
+/* Ikonok fix mérete */
+.material-symbols-outlined {
+    font-size: 22px;
     flex-shrink: 0;
+}
+
+/* Bejelentkezés gomb egyedi dizájn */
+.auth-action.login-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background: rgba(37, 99, 235, 0.1) !important; /* Halvány kék háttér */
+    color: #60a5fa !important; /* Világoskék szöveg */
+    font-size: 13.5px;
+    font-weight: 500;
+    transition: 0.2s;
+    width: 100%;
+}
+
+    .auth-action.login-btn:hover {
+        background: rgba(37, 99, 235, 0.2) !important;
+    }
+
+/* Regisztráció gomb egyedi dizájn */
+.auth-action.register-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background: rgba(16, 185, 129, 0.1) !important; /* Halvány zöldes háttér */
+    color: #34d399 !important; /* Világoszöld szöveg */
+    font-size: 13.5px;
+    font-weight: 500;
+    transition: 0.2s;
+    width: 100%;
+}
+
+    .auth-action.register-btn:hover {
+        background: rgba(16, 185, 129, 0.2) !important;
+    }
+
+/* Csukott állapot fix (hogy ne lógjanak ki) */
+.sidebar-closed .auth-action {
+    justify-content: center;
+    width: 42px;
+    padding: 10px 0;
+    margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+    /* 1. Rejtsük el a belső kis kerek nyilacskát mobilon */
+    .mobile-hide-toggle {
+        display: none !important;
+    }
+
+    /* 2. Kényszerítsük a SideNav-ot, hogy mobilon MINDIG nyitva legyen, 
+       függetlenül a belső isOpened változótól */
+    .sidebar {
+        width: 100% !important; /* Kitölti a sidenav-container 260px-ét */
+        display: flex !important;
+    }
+
+        /* 3. Mobilon minden elemet mutassunk meg (ne tűnjenek el az ikonok mellől a szövegek) */
+        .sidebar .section-label,
+        .sidebar .nav-item span:not(.material-symbols-outlined),
+        .sidebar .user-info,
+        .sidebar .logout-btn span:not(.material-symbols-outlined) {
+            display: block !important;
+        }
+
+    /* 4. A container maradjon a korábbi beállításodon */
+    .sidenav-container {
+        position: fixed;
+        top: 60px;
+        left: -280px; /* Alapból elrejtve */
+        width: 260px;
+        height: calc(100% - 60px);
+        z-index: 999;
+        transition: left 0.3s ease;
+        background: #0f1923;
+    }
+
+    .mobile-menu-active .sidenav-container {
+        left: 0; /* Beúszik */
+    }
 }

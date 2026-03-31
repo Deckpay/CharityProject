@@ -1,66 +1,154 @@
-/* ── Reset ── */
-*, *::before, *::after {
+/* ── Reset & Alapok ── */
+* {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
 
-/* ── Lap alap ── */
 html, body {
     height: 100%;
     font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
     background: #f4f6f9;
     color: #1a2332;
+    overflow: hidden;
 }
 
-/* ── Wrapper ── */
+/* ── Struktúra ── */
 .page-wrapper {
     height: 100vh;
-    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .content-wrapper {
     display: flex;
-    height: 100vh;
+    flex: 1;
     overflow: hidden;
 }
 
-/* ── Sidebar tartó ── */
+/* ── Top Bar (Sötét, modern stílus) ── */
+.top-bar {
+    height: 60px;
+    background: #0f1923;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    z-index: 1100;
+    flex-shrink: 0;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* Logó dizájn */
+.logo-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+}
+
+.logo-icon {
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.brand-name {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: -0.5px;
+}
+
+.brand-accent {
+    color: #60a5fa;
+}
+
+/* ── SideNav Konténer (Asztali) ── */
 .sidenav-container {
     flex-shrink: 0;
-    height: 100vh;
-    position: sticky;
-    top: 0;
+    height: 100%;
+    background: #0f1923;
     z-index: 100;
 }
 
-/* ── Fő tartalom ── */
 .main-content {
     flex: 1;
     overflow-y: auto;
     background: #f4f6f9;
-    min-width: 0;
+    position: relative;
 }
 
-/* ── Blazor hibajelző ── */
-#blazor-error-ui {
-    background: #fff3cd;
-    bottom: 0;
-    box-shadow: 0 -1px 4px rgba(0,0,0,0.15);
-    display: none;
-    left: 0;
-    padding: 0.6rem 1.25rem 0.7rem;
-    position: fixed;
-    width: 100%;
-    z-index: 2000;
-    font-size: 13px;
-    color: #664d03;
+.desktop-hide {
+    display: none !important; /* Asztali nézetben kötelezően rejtve */
 }
 
-    #blazor-error-ui .dismiss {
-        cursor: pointer;
-        position: absolute;
-        right: 0.75rem;
-        top: 0.5rem;
-        font-size: 18px;
+/* ── MOBIL SPECIFIKUS SZABÁLYOK (@768px) ── */
+@media (max-width: 768px) {
+
+    .desktop-hide {
+        display: flex !important; /* Csak mobilon jelenik meg */
     }
+    /* 1. Hamburger megjelenítése */
+    .mobile-hamburger {
+        display: flex;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: white;
+        padding: 5px;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+    /* 2. SideNav pozicionálása mobilon */
+    .sidenav-container {
+        position: fixed;
+        top: 60px;
+        left: -280px; /* Alapból rejtve */
+        width: 260px;
+        height: calc(100% - 60px);
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 10px 0 20px rgba(0,0,0,0.4);
+        z-index: 999;
+    }
+
+    .mobile-menu-active .sidenav-container {
+        left: 0; /* Beúszik */
+    }
+
+    /* 3. SideNav belső kényszerítés (Hogy ne csukódjon össze) */
+    .mobile-hide-toggle {
+        display: none !important; /* Rejtse el a belső kis nyilat */
+    }
+
+    .mobile-sidebar-fix {
+        width: 100% !important;
+        display: flex !important;
+    }
+
+        /* Mutassunk minden feliratot mobilon akkor is, ha "closed" az állapot */
+        .mobile-sidebar-fix .section-label,
+        .mobile-sidebar-fix .nav-item span:not(.material-symbols-outlined),
+        .mobile-sidebar-fix .user-info,
+        .mobile-sidebar-fix .logout-btn span {
+            display: block !important;
+        }
+
+    /* 4. Tartalom sötétítése */
+    .mobile-menu-active .main-content {
+        filter: brightness(0.6) blur(1px);
+        pointer-events: none;
+    }
+}

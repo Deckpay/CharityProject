@@ -8,6 +8,7 @@
 @inject AuthApiService AuthService
 @inject NavigationManager NavigationManager
 @inject LookupApiService Lookup
+@inject ToastService ToastService
 
 <PageTitle>Regisztráció</PageTitle>
 <div class="register-container">
@@ -107,6 +108,7 @@
 
         if (result)
         {
+            ToastService.ShowToast("Sikeres Regisztráció!", "success");
             // Sikeres regisztráció után átirányítás (pl. a bejelentkezéshez)
             NavigationManager.NavigateTo("/login");
         }

@@ -4,25 +4,17 @@
 @inject AuthenticationStateProvider AuthProvider
 @inject LocalStorageService Storage
 @inject ChatApiService ChatService
+@inject ToastService ToastService
 @rendermode InteractiveServer
 @implements IDisposable
 
-<nav class="sidebar @(isOpened ? "sidebar-opened" : "sidebar-closed")">
-
-    @* Logo *@
-    <a class="sidebar-logo" href="/">
-        <div class="logo-icon">
-            <span class="material-symbols-outlined">volunteer_activism</span>
-        </div>
-        @if (isOpened)
-        {
-            <span class="logo-text">Charity App</span>
-        }
-    </a>
+<nav class="sidebar @(isOpened ? "sidebar-opened" : "sidebar-closed") mobile-sidebar-fix">
 
     @* Toggle *@
-    <button class="toggle-btn" @onclick="ToggleSidebar">
-        <span class="material-symbols-outlined @(isOpened ? "ti-open" : "ti-closed")">chevron_left</span>
+    <button class="toggle-btn mobile-hide-toggle" @onclick="ToggleSidebar">
+        <span class="material-symbols-outlined rotate-icon @(isOpened ? "" : "is-mirror")">
+            chevron_left
+        </span>
     </button>
 
     @* Nav *@
@@ -35,28 +27,28 @@
                         {
                             <span class="section-label">Adminisztráció</span>
                         }
-                        <a class="nav-item @Active("/admin-users")" href="/admin-users">
+                        <a class="nav-item @Active("/admin-users")" href="/admin-users" @onclick="HandleNavLinkClick">
                             <span class="material-symbols-outlined">groups</span>
                             @if (isOpened)
                             {
                                 <span>Felhasználók</span>
                             }
                         </a>
-                        <a class="nav-item @Active("/admin-products")" href="/admin-products">
+                        <a class="nav-item @Active("/admin-products")" href="/admin-products" @onclick="HandleNavLinkClick">
                             <span class="material-symbols-outlined">inventory</span>
                             @if (isOpened)
                             {
                                 <span>Termékek</span>
                             }
                         </a>
-                        <a class="nav-item @Active("/admin-product-requests")" href="/admin-product-requests">
+                        <a class="nav-item @Active("/admin-product-requests")" href="/admin-product-requests" @onclick="HandleNavLinkClick">
                             <span class="material-symbols-outlined">inventory</span>
                             @if (isOpened)
                             {
                                 <span>Igénylések</span>
                             }
                         </a>
-                        <a class="nav-item @Active("/admin-product-requester-limits")" href="/admin-product-requester-limits">
+                        <a class="nav-item @Active("/admin-product-requester-limits")" href="/admin-product-requester-limits" @onclick="HandleNavLinkClick">
                             <span class="material-symbols-outlined">inventory</span>
                             @if (isOpened)
                             {
@@ -69,35 +61,35 @@
                         {
                             <span class="section-label">Navigáció</span>
                         }
-                        <a class="nav-item" href="/#home">
+                        <a class="nav-item" href="/#home" @onclick="HandleNavLinkClick">
                             <span class="material-symbols-outlined">home</span>
                             @if (isOpened)
                             {
                                 <span>Főoldal</span>
                             }
                         </a>
-                        <a class="nav-item" href="/#rolunk">
+                        <a class="nav-item" href="/#rolunk" @onclick="HandleNavLinkClick">
                             <span class="material-symbols-outlined">info</span>
                             @if (isOpened)
                             {
                                 <span>Rólunk</span>
                             }
                         </a>
-                        <a class="nav-item" href="/#eredmenyek">
+                        <a class="nav-item" href="/#eredmenyek" @onclick="HandleNavLinkClick">
                             <span class="material-symbols-outlined">leaderboard</span>
                             @if (isOpened)
                             {
                                 <span>Eredmények</span>
                             }
                         </a>
-                        <a class="nav-item" href="/#gyik">
+                        <a class="nav-item" href="/#gyik" @onclick="HandleNavLinkClick">
                             <span class="material-symbols-outlined">help_outline</span>
                             @if (isOpened)
                             {
                                 <span>GYIK</span>
                             }
                         </a>
-                        <a class="nav-item" href="/#kapcsolat">
+                        <a class="nav-item" href="/#kapcsolat" @onclick="HandleNavLinkClick">
                             <span class="material-symbols-outlined">contact_page</span>
                             @if (isOpened)
                             {
@@ -112,21 +104,21 @@
                                 {
                                     <span class="section-label">Termékek</span>
                                 }
-                                <a class="nav-item @Active("/products")" href="/products">
+                                <a class="nav-item @Active("/products")" href="/products" @onclick="HandleNavLinkClick">
                                     <span class="material-symbols-outlined">storefront</span>
                                     @if (isOpened)
                                     {
                                         <span>Böngészés</span>
                                     }
                                 </a>
-                                <a class="nav-item @Active("/my-requests")" href="/my-requests">
+                                <a class="nav-item @Active("/my-requests")" href="/my-requests" @onclick="HandleNavLinkClick">
                                     <span class="material-symbols-outlined">assignment_turned_in</span>
                                     @if (isOpened)
                                     {
                                         <span>Igényléseim</span>
                                     }
                                 </a>
-                                <a class="nav-item @Active("/chats")" href="/chats">
+                                <a class="nav-item @Active("/chats")" href="/chats" @onclick="HandleNavLinkClick">
                                     <span class="material-symbols-outlined">forum</span>
                                     @if (isOpened)
                                     {
@@ -147,14 +139,14 @@
                                 {
                                     <span class="section-label">Adományozás</span>
                                 }
-                                <a class="nav-item @Active("/my-products")" href="/my-products">
+                                <a class="nav-item @Active("/my-products")" href="/my-products" @onclick="HandleNavLinkClick">
                                     <span class="material-symbols-outlined">inventory_2</span>
                                     @if (isOpened)
                                     {
                                         <span>Termékeim</span>
                                     }
                                 </a>
-                                <a class="nav-item @Active("/chats")" href="/chats">
+                                <a class="nav-item @Active("/chats")" href="/chats" @onclick="HandleNavLinkClick">
                                     <span class="material-symbols-outlined">forum</span>
                                     @if (isOpened)
                                     {
@@ -176,35 +168,35 @@
                 {
                     <span class="section-label">Navigáció</span>
                 }
-                <a class="nav-item" href="/#home">
+                <a class="nav-item" href="/#home" @onclick="HandleNavLinkClick">
                     <span class="material-symbols-outlined">home</span>
                     @if (isOpened)
                     {
                         <span>Főoldal</span>
                     }
                 </a>
-                <a class="nav-item" href="/#rolunk">
+                <a class="nav-item" href="/#rolunk" @onclick="HandleNavLinkClick">
                     <span class="material-symbols-outlined">info</span>
                     @if (isOpened)
                     {
                         <span>Rólunk</span>
                     }
                 </a>
-                <a class="nav-item" href="/#eredmenyek">
+                <a class="nav-item" href="/#eredmenyek" @onclick="HandleNavLinkClick">
                     <span class="material-symbols-outlined">leaderboard</span>
                     @if (isOpened)
                     {
                         <span>Eredmények</span>
                     }
                 </a>
-                <a class="nav-item" href="/#gyik">
+                <a class="nav-item" href="/#gyik" @onclick="HandleNavLinkClick">
                     <span class="material-symbols-outlined">help_outline</span>
                     @if (isOpened)
                     {
                         <span>GYIK</span>
                     }
                 </a>
-                <a class="nav-item" href="/#kapcsolat">
+                <a class="nav-item" href="/#kapcsolat" @onclick="HandleNavLinkClick">
                     <span class="material-symbols-outlined">contact_page</span>
                     @if (isOpened)
                     {
@@ -243,14 +235,14 @@
                 </button>
             </Authorized>
             <NotAuthorized>
-                <button @onclick="GoToLogin" class="auth-action login-btn">
+                <button @onclick='async () => { await HandleNavLinkClick(); GoToLogin(); }' class="auth-action login-btn">
                     <span class="material-symbols-outlined">login</span>
                     @if (isOpened)
                     {
                         <span>Bejelentkezés</span>
                     }
                 </button>
-                <button @onclick="GoToRegister" class="auth-action register-btn">
+                <button @onclick='async () => { await HandleNavLinkClick(); GoToRegister(); }' class="auth-action register-btn">
                     <span class="material-symbols-outlined">person_add</span>
                     @if (isOpened)
                     {
@@ -260,13 +252,13 @@
             </NotAuthorized>
         </AuthorizeView>
     </div>
-
 </nav>
 
 @code {
     private bool isOpened = true;
     private int unreadCount = 0;
     private PeriodicTimer? _timer;
+    [Parameter] public EventCallback OnNavigate { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -275,14 +267,13 @@
         Navigation.LocationChanged += OnLocationChanged;
 
         var token = await Storage.GetItemAsync<string>("authToken") ?? "";
-        
+
         if (!string.IsNullOrEmpty(token))
         {
             unreadCount = await ChatService.GetUnreadCountAsync(token);
             StateHasChanged();
             _ = StartPollingAsync(token);
         }
-        
     }
 
     private async void OnLocationChanged(object? sender, LocationChangedEventArgs e)
@@ -312,15 +303,23 @@
     }
 
     private void ToggleSidebar() => isOpened = !isOpened;
+
     private void GoToLogin() => Navigation.NavigateTo("/login");
+
     private void GoToRegister() => Navigation.NavigateTo("/register");
+
     private string Active(string path) =>
         Navigation.Uri.Contains(path, StringComparison.OrdinalIgnoreCase) ? "active" : "";
+
     private async Task HandleLogout()
     {
         _timer?.Dispose();
         var provider = (CustomAuthStateProvider)AuthProvider;
         await provider.LogoutAsync();
+        await HandleNavLinkClick();
+        ToastService.ShowToast("Sikeres kijelentkezés!", "success");
         Navigation.NavigateTo("/");
     }
+
+    private async Task HandleNavLinkClick() => await OnNavigate.InvokeAsync();
 }

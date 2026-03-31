@@ -1,23 +1,58 @@
-﻿@inherits LayoutComponentBase
+﻿@using WEB.Components.Shared
+@inherits LayoutComponentBase
 
-<div class="page-wrapper">
-    @* 1. FELSŐ LOGÓ SÁV *@
+<div class="page-wrapper @(isMobileMenuOpen ? "mobile-menu-active" : "")">
+    <Toast />
+    @* 1. FELSŐ MODERN SÁV *@
     <header class="top-bar">
-        <a class="logo-section-top" href="/">
-            <span class="material-symbols-outlined">volunteer_activism</span>
-            <span>Charity App</span>
-        </a>
+        <div class="header-left">
+            @* MOBIL HAMBURGER GOMB *@
+            <button class="mobile-hamburger desktop-hide" @onclick="ToggleMobileMenu">
+                <span class="material-symbols-outlined">@(isMobileMenuOpen ? "close" : "menu")</span>
+            </button>
+
+            @* STÍLUSOS LOGÓ *@
+            <a class="logo-wrapper" href="/">
+                <div class="logo-icon">
+                    <span class="material-symbols-outlined">volunteer_activism</span>
+                </div>
+                <div class="logo-text">
+                    <span class="brand-name">Charity<span class="brand-accent">App</span></span>
+                </div>
+            </a>
+        </div>
+
+        <div class="header-right">
+            @* Ide jöhetnek majd profil ikonok vagy értesítések *@
+        </div>
     </header>
 
     <div class="content-wrapper">
-        @* 2. OLDALSÁV *@
+        @* 2. OLDALSÁV TÁROLÓ *@
         <aside class="sidenav-container">
-            <SideNav />
+            <SideNav OnNavigate="CloseMenu" />
         </aside>
 
-        @* 3. FŐ TARTALOM *@
-        <main class="main-content">
+        @* 3. FŐ TARTALOM (kattintásra bezárja a mobilmenüt) *@
+        <main class="main-content" @onclick="CloseMenu">
             @Body
         </main>
     </div>
 </div>
+
+@code {
+    private bool isMobileMenuOpen = false;
+    [Parameter] public EventCallback OnNavigate { get; set; }
+
+    private void ToggleMobileMenu() => isMobileMenuOpen = !isMobileMenuOpen;
+    
+    private void CloseMenu()
+    {
+        if (isMobileMenuOpen) isMobileMenuOpen = false;
+    }
+
+    private async Task HandleNavLinkClick()
+    {
+        await OnNavigate.InvokeAsync();
+    }
+}

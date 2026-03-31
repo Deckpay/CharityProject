@@ -20,6 +20,7 @@ if (string.IsNullOrEmpty(apiBaseUrl))
 // TokenStore-ot egyszer regisztráljuk és a TokenHandler ezt használja.
 builder.Services.AddSingleton<TokenStore>();
 builder.Services.AddScoped<TokenHandler>();
+builder.Services.AddScoped<ToastService>();
 
 builder.Services.AddHttpClient<AuthApiService>(client =>
 {

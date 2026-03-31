@@ -9,6 +9,7 @@
 @inject HttpClient Http
 @inject AuthenticationStateProvider AuthStateProvider
 @inject TokenStore TokenStore
+@inject ToastService ToastService
 @rendermode InteractiveServer
 
 <div class="register-container">
@@ -85,6 +86,8 @@
 
                 var customAuth = (CustomAuthStateProvider)AuthStateProvider;
                 customAuth.NotifyUserAuthentication(token);
+
+                ToastService.ShowToast("Sikeres Bejelentkezés!", "success");
 
                 Navigation.NavigateTo("/");
             }
