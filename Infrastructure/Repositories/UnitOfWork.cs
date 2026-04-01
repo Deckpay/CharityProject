@@ -19,6 +19,7 @@ namespace Infrastructure.Repositories
         public IGenericRepository<ChatMessage> ChatMessages { get; private set; }
         public IGenericRepository<ProductRequest> ProductRequests { get; private set; }
         public IGenericRepository<RequesterLimitRule> RequesterLimitRules { get; private set; }
+        public IGenericRepository<RequesterLimitUsage> RequesterLimitUsages { get; private set; }
 
         public UnitOfWork(CharityDbContext context)
         {
@@ -33,6 +34,7 @@ namespace Infrastructure.Repositories
             ChatMessages = new GenericRepository<ChatMessage>(_context);
             ProductRequests = new GenericRepository<ProductRequest>(_context);
             RequesterLimitRules = new GenericRepository<RequesterLimitRule>(_context);
+            RequesterLimitUsages = new GenericRepository<RequesterLimitUsage>(_context);
         }
 
         // Ez a metódus az "indítógomb": egyszerre ment el mindent az adatbázisba

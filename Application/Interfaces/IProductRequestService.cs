@@ -9,7 +9,7 @@ namespace Application.Interfaces
 {
     public interface IProductRequestService
     {
-        Task<int> ClaimProductAsync(int productId, int userId);
+        Task<ClaimResultDto> ClaimProductAsync(int productId, int userId);
         Task<IEnumerable<ProductRequestDto>> GetMyRequestsAsync(int userId);
         Task<bool> DeleteRequestAsync(int requestId, int userId);
         Task<IEnumerable<ProductRequestDto>> GetDonorRequestsAsync(int userId);

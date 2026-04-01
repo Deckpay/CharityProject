@@ -22,12 +22,12 @@ namespace API.Controllers
         public async Task<IActionResult> Claim(int productId)
         {
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-            var requestId = await _productRequestService.ClaimProductAsync(productId, userId);
+            var result = await _productRequestService.ClaimProductAsync(productId, userId);
 
-            if (requestId > 0)
-                return Ok(new { requestId = requestId }); // JSON válasz: {"requestId": 123}
+            if (result.Success)
+                return Ok(result);
 
-            return BadRequest("Nem sikerült az igénylés.");
+            return BadRequest(result);
         }
 
         [Authorize]

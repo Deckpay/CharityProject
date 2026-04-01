@@ -4,7 +4,7 @@
 @if (isVisible)
 {
     <div class="toast-container @type">
-        <span class="material-symbols-outlined">@(type == "success" ? "check_circle" : "info")</span>
+        <span class="material-symbols-outlined">@(type == "success" ? "check_circle" : "error")</span>
         <span class="toast-message">@message</span>
     </div>
 }

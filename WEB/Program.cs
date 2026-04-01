@@ -53,6 +53,11 @@ builder.Services.AddHttpClient<ProductRequestApiService>(client =>
     client.BaseAddress = new Uri(apiBaseUrl);
 });
 
+builder.Services.AddHttpClient<LimitApiService>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl);
+});
+
 builder.Services.AddScoped<CustomAuthStateProvider>(sp =>
     (CustomAuthStateProvider)sp.GetRequiredService<AuthenticationStateProvider>());
 

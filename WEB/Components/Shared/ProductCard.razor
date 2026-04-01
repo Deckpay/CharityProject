@@ -5,6 +5,7 @@
 @inject ProductRequestApiService ProductRequestService
 @inject NavigationManager Navigation
 @inject LocalStorageService LocalStorage
+@inject ToastService ToastService;
 
 <div class="modern-product-card @(isClaimed ? "card-claimed" : "")">
     <div class="card-header-section">
@@ -141,19 +142,20 @@
         {
             var rawToken = await LocalStorage.GetItemAsync<string>("authToken") ?? "";
             var token = rawToken.Trim('"');
-            var requestId = await ProductRequestService.ClaimProductAsync(Product.ProductId, token);
-            if (requestId > 0)
+            var result = await ProductRequestService.ClaimProductAsync(Product.ProductId, token);
+            if (result.Success)
             {
-                activeRequestId = requestId;
+                activeRequestId = result.RequestId ?? 0;
                 isMyActiveClaim = true;
+                ToastService.ShowToast("Sikeres igénylés", "success");
                 StateHasChanged();
-                Navigation.NavigateTo($"/chat/{requestId}");
+                Navigation.NavigateTo($"/chat/{activeRequestId}");
             }
             else
             {
-                // 0 visszatérés = foglalt vagy más hiba
+                ToastService.ShowToast(result.Message, "error");
                 isClaimedByOther = true;
-                claimError = false;
+                claimError = true;
                 StateHasChanged();
             }
         }

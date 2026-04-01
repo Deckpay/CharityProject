@@ -21,6 +21,7 @@ namespace Infrastructure.Data
         public DbSet<Chat> Chats { get; set; } = null!;
         public DbSet<ProductRequest> ProductRequests { get; set; }
         public DbSet<RequesterLimitRule> RequesterLimitRule { get; set; }
+        public DbSet<RequesterLimitUsage> RequesterLimitUsage { get; set; }
 
         // Ez a metódus felel az adatbázis finomhangolásáért (Fluent API)
         protected override void OnModelCreating(ModelBuilder modelBuilder)

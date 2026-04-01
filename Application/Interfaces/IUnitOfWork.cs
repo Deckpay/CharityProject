@@ -14,6 +14,7 @@ namespace Application.Interfaces
         IGenericRepository<ChatMessage> ChatMessages { get; }
         IGenericRepository<ProductRequest> ProductRequests { get; }
         IGenericRepository<RequesterLimitRule> RequesterLimitRules { get; }
+        IGenericRepository<RequesterLimitUsage> RequesterLimitUsages { get; }
 
         // Ez a metódus menti el az összes változtatást (Tranzakció kezelés)
         Task<int> CompleteAsync();

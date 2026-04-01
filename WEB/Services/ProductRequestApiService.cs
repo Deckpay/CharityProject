@@ -43,19 +43,31 @@ namespace WEB.Services
             await _http.SendAsync(request);
         }
 
-        public async Task<int> ClaimProductAsync(int productId, string token)
+        public async Task<ClaimResultDto> ClaimProductAsync(int productId, string token)
         {
             var request = CreateAuthRequest(HttpMethod.Post, $"ProductRequest/claim/{productId}", token);
             var response = await _http.SendAsync(request);
 
-            if (!response.IsSuccessStatusCode) return 0;
-
             var json = await response.Content.ReadAsStringAsync();
-            using var doc = JsonDocument.Parse(json);
-            if (doc.RootElement.TryGetProperty("requestId", out var prop))
-                return prop.GetInt32();
 
-            return 0;
+            try
+            {
+                // Próbáljuk deszerializálni a backend DTO-t
+                var result = JsonSerializer.Deserialize<ClaimResultDto>(json, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
+                if (result != null)
+                    return result;
+
+                return new ClaimResultDto { Success = false, Message = "Hiba a szerverről." };
+            }
+            catch
+            {
+                // Ha nem sikerül deszerializálni, visszaadjuk a raw üzenetet
+                return new ClaimResultDto { Success = false, Message = json };
+            }
         }
 
         // Donor lezárja az igénylést. success=true → sikeres, false → sikertelen átadás.

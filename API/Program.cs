@@ -28,6 +28,7 @@ builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<IProductRequestService, ProductRequestService>();
+builder.Services.AddScoped<ILimitService, LimitService>();
 
 
 // --- DINAMIKUS CORS BEÁLLÍTÁS (Módosítva) ---
