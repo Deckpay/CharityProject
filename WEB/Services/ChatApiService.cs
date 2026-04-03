@@ -80,7 +80,7 @@ namespace WEB.Services
             return null;
         }
 
-        public async Task<ChatInfoDto?> GetChatINfoAsync(int requestId, string token)
+        public async Task<ChatInfoDto?> GetChatInfoAsync(int requestId, string token)
         {
             var request = CreateAuthRequest(HttpMethod.Get, $"Chat/info/{requestId}", token);
             var response = await _http.SendAsync(request);

@@ -17,7 +17,11 @@ namespace Application.DTOs
 
         [Compare("Password", ErrorMessage = "A két jelszó nem egyezik")]
         public string ConfirmPassword { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "A név megadása kötelező")]
         public string FirstName { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "A név megadása kötelező")]
         public string LastName { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "A szerepkör kiválasztása kötelező")]

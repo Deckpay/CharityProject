@@ -1,12 +1,14 @@
 ﻿@page "/my-requests"
 @using Application.DTOs
 @using Domain.Entities
+@using Domain.Enums
 @using WEB.Services
 @inject NavigationManager Navigation
 @inject ProductApiService ProductService
 @inject ProductRequestApiService ProductRequestService
 @inject CustomAuthStateProvider AuthStateProvider
 @inject LocalStorageService LocalStorage
+@inject ToastService ToastService
 @implements IDisposable
 
 <div class="requests-page">
@@ -49,14 +51,16 @@
                 <div class="request-card">
                     <div class="card-top-row">
                         <span class="status-badge @req.RequestStatus">
-                            @req.RequestStatus
+                            Állapot: @GetStatusText(req.RequestStatus)
                         </span>
                         <button class="delete-icon-btn" @onclick="() => AskDelete(req.ProductRequestId)"
                                 title="Törlés">
                             <span class="material-symbols-outlined">delete_outline</span>
                         </button>
                     </div>
-                    <div class="card-product-name">@GetProductName(req.ProductId)</div>
+                    <div class="card-product-name">
+                        @(req.ProductName ?? $"Termék #{req.ProductId}")
+                    </div>
                     <div class="card-date">
                         <span class="material-symbols-outlined">schedule</span>
                         @req.RequestedAt.ToLocalTime().ToString("yyyy. MM. dd. HH:mm")
@@ -166,15 +170,30 @@
             requests.RemoveAll(r => r.ProductRequestId == deletingId.Value);
         }
         catch (Exception ex) { Console.WriteLine($"Törlési hiba: {ex.Message}"); }
-        finally { isDeleting = false; showConfirm = false; deletingId = null; StateHasChanged(); }
+        finally 
+        { 
+            isDeleting = false; 
+            showConfirm = false; 
+            deletingId = null;
+            ToastService.ShowToast("Sikeresen törölted az igénylést", "success");
+            StateHasChanged(); 
+        }
     }
-
-    private string GetProductName(int id) =>
-        products.FirstOrDefault(p => p.ProductId == id)?.ProductName ?? $"Termék #{id}";
 
     private Dictionary<string, object> GetDeleteBtnAttrs() =>
         isDeleting ? new Dictionary<string, object> { { "disabled", "disabled" } }
                    : new Dictionary<string, object>();
+
+    private string GetStatusText(RequestStatus status)
+    {
+        return status switch
+        {
+            RequestStatus.Pending => "Függőben",
+            RequestStatus.Completed => "Sikeres",
+            RequestStatus.Failed => "Sikertelen",
+            _ => status.ToString()
+        };
+    }
 
     // Timer cleanup az oldal elhagyásakor
     public void Dispose() => _timer?.Dispose();

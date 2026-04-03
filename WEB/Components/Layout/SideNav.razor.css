@@ -269,6 +269,23 @@
     margin: 0 auto;
 }
 
+.nav-badge {
+    background-color: #ef4444; /* Élénk piros (Tailwind red-500) */
+    color: white; /* Fehér szám */
+    font-size: 11px; /* Kicsit kisebb, hogy esztétikus legyen */
+    font-weight: 700; /* Vastagabb szám */
+    min-width: 18px; /* Minimum szélesség, hogy egy számnál is kör legyen */
+    height: 18px;
+    border-radius: 10px; /* Lekerekítés */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 5px;
+    margin-left: auto; /* Kitolja a jobb szélre a menüponton belül */
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.4); /* Enyhe piros izzás */
+    border: 1.5px solid #0f1923; /* Egy vékony keret, ami megegyezik a sidebar színével (ettől "lebegősebb") */
+}
+
 @media (max-width: 768px) {
     /* 1. Rejtsük el a belső kis kerek nyilacskát mobilon */
     .mobile-hide-toggle {

@@ -20,11 +20,11 @@
                 </svg>
             </button>
             <div class="header-avatar">
-                <span>@(otherPartyName ?.Length > 0 ? otherPartyName[0].ToString().ToUpper() : "?")</span>
+                <span>@(otherPartyName?.Length > 0 ? otherPartyName[0].ToString().ToUpper() : "?")</span>
             </div>
             <div class="header-info">
-                <span class="header-title">@(string.IsNullOrEmpty(otherPartyName) ? $"Igénylés #{RequestId}": otherPartyName)</span>
-                <span class="header-sub">@(isLoading ? "betöltés..." : $"{messages.Count} üzenet")</span>
+                <span class="header-title">@(string.IsNullOrEmpty(otherPartyName) ? $"Igénylés #{RequestId}" : otherPartyName)</span>
+                <span class="header-product">@productName</span>
             </div> 
         </div>
         @if (!isChatLocked && isUserTheDonor)
@@ -199,6 +199,7 @@
     private string otherPartyName = string.Empty;
     private bool _poolingStarted = false;
     private bool _isLOadingMessages = false;
+    private string? productName = "";
 
     private bool CanSend => !isSending && !string.IsNullOrWhiteSpace(newMessage);
 
@@ -219,13 +220,12 @@
                 return;
             }
 
-
-
             currentUserId = await AuthStateProvider.GetCurrentUserIdAsync();
             token = await LocalStorage.GetItemAsync<string>("authToken") ?? "";
 
             // Párhuzamosan kérjük le a pertner nevét
-            var infoTask = ChatService.GetChatINfoAsync(RequestId, token);
+            //var info = await ChatService.GetChatInfoAsync(RequestId, token);
+            var infoTask = ChatService.GetChatInfoAsync(RequestId, token);
             var messagesTask = LoadMessages();
 
             await Task.WhenAll(infoTask, messagesTask);
@@ -234,7 +234,13 @@
 
             var info = await infoTask;
             if (info != null)
+            {
                 otherPartyName = info.OtherPartyName;
+                isUserTheDonor = (info.DonorId == currentUserId);
+                productName = info.ProductName;
+            }
+
+
 
             isLoading = false;
             StateHasChanged();
@@ -244,8 +250,6 @@
                 _poolingStarted = true;
                 _ = StartPollingAsync();
             }
-
-
         }
     }
 
@@ -261,7 +265,9 @@
 
             var firstMsg = messages.FirstOrDefault();
             if (firstMsg != null)
+            {
                 otherPartyName = firstMsg.OtherPartyName;
+            }
 
             var systemMsg = messages.FirstOrDefault(m => m.Content.Contains("[RENDSZER]"));
             if (systemMsg != null)

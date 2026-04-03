@@ -13,7 +13,7 @@ namespace Application.Interfaces
         //olvasatlannak jelölés
         Task MarkAsRead(int messageId);
         // chat profilok helyes megjelenitése
-        Task<ChatInfoDto> GetChatINfoAsync(int requestId, int currentUserId);
+        Task<ChatInfoDto> GetChatInfoAsync(int requestId, int currentUserId);
         // olvasatlan üzenetek számának megjelenítése
         Task<int> GetTotalUnreadCountAsync(int currentUserId);
 

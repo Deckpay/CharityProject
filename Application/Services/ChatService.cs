@@ -1,6 +1,7 @@
 ﻿using Application.Interfaces;
 using Domain.Entities;
 using Application.DTOs;
+using Domain.Enums;
 
 namespace Application.Services
 {
@@ -87,7 +88,8 @@ namespace Application.Services
                     RequestId = requestId,
                     SenderId = m.SenderId,
                     DonorId = chat.DonorId,
-                    SenderName = allUsers.FirstOrDefault(u => u.UserId == m.SenderId)?.UserName ?? "Ismeretlen",
+                    SenderName = allUsers.FirstOrDefault(u => u.UserId == m.SenderId) is var user && user != null
+                        ? $"{user.FirstName} {user.LastName}" : "Ismeretlen",
                     OtherPartyName = otherPartyName,
                     Content = m.Content,
                     SentAt = m.Timestamp,
@@ -107,7 +109,7 @@ namespace Application.Services
             }
         }
 
-        public async Task<ChatInfoDto> GetChatINfoAsync(int requestId, int currentUserId)
+        public async Task<ChatInfoDto> GetChatInfoAsync(int requestId, int currentUserId)
         {
             var request = await _unitOfWork.ProductRequests.GetByIdAsync(requestId);
             if (request == null)
@@ -123,10 +125,15 @@ namespace Application.Services
                 ? request.RequesterId
                 : product.DonorId;
 
-            var otherPartyName = allUsers.FirstOrDefault(u => u.UserId == otherPartyId)?.UserName
-                                 ?? "Ismeretlen";
+            var otherPartyName = allUsers.FirstOrDefault(u => u.UserId == otherPartyId) is var user && user != null
+                        ? $"{user.FirstName} {user.LastName}" : "Ismeretlen";
 
-            return new ChatInfoDto { OtherPartyName = otherPartyName };
+            return new ChatInfoDto 
+            { 
+                OtherPartyName = otherPartyName,
+                DonorId = product.DonorId,
+                ProductName = product.ProductName
+            };
         }
 
         // olvasatlan uzenetek számolása
@@ -134,10 +141,17 @@ namespace Application.Services
         {
             var allMesages = await _unitOfWork.ChatMessages.GetAllAsync();
             var allChats = await _unitOfWork.Chats.GetAllAsync();
+            var allRequests = await _unitOfWork.ProductRequests.GetAllAsync();
+
+            var activeRequestsIds = allRequests
+                .Where(r => r.RequestStatus == RequestStatus.Pending)
+                .Select(r => r.ProductRequestId)
+                .ToHashSet();
 
             // csak azokat a caheteket vesszük ahol a user résztvevő
             var userChatIds = allChats
-                .Where(c => c.DonorId == currentUserId || c.RequesterId == currentUserId)
+                .Where(c => (c.DonorId == currentUserId || c.RequesterId == currentUserId)
+                    && activeRequestsIds.Contains(c.ProductRequestId))
                 .Select(c => c.ChatId)
                 .ToHashSet();
 

@@ -55,6 +55,10 @@ namespace Application.Services
                 RequestedAt = DateTime.Now
             };
 
+            // Termék státusz frissítése
+            product.ProductStatus = ProductStatus.Pending;
+            product.UpdatedAt = DateTime.UtcNow;
+
             await _unitOfWork.ProductRequests.AddAsync(newRequest);
             await _unitOfWork.CompleteAsync();
             return new ClaimResultDto { Success = true, RequestId = newRequest.ProductRequestId, Message = "Sikeres igénylés!" };
@@ -63,12 +67,19 @@ namespace Application.Services
         public async Task<IEnumerable<ProductRequestDto>> GetMyRequestsAsync(int userId)
         {
             var requests = await _unitOfWork.ProductRequests.GetAllAsync();
-
+            var dtos = new List<ProductRequestDto>();
             // Csak Pending igénylések jelennek meg a rec listájában
             // Ha Completed vagy Failed → eltűnik (a donor lezárta)
-            return requests
+            var activeRequests = requests
                 .Where(r => r.RequesterId == userId && r.RequestStatus == RequestStatus.Pending)
-                .Select(MapToDto);
+                .ToList();
+
+            foreach (var r in activeRequests)
+            {
+                dtos.Add(await MapToDtoAsync(r));
+            }
+
+            return dtos;
         }
 
         public async Task<bool> DeleteRequestAsync(int requestId, int userId)
@@ -81,9 +92,10 @@ namespace Application.Services
 
             // Ha a rec visszavonja az igénylést, a termék visszakerül Active-ba
             var product = await _unitOfWork.Products.GetByIdAsync(request.ProductId);
-            if (product != null && product.ProductStatus == ProductStatus.Active)
+            if (product != null)
             {
-                // Már Active, nem kell változtatni
+                product.ProductStatus = ProductStatus.Active;
+                product.UpdatedAt = DateTime.UtcNow;
             }
 
             return await _unitOfWork.CompleteAsync() > 0;
@@ -93,14 +105,23 @@ namespace Application.Services
         {
             var myProducts = await _unitOfWork.Products.GetAllAsync();
             var myProductIds = myProducts
-                .Where(p => p.DonorId == userId && p.ProductStatus == ProductStatus.Active)
+                .Where(p => p.DonorId == userId &&
+                    (p.ProductStatus == ProductStatus.Active || p.ProductStatus == ProductStatus.Pending))
                 .Select(p => p.ProductId)
                 .ToHashSet();
 
             var requests = await _unitOfWork.ProductRequests.GetAllAsync();
-            return requests
+            var filteredRequests = requests
                 .Where(r => myProductIds.Contains(r.ProductId) && r.RequestStatus == RequestStatus.Pending)
-                .Select(MapToDto);
+                .ToList();
+
+            var dtos = new List<ProductRequestDto>();
+            foreach (var r in filteredRequests)
+            {
+                dtos.Add(await MapToDtoAsync(r));
+            }
+
+            return dtos;
         }
 
         public async Task<bool> CompleteRequestAsync(int requestId, int userId, bool success)
@@ -151,13 +172,18 @@ namespace Application.Services
                 r.RequestStatus == RequestStatus.Pending);
         }
 
-        private static ProductRequestDto MapToDto(ProductRequest r) => new ProductRequestDto
+        private async Task<ProductRequestDto> MapToDtoAsync(ProductRequest r)
         {
-            ProductRequestId = r.ProductRequestId,
-            ProductId = r.ProductId,
-            RequesterId = r.RequesterId,
-            RequestStatus = r.RequestStatus,
-            RequestedAt = r.RequestedAt
-        };
+            var product = await _unitOfWork.Products.GetByIdAsync(r.ProductId);
+            return new ProductRequestDto
+            {
+                ProductRequestId = r.ProductRequestId,
+                ProductId = r.ProductId,
+                ProductName = product?.ProductName ?? $"Termék #{r.ProductId}",
+                RequesterId = r.RequesterId,
+                RequestStatus = r.RequestStatus,
+                RequestedAt = r.RequestedAt
+            };
+        }
     }
 }

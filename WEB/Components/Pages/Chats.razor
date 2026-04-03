@@ -99,52 +99,14 @@
                             }
                         </div>
                         <div class="conv-meta">
-                            <span class="req-id">#@conv.RequestId</span>
-                            <span class="@statusCls">@statusTxt</span>
+                            <span class="@statusCls">Állapot: @GetStatusText(conv.Status)</span>
                         </div>
                     </div>
-                    <button class="conv-delete" title="Törlés"
-                            @onclick:stopPropagation="true"
-                            @onclick="() => AskDelete(reqId)">
-                        <span class="material-symbols-outlined">close</span>
-                    </button>
                 </div>
             }
         </div>
     }
 </div>
-
-@if (showConfirm)
-{
-    <div class="modal-backdrop" @onclick="CancelDelete">
-        <div class="modal-card" @onclick:stopPropagation="true">
-            <button class="modal-close-btn" @onclick="CancelDelete">
-                <span class="material-symbols-outlined">close</span>
-            </button>
-            <div class="modal-danger-icon">
-                <span class="material-symbols-outlined">delete_forever</span>
-            </div>
-            <h3 class="modal-title">Töröljük a beszélgetést?</h3>
-            <p class="modal-desc">Ez a művelet nem vonható vissza. A chat üzenetek is törlődnek.</p>
-            <div class="modal-actions">
-                <button class="btn-modal-cancel" @onclick="CancelDelete">Mégsem</button>
-                @if (isDeleting)
-                {
-                    <button class="btn-modal-danger" disabled="disabled">
-                        <span class="spinner-border spinner-border-sm"></span>
-                        Törlés...
-                    </button>
-                }
-                else
-                {
-                    <button class="btn-modal-danger" @onclick="ConfirmDelete">
-                        Igen, törlöm
-                    </button>
-                }
-            </div>
-        </div>
-    </div>
-}
 
 @code {
     private class ConversationVm
@@ -159,13 +121,13 @@
 
     private List<ConversationVm> conversations = new();
     private bool isLoading = true;
-    private bool showConfirm = false;
-    private bool isDeleting = false;
     private int? deletingConvId = null;
     private int currentUserId = 0;
     private string token = string.Empty;
     private bool isDonor = false;
-    
+    private System.Threading.PeriodicTimer? _timer;
+    private bool _isDisposed = false;
+
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -185,6 +147,22 @@
         await LoadConversations();
         isLoading = false;
         StateHasChanged();
+
+        _ = StartPolling();
+    }
+
+    private async Task StartPolling()
+    {
+        _timer = new System.Threading.PeriodicTimer(TimeSpan.FromSeconds(5));
+        try
+        {
+            while (await _timer.WaitForNextTickAsync() && !_isDisposed)
+            {
+                await LoadConversations();
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+        catch (OperationCanceledException) { }
     }
 
     private async Task LoadConversations()
@@ -203,14 +181,17 @@
             foreach (var req in requests.OrderByDescending(r => r.RequestedAt))
             {
                 var found = allProducts.FirstOrDefault(p => p.ProductId == req.ProductId);
-                var productName = found != null ? found.ProductName : ("Termék #" + req.ProductId.ToString());
+                var productName = !string.IsNullOrEmpty(req.ProductName)
+                ? req.ProductName
+                : (found != null ? found.ProductName : "Termék #" + req.ProductId);
 
+                Console.WriteLine($"RequestId: {req.ProductRequestId}, ProductId: {req.ProductId}, Found: {found?.ProductName}");
                 List<ChatMessageResponseDto> msgs = new();
                 try { msgs = await ChatService.GetHistoryAsync(req.ProductRequestId, token); }
                 catch { }
 
-                
-                
+
+
                 var last = msgs.Count > 0 ? msgs[msgs.Count - 1] : null;
                 result.Add(new ConversationVm
                 {
@@ -230,41 +211,6 @@
         }
     }
 
-    private void AskDelete(int requestId)
-    {
-        deletingConvId = requestId;
-        showConfirm = true;
-    }
-
-    private void CancelDelete()
-    {
-        showConfirm = false;
-        deletingConvId = null;
-    }
-
-    private async Task ConfirmDelete()
-    {
-        if (deletingConvId == null) return;
-        isDeleting = true;
-        StateHasChanged();
-        try
-        {
-            await ProductRequestService.DeleteRequestAsync(deletingConvId.Value, token);
-            conversations.RemoveAll(c => c.RequestId == deletingConvId.Value);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("Törlési hiba: " + ex.Message);
-        }
-        finally
-        {
-            isDeleting = false;
-            showConfirm = false;
-            deletingConvId = null;
-            StateHasChanged();
-        }
-    }
-
     private string FormatTime(DateTime dt)
     {
         var local = dt.ToLocalTime();
@@ -274,12 +220,15 @@
         return local.ToString("MM. dd.");
     }
 
-    private string GetStatusText(int s)
+    private string GetStatusText(RequestStatus status)
     {
-        if (s == 0) return "Függőben";
-        if (s == 1) return "Elfogadva";
-        if (s == 2) return "Elutasítva";
-        return string.Empty;
+        return status switch
+        {
+            RequestStatus.Pending => "Függőben",
+            RequestStatus.Completed => "Sikeres",
+            RequestStatus.Failed => "Sikertelen",
+            _ => status.ToString()
+        };
     }
 
     private string GetStatusClass(int s)
@@ -288,5 +237,11 @@
         if (s == 1) return "st-accepted";
         if (s == 2) return "st-rejected";
         return string.Empty;
+    }
+
+    public void Dispose()
+    {
+        _isDisposed = true;
+        _timer?.Dispose();
     }
 }

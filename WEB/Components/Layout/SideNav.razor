@@ -214,15 +214,20 @@
                 <div class="user-card">
                     <div class="user-avatar">
                         @{
-                            var uname = context.User.Identity?.Name ?? "?";
+                            var firstName = context.User.FindFirst(System.Security.Claims.ClaimTypes.GivenName)?.Value ?? "";
+                            var lastName = context.User.FindFirst(System.Security.Claims.ClaimTypes.Surname)?.Value ?? "";
+                            var fullName = $"{firstName} {lastName}".Trim();
                         }
-                        <span>@(uname.Length > 0 ? uname[0].ToString().ToUpper() : "?")</span>
+                        <span>
+                            @(fullName.Length > 0
+                                ? fullName.Split(' ').First()[0].ToString().ToUpper()
+                                : "?")
+                        </span>
                     </div>
                     @if (isOpened)
                     {
                         <div class="user-info">
-                            <span class="user-name">@uname</span>
-                            <span class="user-role">@(context.User.FindFirst(c => c.Type == System.Security.Claims.ClaimTypes.Role)?.Value ?? "Felhasználó")</span>
+                            <span class="user-name">@fullName</span>
                         </div>
                     }
                 </div>

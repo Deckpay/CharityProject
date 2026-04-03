@@ -28,6 +28,8 @@ namespace Infrastructure.Repositories
             {
                 new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
                 new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.GivenName, user.FirstName),
+                new Claim(ClaimTypes.Surname, user.LastName),
                 new Claim(ClaimTypes.Role, user.UserRole.ToString()),
                 new Claim(ClaimTypes.Email, user.Email)
             };

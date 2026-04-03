@@ -43,7 +43,7 @@ namespace API.Controllers
         public async Task<IActionResult> GetChatInfo(int requestId)
         {
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-            var info = await _chatService.GetChatINfoAsync(requestId, userId);
+            var info = await _chatService.GetChatInfoAsync(requestId, userId);
             return Ok(info);
         }
 

@@ -8,6 +8,8 @@ namespace Application.DTOs
 {
     public class ChatInfoDto
     {
+        public int DonorId { get; set; }
         public string OtherPartyName { get; set; } = string.Empty;
+        public string? ProductName { get; set; }
     }
 }
