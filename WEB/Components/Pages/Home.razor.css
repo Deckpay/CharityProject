@@ -13,6 +13,11 @@ section {
 /* ════════════════════════════════════════════════════════════════
    1. HERO – #home
    ════════════════════════════════════════════════════════════════ */
+/*cim körüli resz eltüntetése*/
+h1:focus, h1:focus-visible {
+    outline: none;
+}
+
 #home {
     background-image: url('../Images/home.png');
     background-size: cover;
@@ -402,16 +407,126 @@ cta-box .btn-alt {
    ════════════════════════════════════════════════════════════════ */
 #gyik {
     background: #253749;
+    padding:80px 0;
 }
 
-    #gyik h2 {
-        font-family: 'Sora', sans-serif;
-        font-size: clamp(1.5rem, 3vw, 2.2rem);
-        font-weight: 800;
-        color: #f1f5f9;
-        letter-spacing: -0.03em;
-        margin-bottom: 32px;
+#gyik details {
+    background-color: #1e2d3d;
+    border: 1px solid rgba(96, 165, 250, 0.25);
+    border-radius: 12px;
+    margin-bottom: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    position: relative;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    min-height: 80px;
+}
+
+#gyik details .gyik-kep {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: 50%;
+    object-fit: cover;
+    object-position: center;
+    z-index: 0;
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 30%);
+    mask-image: linear-gradient(to right, transparent 0%, black 30%);
+}
+
+#gyik details[open] {
+    border-color: rgba(96,165,250,0.95);
+    background-color: rgba(30,41,59,.0.85);
+}
+
+/* Kártyák kiemelése Hover (rámutatás) esetén */
+#gyik details:hover {
+    transform: translateY(-2px);
+    border-color: rgba(96, 165, 250, 0.5);
+}
+
+#gyik details summary,
+#gyik details p {
+    position: relative;
+    z-index: 1;
+}
+
+.elso_kerdes,
+.masodik_kerdes,
+.harmadik_kerdes,
+.negyedik_kerdes {
+    background-image: none;
+}
+
+ /* A kinyíló szövegblokk stílusa */
+#gyik details p {
+    background: rgba(10, 20, 35, 0.35); /* volt: 0.5 → most átlátszóbb */
+    border-radius: 10px;
+    margin: 12px 18px 18px;
+    padding: 16px;
+    color: #e2e8f0;
+    line-height: 1.7;
+    font-size: 14.5px;
+    font-weight: 400;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    animation: fadeIn 0.3s ease-in-out;
+    position: relative;
+    z-index: 1;    
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+#gyik summary::after {
+    content: '+';
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 22px;
+    color: #60a5fa;
+    transition: transform 0.3s;
+}
+
+#gyik details[open] summary::after {
+    transform: translateY(-50%) rotate(45deg);
+}
+
+/* A nyitó fejléc stílusa */
+#gyik summary {
+    padding: 20px 5px;
+    color: #ffffff; /* Tiszta fehér a jobb olvashatóságért */
+    font-family: 'Sora', sans-serif;    
+    font-size: 15px;
+    font-weight: 600;
+    cursor:pointer;
+    list-style:none;
+    position:relative;
+    
+}
+
+/* Animáció definiálása */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
     }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#gyik h2 {
+    font-family: 'Sora', sans-serif;
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    font-weight: 800;
+    color: #f1f5f9;
+    letter-spacing: -0.03em;
+    text-align:center;
+    margin-bottom: 40px;
+}
 
 .accordion {
     max-width: 760px;
@@ -421,20 +536,10 @@ cta-box .btn-alt {
     gap: 10px;
 }
 
-details {
-    background: #324a61;
-    margin-bottom: 0;
-    border-radius: 12px;
-    border: 1px solid rgba(255,255,255,0.08);
-    overflow: hidden;
-    transition: box-shadow 0.22s;
+details[open] {
+    border-color: rgba(37,99,235,0.45);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);    
 }
-
-    details[open] {
-        border-color: rgba(37,99,235,0.45);
-        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-        background: #364f67;
-    }
 
 summary {
     padding: 18px 20px;
@@ -449,22 +554,22 @@ summary {
     transition: color 0.2s;
 }
 
-    summary::-webkit-details-marker {
-        display: none;
-    }
+summary::-webkit-details-marker {
+    display: none;
+}
 
-    summary::after {
-        content: '+';
-        position: absolute;
-        right: 18px;
-        top: 50%;
-        transform: translateY(-50%);
-        font-size: 20px;
-        font-weight: 300;
-        color: #60a5fa;
-        transition: transform 0.2s;
-        line-height: 1;
-    }
+summary::after {
+    content: '+';
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 20px;
+    font-weight: 300;
+    color: #60a5fa;
+    transition: transform 0.2s;
+    line-height: 1;    
+}
 
 details[open] summary::after {
     content: '+';
@@ -492,6 +597,7 @@ details p {
 #kapcsolat {
     background: #223040;
     color: #c8d3e0;
+    padding: 80px;
     border-bottom: none;
 }
 
@@ -518,107 +624,148 @@ details p {
 
 .info-item {
     display: flex;
-    align-items: flex-start;
-    gap: 14px;
-    padding: 14px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.07);
-    margin-bottom: 0;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+    backdrop-filter:blur(5px); 
 }
 
-    .info-item:last-child {
-        border-bottom: none;
+
+    .info-item:hover {
+        border-color: rgba(255, 255, 255, 0.4);
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.05);
     }
 
     .info-item .material-symbols-outlined {
-        font-size: 20px !important;
-        color: #60a5fa;
-        background: rgba(37,99,235,0.14);
-        padding: 9px;
+        font-size: 22px !important;
+        color: #ffffff;
+        background: linear-gradient(135deg, #60a5fa, #2563eb);
+        padding: 10px;
         border-radius: 10px;
-        width: 38px;
-        height: 38px;
+        box-shadow: 0 0 15px rgba(96, 165, 250, 0.6);
         display: flex;
         align-items: center;
         justify-content: center;
-        flex-shrink: 0;
-        line-height: 1;
     }
 
-    .info-item strong {
-        display: block;
-        font-size: 11px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.07em;
-        color: #5a7080;
-        margin-bottom: 3px;
-    }
 
-    .info-item a,
-    .info-item span:not(.material-symbols-outlined) {
-        color: #c8d3e0;
-        text-decoration: none;
-        font-size: 14.5px;
-        font-weight: 500;
-    }
 
-        .info-item a:hover {
-            color: #60a5fa;
-        }
+.info-item:last-child {
+   border-bottom: none;
+}
+
+.info-item .material-symbols-outlined {
+   font-size: 20px !important;
+   color: #60a5fa;
+   background: rgba(37,99,235,0.14);
+   padding: 9px;
+   border-radius: 10px;
+   width: 38px;
+   height: 38px;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   flex-shrink: 0;
+   line-height: 1;
+}
+
+.info-item strong {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: #5a7080;
+    margin-bottom: 3px;
+}
+
+.info-item a,
+.info-item span:not(.material-symbols-outlined) {
+   color: #c8d3e0;
+   text-decoration: none;
+   font-size: 14.5px;
+   font-weight: 500;
+}
+
+.info-item a:hover {
+   color: #60a5fa;
+}
 
 /* Kapcsolat form */
 .contact-form-wrapper {
-    background: #324a61;
-    padding: 32px 28px;
-    border-radius: 16px;
-    border: 1px solid rgba(255,255,255,0.09);
-    color: #c8d3e0;
+    background: rgba(30, 45, 61, 0.6);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    padding: 40px;
+    border-radius: 20px;   
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
 }
+
+    .contact-form-wrapper::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+    }
 
 .form-group {
     margin-bottom: 16px;
 }
 
     .form-group label {
-        display: block;
-        margin-bottom: 6px;
-        font-family: 'DM Sans', sans-serif;
+        display:block;
+        color: #ffffff;
+        font-family: 'Sora', sans-serif;
+        font-size: 12px;
         font-weight: 600;
-        font-size: 11.5px;
-        text-transform: uppercase;
-        letter-spacing: 0.07em;
-        color: #5a7080;
+        margin-bottom: 8px;
+        letter-spacing: 0.05em;
+        opacity: 0.8;
     }
 
-    .form-group input,
-    .form-group textarea {
-        width: 100%;
-        padding: 11px 14px;
-        background: #223040;
-        border: 1.5px solid rgba(255,255,255,0.1);
-        border-radius: 10px;
-        font-family: 'DM Sans', sans-serif;
-        font-size: 14px;
-        color: #c8d3e0;
-        transition: border-color 0.22s, box-shadow 0.22s;
-        outline: none;
-        resize: vertical;
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 11px 14px;
+    background: #1e293b;
+    border: 1.5px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: #ffffff;
+    transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    outline: none;
+    box-shadow: 0.4px 12px rgba(0,0,0,0,0.4);
+    /*resize: vertical;*/
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+   color: #5a7080;
+}
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+        transform: translateY(-3px); /* Fizikai emelkedés */
+        background: #26334d;
+        border-color: rgba(255, 255, 255, 0.5); /* Fényesebb keret focusnál */
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5), 0 0 10px rgba(255, 255, 255, 0.1);
     }
 
-        .form-group input::placeholder,
-        .form-group textarea::placeholder {
-            color: #5a7080;
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus {
-            border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37,99,235,0.18);
-        }
-
-    .form-group textarea {
-        min-height: 110px;
-    }
+.form-group textarea {
+   min-height: 110px;
+}
 
 .contact-form button {
     width: 100%;
@@ -635,11 +782,11 @@ details p {
     box-shadow: 0 4px 14px rgba(37,99,235,0.25);
 }
 
-    .contact-form button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(37,99,235,0.35);
-        filter: brightness(1.08);
-    }
+.contact-form button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(37,99,235,0.35);
+    filter: brightness(1.08);
+}
 
 /* ════════════════════════════════════════════════════════════════
    RESZPONZÍV – MOBIL
