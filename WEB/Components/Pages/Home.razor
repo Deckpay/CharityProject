@@ -3,8 +3,9 @@
 @rendermode InteractiveServer
 
 @* 1. SZEKCIÓ: KAPCSOLAT / LÁBJEGYZÉK *@
-<section id="home">
+<section id="home" class="bg-slate-900">
     <div class="hero-container">
+        
         <div class="hero-content-wrapper">
             <span class="sub-title">Közvetlen segítség, tárgyak útján</span>
             <h1>Ami Önnek felesleg, másnak kincs</h1>
@@ -17,13 +18,15 @@
                 <div class="cta-box give">
                     <span class="material-symbols-outlined">upload_file</span>
                     <h3>Adni szeretnék</h3>
+                    <img class="images"  src="/Images/adok.png" />
                     <p>Töltse fel a tárgyat, válasszon megyét és kategóriát.</p>
-                    <button @onclick='() => Navigation.NavigateTo("/add-item")'>Hirdetés feladása</button>
+                    <button @onclick='() => Navigation.NavigateTo("/my-products")'>Hirdetés feladása</button>
                 </div>
 
                 <div class="cta-box receive">
                     <span class="material-symbols-outlined">inventory_2</span>
                     <h3>Keresek valamit</h3>
+                    <img class=" images" src="/Images/keresekvalamit.png" />
                     <p>Böngésszen az igényelhető termékek között megyék szerint.</p>
                     <button class="btn-alt" @onclick='() => Navigation.NavigateTo("/products")'>Termékek böngészése</button>
                 </div>
@@ -50,10 +53,8 @@
                 <li><span class="material-symbols-outlined">check_circle</span> Ellenőrzött közösség</li>
             </ul>
         </div>
-        <div class="image-side">
-            <div class="placeholder-img">
-                <span class="material-symbols-outlined">volunteer_activism</span>
-            </div>
+        <div class="image-side">            
+                <img class="recycle-img" src="/Images/kuldetesunk.png" />
         </div>
     </div>
 </section>
@@ -66,22 +67,22 @@
         <p class="section-desc">Közösségünk ereje abban rejlik, hogy minden apró felajánlás valaki másnak a világot jelentheti.</p>
 
         <div class="stats-grid">
-            <div class="stat-card">
+            <div class="stat-card given-items">
                 <span class="material-symbols-outlined">package_2</span>
                 <span class="number">1,250+</span>
                 <span class="label">Átadott tárgy</span>
             </div>
-            <div class="stat-card">
+            <div class="stat-card given-help">
                 <span class="material-symbols-outlined">group</span>
                 <span class="number">850</span>
                 <span class="label">Segített család</span>
             </div>
-            <div class="stat-card">
+            <div class="stat-card saved-material">
                 <span class="material-symbols-outlined">forest</span>
                 <span class="number">3.5t</span>
                 <span class="label">Megmentett hulladék</span>
             </div>
-            <div class="stat-card">
+            <div class="stat-card supporterts">
                 <span class="material-symbols-outlined">location_on</span>
                 <span class="number">19</span>
                 <span class="label">Aktív megye</span>

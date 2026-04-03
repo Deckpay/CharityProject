@@ -14,7 +14,11 @@ section {
    1. HERO – #home
    ════════════════════════════════════════════════════════════════ */
 #home {
-    background: #2a3d52;
+    background-image: url('../Images/home.png');
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;    
+    /*#2a3d52*/
     padding: 48px 40px;
     align-items: center;
     justify-content: center;
@@ -23,27 +27,26 @@ section {
     min-height: calc(100vh - 60px);
 }
 
-    #home::before {
-        content: '';
-        position: absolute;
-        top: -100px;
-        right: -150px;
-        width: 500px;
-        height: 500px;
-        background: radial-gradient(circle, rgba(37,99,235,0.22) 0%, transparent 65%);
-        pointer-events: none;
-    }
+#home::before {
+    content: '';
+    position: absolute;
+    inset: 0; /* felülírja a régi top/right/width/height értékeket */
+    /*background: rgba(10, 20, 35, 0.55);  sötét overlay */
+    background: linear-gradient(to bottom, rgba(10, 20, 35, 0.7), rgba(10, 20, 35, 0.4));
+    pointer-events: none;
+    z-index: 0;
+}
 
-    #home::after {
-        content: '';
-        position: absolute;
-        bottom: -80px;
-        left: -100px;
-        width: 400px;
-        height: 400px;
-        background: radial-gradient(circle, rgba(124,58,237,0.12) 0%, transparent 65%);
-        pointer-events: none;
-    }
+#home::after {
+    content: '';
+    position: absolute;
+    bottom: -80px;
+    left: -100px;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(124,58,237,0.12) 0%, transparent 65%);
+    pointer-events: none;
+}
 
 .hero-container {
     max-width: 1000px;
@@ -66,7 +69,7 @@ section {
     font-weight: 700;
     letter-spacing: 0.09em;
     text-transform: uppercase;
-    color: #60a5fa;
+    color: #ffffff;
     background: rgba(37,99,235,0.14);
     border: 1px solid rgba(96,165,250,0.2);
     padding: 5px 14px;
@@ -79,7 +82,7 @@ h1 {
     font-family: 'Sora', sans-serif;
     font-size: clamp(2rem, 5vw, 3.2rem);
     font-weight: 800;
-    color: #f1f5f9;
+    color: #ffffff;
     margin: 0 0 18px;
     line-height: 1.15;
     letter-spacing: -0.03em;
@@ -88,8 +91,8 @@ h1 {
 .hero-content-wrapper > p {
     font-family: 'DM Sans', sans-serif;
     font-size: clamp(14px, 2vw, 16px);
-    color: #a8bbd0;
-    line-height: 1.7;
+    color: #ffffff;
+    line-height: 2.0;
     max-width: 560px;
     margin: 0 auto 36px;
 }
@@ -102,9 +105,9 @@ h1 {
     max-width: 580px;
     margin: 0 auto;
 }
-
+/*home kártya*/
 .cta-box {
-    background: #324a61;
+    background-color:transparent;
     padding: 28px 24px;
     border-radius: 16px;
     border: 1px solid rgba(255,255,255,0.09);
@@ -112,64 +115,72 @@ h1 {
     transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
 }
 
-    .cta-box:hover {
-        transform: translateY(-5px);
-        border-color: rgba(37,99,235,0.5);
-        box-shadow: 0 12px 30px rgba(0,0,0,0.25);
-    }
+.cta-box:hover {
+    transform: translateY(-5px);
+    border-color: rgba(37,99,235,0.5);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+}
+/*home ikon*/
+.cta-box .material-symbols-outlined {
+     font-size: 30px !important;
+     color: #2563eb;
+     margin-bottom: 12px;
+     display: block;
+}
 
-    .cta-box .material-symbols-outlined {
-        font-size: 30px !important;
-        color: #60a5fa;
-        margin-bottom: 12px;
-        display: block;
-    }
+.cta-box h3 {
+    font-family: 'Sora', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0 0 8px;
+}
 
-    .cta-box h3 {
-        font-family: 'Sora', sans-serif;
-        font-size: 15px;
-        font-weight: 700;
-        color: #e2e8f0;
-        margin: 0 0 8px;
-    }
+.cta-box p {
+    font-family: 'DM Sans', sans-serif;
+    color: #ffffff;
+    margin: 0 0 18px;
+    font-size: 13px;
+    line-height: 1.55;
+}
 
-    .cta-box p {
-        font-family: 'DM Sans', sans-serif;
-        color: #7a96b0;
-        margin: 0 0 18px;
-        font-size: 13px;
-        line-height: 1.55;
-    }
+.cta-box button {
+    width: 100%;
+    padding: 11px 16px;
+    border-radius: 999px;
+    border: none;
+    font-family: 'Sora', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: #2563eb;
+    color: white;
+}
 
-    .cta-box button {
-        width: 100%;
-        padding: 11px 16px;
-        border-radius: 999px;
-        border: none;
-        font-family: 'Sora', sans-serif;
-        font-size: 13px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        background: #2563eb;
-        color: white;
-    }
+.cta-box button:hover {
+       background: #1d4ed8;
+       transform: scale(1.02);
+}
 
-        .cta-box button:hover {
-            background: #1d4ed8;
-            transform: scale(1.02);
-        }
+cta-box .btn-alt {
+   background: #2563eb;
+   color: white;
+   border: 1.5px solid rgba(96,165,250,0.4);
+}
 
-    .cta-box .btn-alt {
-        background: transparent;
-        color: #60a5fa;
-        border: 1.5px solid rgba(96,165,250,0.4);
-    }
+.cta-box .btn-alt:hover {
+   color:white;
+   border-color: #60a5fa;
+}
 
-        .cta-box .btn-alt:hover {
-            background: rgba(37,99,235,0.15);
-            border-color: #60a5fa;
-        }
+/*képek home kártyákhoz*/
+.images {
+    max-width:100%;
+    position:center;
+    
+}
+
 
 /* ════════════════════════════════════════════════════════════════
    ÁLTALÁNOS SEGÉDEK
@@ -179,6 +190,7 @@ h1 {
     width: 100%;
     margin: 0 auto;
     padding: 60px 32px;
+   
 }
 
 .centered-layout {
@@ -232,21 +244,21 @@ h1 {
     gap: 10px;
 }
 
-    .feature-list li {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        font-family: 'DM Sans', sans-serif;
-        font-size: 14px;
-        font-weight: 500;
-        color: #c8d3e0;
-    }
+.feature-list li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: #ffffff;
+}
 
-    .feature-list .material-symbols-outlined {
-        font-size: 20px !important;
-        color: #34d399;
-        flex-shrink: 0;
-    }
+.feature-list .material-symbols-outlined {
+    font-size: 20px !important;
+    color: #34d399;
+    flex-shrink: 0;
+}
 
 .placeholder-img {
     width: 100%;
@@ -260,26 +272,54 @@ h1 {
     box-shadow: 0 20px 40px rgba(0,0,0,0.3);
 }
 
-    .placeholder-img span {
-        font-size: 80px;
-        color: rgba(96,165,250,0.35);
-    }
-
+.placeholder-img span {
+    font-size: 80px;
+    color: rgba(96,165,250,0.35);
+}
+.recycle-img {
+    max-width:100%;    
+    border-radius:10px;   
+}
 /* ════════════════════════════════════════════════════════════════
    3. EREDMÉNYEK – #eredmenyek
    ════════════════════════════════════════════════════════════════ */
 #eredmenyek {
-    background: #2a3d52;
+    background: #1a2634;
 }
 
-    #eredmenyek h2 {
-        font-family: 'Sora', sans-serif;
-        font-size: clamp(1.5rem, 3vw, 2.2rem);
-        font-weight: 800;
-        color: #f1f5f9;
-        letter-spacing: -0.03em;
-        margin: 12px 0 14px;
-    }
+.given-items {
+    background-image: url('../Images/adok.png');
+    background-size:cover;
+    backdrop-filter:blur(10px);
+    
+}
+
+.given-help {
+    background-image: url('../Images/adok.png');
+    background-size: cover;
+    backdrop-filter: blur(10px);
+}
+
+.saved-material {
+    background-image: url('../Images/adok.png');
+    background-size: cover;
+    backdrop-filter: blur(10px);
+}
+
+.supporterts {
+    background-image: url('../Images/adok.png');
+    background-size: cover;
+    backdrop-filter: blur(10px);
+}
+
+#eredmenyek h2 {
+    font-family: 'Sora', sans-serif;
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    font-weight: 800;
+    color: #f1f5f9;
+    letter-spacing: -0.03em;
+    margin: 12px 0 14px;
+}
 
 .section-desc {
     font-family: 'DM Sans', sans-serif;
@@ -297,8 +337,9 @@ h1 {
 }
 
 .stat-card {
-    background: #324a61;
-    padding: 28px 18px;
+    overflow: hidden; /* Hogy a háttér ne lógjon ki a sarkoknál */
+    background-color: #324a61; /*ss*/
+    padding: 28px 18px;    
     border-radius: 14px;
     text-align: center;
     border: 1px solid rgba(255,255,255,0.08);
@@ -307,46 +348,54 @@ h1 {
     flex-direction: column;
     align-items: center;
     gap: 10px;
+    /*position: relative;*/
+}
+.stat-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(42, 61, 82, 0.7); /* Sötétítés mértéke */
+    z-index: -1;
 }
 
-    .stat-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 12px 28px rgba(0,0,0,0.25);
-        border-color: rgba(37,99,235,0.3);
-    }
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.25);
+    border-color: rgba(37,99,235,0.3);
+}
 
-    .stat-card .material-symbols-outlined {
-        font-size: 28px;
-        color: #60a5fa;
-        background: rgba(37,99,235,0.14);
-        padding: 10px;
-        border-radius: 50%;
-        width: 48px;
-        height: 48px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        line-height: 1;
-    }
+.stat-card .material-symbols-outlined {
+    font-size: 28px;
+    color: #ffffff;
+    background: rgba(37,99,235,0.14);
+    padding: 10px;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
 
-    .stat-card .number {
-        display: block;
-        font-family: 'Sora', sans-serif;
-        font-size: 2rem;
-        font-weight: 800;
-        color: #f1f5f9;
-        letter-spacing: -0.04em;
-        line-height: 1;
-    }
+.stat-card .number {
+    display: block;
+    font-family: 'Sora', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: -0.04em;
+    line-height: 1;
+}
 
-    .stat-card .label {
-        font-family: 'DM Sans', sans-serif;
-        color: #7a96b0;
-        font-size: 12px;
-        font-weight: 500;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-    }
+.stat-card .label {
+    font-family: 'DM Sans', sans-serif;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
 
 /* ════════════════════════════════════════════════════════════════
    4. GYIK – #gyik
