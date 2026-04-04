@@ -59,12 +59,11 @@ namespace WEB.Services
             await _http.PutAsJsonAsync("Product/update-product", productDto);
         }
 
-        public async Task DeleteProductAsync(int id, string token)
+        public async Task<bool> DeleteProductAsync(int id, string token)
         {
             var request = CreateAuthRequest(HttpMethod.Delete, $"Product/{id}", token);
-            await _http.SendAsync(request);
-        }
-
-       
+            var response = _http.SendAsync(request);
+            return response.IsCompletedSuccessfully;
+        }  
     }
 }

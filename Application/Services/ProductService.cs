@@ -70,9 +70,11 @@ namespace Application.Services
 
             if (product == null) throw new Exception("A termék nem található");
 
+            if (product.ProductStatus != ProductStatus.Active)
+                throw new Exception("Csak aktív termék szerkeszthető");
+
             product.ProductName = productDto.ProductName;
             product.ProductDescription = productDto.ProductDescription;
-            product.ProductStatus = productDto.ProductStatus;
             product.CountyId = productDto.CountyId;
             product.ProductCategoryId = productDto.ProductCategoryId;
             product.UpdatedAt = DateTime.UtcNow;

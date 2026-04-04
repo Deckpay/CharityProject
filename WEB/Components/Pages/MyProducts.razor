@@ -130,7 +130,8 @@
                                          CategoryName="@GetCategoryName(product.ProductCategoryId)"
                                          CountyName="@GetCountyName(product.CountyId)"
                                          OnDetails="ShowProductDetails"
-                                         OnEdit="OpenEditModal" />
+                                         OnEdit="OpenEditModal"
+                                         OnDelete="HandleProductDelete" />
                         }
                     }
                 </div>
@@ -279,6 +280,14 @@
         CloseModal();
     }
 
+    private void HandleProductDelete(int productId)
+    {
+        var product = allProducts.FirstOrDefault(p => p.ProductId == productId);
+        if (product != null)
+            allProducts.Remove(product);
+
+        StateHasChanged();
+    }
 
     private async Task LoadProducts() => allProducts = (await productService.GetProductsAsync()).ToList();
     private async Task LoadFilters()

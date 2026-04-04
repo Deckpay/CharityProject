@@ -1,11 +1,13 @@
 ﻿@using Application.DTOs
 @using Microsoft.AspNetCore.Components.Authorization
 @using WEB.Services
+@using Domain.Enums
 @inject IConfiguration Configuration
 @inject ProductRequestApiService ProductRequestService
+@inject ProductApiService ProductApiService
 @inject NavigationManager Navigation
 @inject LocalStorageService LocalStorage
-@inject ToastService ToastService;
+@inject ToastService ToastService
 
 <div class="modern-product-card @(isClaimed ? "card-claimed" : "")">
     <div class="card-header-section">
@@ -83,9 +85,26 @@
                 }
                 else
                 {
-                    <button class="claim-action-btn" @onclick="() => OnEdit.InvokeAsync(Product)">
-                        Szerkesztés
-                    </button>
+                    <div class="d-flex justify-content-between mt-2">
+                        
+                        <button class="btn btn-primary flex-fill me-2"
+                            disabled="@(Product.ProductStatus != ProductStatus.Active)"
+                            @onclick="() => {
+                                if (Product.ProductStatus == ProductStatus.Active)
+                                    OnEdit.InvokeAsync(Product);
+                            }">
+                            Szerkesztés
+                        </button>
+
+                        <button class="btn btn-danger flex-fill"
+                            disabled="@(Product.ProductStatus != ProductStatus.Active)"
+                            @onclick="async () => {
+                                if (Product.ProductStatus == ProductStatus.Active)
+                                    await HandleDelete(Product.ProductId);
+                            }">
+                            Törlés
+                        </button>
+                    </div>
                 }
             </Authorized>
         </AuthorizeView>
@@ -98,7 +117,7 @@
     [Parameter] public string CountyName { get; set; } = "Ismeretlen";
     [Parameter] public EventCallback<ProductDto> OnDetails { get; set; }
     [Parameter] public EventCallback<ProductDto> OnEdit { get; set; }
-
+    [Parameter] public EventCallback<int> OnDelete { get; set; }
     private bool isClaiming = false;
     private bool claimError = false;
     private bool isMyActiveClaim = false;    // ennek a usernek van aktív igénylése
@@ -166,6 +185,24 @@
         finally
         {
             isClaiming = false;
+        }
+    }
+
+    private async Task HandleDelete(int productId)
+    {
+        var token = await LocalStorage.GetItemAsync<string>("authToken") ?? "";
+
+        try
+        {
+            await ProductApiService.DeleteProductAsync(productId, token);
+            ToastService.ShowToast("Termék törölve", "success");
+
+            if (OnDelete.HasDelegate)
+                await OnDelete.InvokeAsync(productId);
+        }
+        catch
+        {
+            ToastService.ShowToast("Hiba történt a törlés sorám", "error");
         }
     }
 

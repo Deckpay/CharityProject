@@ -53,9 +53,5 @@ namespace API.Controllers
             await _productService.DeleteProductAsync(id);
             return Ok();
         }
-
-
-        //
-        
     }
 }

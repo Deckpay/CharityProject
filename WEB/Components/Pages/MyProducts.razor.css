@@ -132,8 +132,11 @@ select.clean-input {
 ========================= */
 .product-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 24px;
+    grid-template-columns: repeat(auto-fit, 320px);
+    gap: 25px;
+    justify-content : center;
+    padding: 20px 10px;
+    width: 100%;
 }
 
 /* =========================
@@ -192,4 +195,45 @@ select.clean-input {
 .pag-btn:disabled {
     opacity: 0.4;
     cursor: not-allowed;
+}
+
+/* MOBIL */
+@media (max-width: 360px) {
+    .container {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    .product-grid {
+        grid-template-columns: 1fr;
+        padding: 10px;
+    }
+
+    .page-title {
+        font-size: 1.5rem;
+        text-align: center;
+    }
+
+    .btn-add-product {
+        width: 100%; /* Mobilon legyen teljes szélességű a gomb */
+        order: -1; /* Kerüljön a cím fölé vagy alá, ahogy tetszik */
+    }
+
+    .filter-card {
+        padding: 15px;
+        margin-bottom: 30px;
+    }
+
+    /* A lapozó gombjai mobilon hajlamosak egymásra csúszni */
+    .page-numbers {
+        display: none; /* Mobilon rejtsük el a számokat, csak előre/hátra maradjon */
+    }
+
+    /* Vagy ha meg akarod tartani a számokat, legyenek kisebbek: */
+    /* .page-num { padding: 6px 10px; font-size: 0.8rem; } */
+}
+
+/* FILTER CARD IGAZÍTÁSA */
+.filter-card .row > div {
+    margin-bottom: 10px;
 }
