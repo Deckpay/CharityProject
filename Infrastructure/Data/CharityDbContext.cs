@@ -28,11 +28,11 @@ namespace Infrastructure.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // 2. Termék és Donor (User) kapcsolata (1:N)
+            // 2. Termék és Sender (User) kapcsolata (1:N)
             modelBuilder.Entity<Product>()
-                .HasOne(p => p.Donor)
+                .HasOne(p => p.Sender)
                 .WithMany(u => u.Products)
-                .HasForeignKey(p => p.DonorId)
+                .HasForeignKey(p => p.SenderId)
                 .OnDelete(DeleteBehavior.Cascade); // Ha törlünk egy usert, törlődjenek a termékei
 
             // 3. Termék és Kategória kapcsolata (1:N)

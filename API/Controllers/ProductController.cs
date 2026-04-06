@@ -27,7 +27,7 @@ namespace API.Controllers
         public async Task<IActionResult> GetMyProducts()
         {
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-            return Ok(await _productService.GetProductsByDonorAsync(userId));
+            return Ok(await _productService.GetProductsBySenderAsync(userId));
         }
 
         [Authorize]

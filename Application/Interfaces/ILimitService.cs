@@ -10,5 +10,6 @@ namespace Application.Interfaces
     {
         Task<bool> CanUserRequestProduct(int userId, int categoryId);
         Task<bool> UpdateLimitUsage(int userId, int categoryId);
+        Task<bool> DecreaseLimitUsage(int userId, int categoryId);
     }
 }

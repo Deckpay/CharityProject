@@ -27,10 +27,10 @@ namespace WEB.Services
             return await response.Content.ReadFromJsonAsync<IEnumerable<ProductRequestDto>>() ?? new List<ProductRequestDto>();
         }
 
-        // Donor: az ő termékeihez beérkezett igénylések
-        public async Task<IEnumerable<ProductRequestDto>> GetDonorRequestsAsync(string token)
+        // Sender: az ő termékeihez beérkezett igénylések
+        public async Task<IEnumerable<ProductRequestDto>> GetSenderRequestsAsync(string token)
         {
-            var request = CreateAuthRequest(HttpMethod.Get, "ProductRequest/donor-requests", token);
+            var request = CreateAuthRequest(HttpMethod.Get, "ProductRequest/Sender-requests", token);
             var response = await _http.SendAsync(request);
             if (!response.IsSuccessStatusCode) return new List<ProductRequestDto>();
             return await response.Content.ReadFromJsonAsync<IEnumerable<ProductRequestDto>>() ?? new List<ProductRequestDto>();
@@ -70,7 +70,7 @@ namespace WEB.Services
             }
         }
 
-        // Donor lezárja az igénylést. success=true → sikeres, false → sikertelen átadás.
+        // Sender lezárja az igénylést. success=true → sikeres, false → sikertelen átadás.
         public async Task<bool> CompleteRequestAsync(int requestId, bool success, string token)
         {
             var request = CreateAuthRequest(

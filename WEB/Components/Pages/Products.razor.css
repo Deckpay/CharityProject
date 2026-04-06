@@ -1,453 +1,239 @@
-﻿
+﻿/* =========================
+   1. HÁTTÉR
+========================= */
 .page-background-fix {
-    min-height: 100%;
+    min-height: 100vh;
     width: 100%;
-    background: #f4f6f9; /* = main-content háttér – semleges */
+    background: linear-gradient(135deg, #cfd9e6 0%, #9fb3c8 100%);
     margin: 0;
     padding: 0;
     overflow-x: hidden;
 }
 
-/* Bootstrap .container felülírás */
+/* =========================
+   2. LAYOUT
+========================= */
 .container {
-    max-width: 1200px !important;
+    max-width: 1300px; /* kicsit szélesebb */
     margin: 0 auto;
 }
 
-/* ════════════════════════════════════════════════════════════════
-   2. OLDAL CÍM
-   ════════════════════════════════════════════════════════════════ */
 .page-title {
-    font-family: 'Sora', sans-serif;
+    font-family: 'Rubik', sans-serif;
     font-weight: 800;
-    font-size: clamp(1.3rem, 3vw, 1.8rem);
     color: #1e222d;
-    letter-spacing: -0.03em;
-    margin: 0;
 }
 
-/* ════════════════════════════════════════════════════════════════
-   3. SZŰRŐ KÁRTYA
-   ════════════════════════════════════════════════════════════════ */
+/* =========================
+   3. FILTER CARD
+========================= */
 .filter-card {
-    background: #ffffff;
+    background: white;
     border-radius: 16px;
-    padding: 22px 24px;
-    border: 1.5px solid #e8ecf0;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.06) !important;
+    padding: 24px;
+    border: 1px solid rgba(0,0,0,0.05);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
 }
 
 .filter-label {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 11px;
+    font-size: 0.75rem;
     font-weight: 700;
-    color: #64748b;
+    color: #627d98;
     text-transform: uppercase;
-    letter-spacing: 0.07em;
-    margin-bottom: 7px;
+    margin-bottom: 8px;
     display: block;
 }
 
-/* ════════════════════════════════════════════════════════════════
+/* =========================
    4. INPUT GROUP
-   ════════════════════════════════════════════════════════════════ */
+========================= */
 .custom-input-group {
     position: relative;
     display: flex;
     align-items: center;
-    background: #f4f6f9;
-    border-radius: 12px;
-    padding: 0 14px;
-    border: 1.5px solid #e4e8ed;
-    transition: border-color 0.22s, box-shadow 0.22s, background 0.22s;
-    overflow: hidden;
+    background: #f0f4f8;
+    border-radius: 14px;
+    padding: 6px 14px;
+    border: 2px solid transparent;
+    transition: all 0.25s ease;
 }
 
     .custom-input-group:hover {
-        background: #eef1f5;
+        background: #e6edf5;
     }
 
+    /* FOCUS */
     .custom-input-group:focus-within {
-        border-color: #2563eb;
-        background: #ffffff;
-        box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+        border-color: #00a8ff;
+        background: white;
+        box-shadow: 0 0 0 4px rgba(0, 168, 255, 0.15);
     }
 
+/* ICON */
 .group-icon {
-    color: #2563eb;
-    display: flex;
-    align-items: center;
-    margin-right: 8px;
-    font-size: 15px;
-    flex-shrink: 0;
+    color: #00a8ff;
+    margin-right: 10px;
 }
 
+/* =========================
+   5. INPUT / SELECT
+========================= */
 .clean-input {
-    flex: 1;
-    border: none !important;
-    background: transparent !important;
-    padding: 11px 0;
-    outline: none;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    color: #1e222d;
-    font-weight: 500;
+    border: none;
+    background: transparent;
     width: 100%;
+    padding: 10px 0;
+    outline: none;
+    color: #102a43;
+    font-weight: 500;
 }
 
-    .clean-input::placeholder {
-        color: #adb5bd;
-    }
-
+/* SELECT RESET */
 select.clean-input {
     appearance: none;
     -webkit-appearance: none;
+    -moz-appearance: none;
     cursor: pointer;
-    padding-right: 28px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2364748b' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") !important;
-    background-repeat: no-repeat !important;
-    background-position: right 12px center !important;
+    padding-right: 30px;
 }
 
-/* Eltávolítjuk az eredeti ::after nyilat a selectnél */
-.custom-input-group:has(select)::after {
-    display: none;
-}
-
-/* ════════════════════════════════════════════════════════════════
-   5. TERMÉK GRID
-   ════════════════════════════════════════════════════════════════ */
-.product-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
-    gap: 20px;
-}
-
-/* ════════════════════════════════════════════════════════════════
-   6. MODERN TERMÉK KÁRTYA
-   (a ProductCard komponens modern-product-card class-t használ)
-   ════════════════════════════════════════════════════════════════ */
-:deep(.modern-product-card) {
-    background: #ffffff;
-    border: 1.5px solid #e8ecf0;
-    border-radius: 18px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
-    cursor: pointer;
-    font-family: 'DM Sans', sans-serif;
-}
-
-:deep(.modern-product-card:hover) {
-    transform: translateY(-5px);
-    box-shadow: 0 14px 36px rgba(0,0,0,0.12);
-    border-color: #2563eb;
-}
-
-/* Kép wrapper */
-:deep(.card-img-wrapper) {
-    position: relative;
-    aspect-ratio: 16/10;
-    overflow: hidden;
-    background: #f4f6f9;
-}
-
-:deep(.card-img-wrapper img) {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.4s ease;
-    display: block;
-}
-
-:deep(.modern-product-card:hover .card-img-wrapper img) {
-    transform: scale(1.04);
-}
-
-/* Kép placeholder */
-:deep(.card-img-placeholder) {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, #e8f0fe 0%, #dde8ff 100%);
-    color: #2563eb;
-    font-size: 44px;
-}
-
-/* Kategória badge a képen */
-:deep(.card-badge) {
+/* CUSTOM NYÍL */
+.custom-input-group::after {
+    content: "";
     position: absolute;
-    top: 10px;
-    left: 10px;
-    background: rgba(255,255,255,0.92);
-    backdrop-filter: blur(4px);
-    border-radius: 999px;
-    padding: 3px 10px;
-    font-family: 'Sora', sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-    color: #1e3a8a;
-    border: 1px solid rgba(30,58,138,0.12);
+    right: 12px;
+    width: 18px;
+    height: 18px;
+    pointer-events: none;
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
-/* Kártya body */
-:deep(.card-body) {
-    padding: 15px 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    flex: 1;
-}
-
-:deep(.card-title) {
-    font-family: 'Sora', sans-serif;
-    font-size: 14.5px;
-    font-weight: 700;
-    color: #1e222d;
-    margin: 0;
-    line-height: 1.35;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-:deep(.card-desc) {
-    font-size: 13px;
-    color: #64748b;
-    line-height: 1.55;
-    margin: 0;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-:deep(.card-meta) {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex-wrap: wrap;
-    margin-top: 5px;
-}
-
-:deep(.card-meta-chip) {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 11.5px;
-    color: #64748b;
-    background: #f4f6f9;
-    padding: 3px 9px;
-    border-radius: 999px;
-    font-weight: 500;
-}
-
-/* Kártya footer */
-:deep(.card-footer) {
-    padding: 11px 16px 15px;
-    border-top: 1px solid #f0f3f6;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-/* Igénylés gomb */
-:deep(.btn-claim) {
-    width: 100%;
-    padding: 10px;
-    background: #2563eb;
+/* =========================
+   6. GOMB
+========================= */
+.btn-add-product {
+    background: #00a8ff;
     color: white;
     border: none;
-    border-radius: 999px;
-    font-family: 'Sora', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    text-align: center;
-}
-
-:deep(.btn-claim:hover) {
-    background: #1d4ed8;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(37,99,235,0.3);
-}
-
-/* Foglalt állapot */
-:deep(.btn-claimed) {
-    width: 100%;
-    padding: 10px;
-    background: #f4f6f9 !important;
-    color: #94a3b8 !important;
-    border: 1.5px solid #e4e8ed !important;
-    border-radius: 999px;
-    font-family: 'Sora', sans-serif;
-    font-size: 13px;
+    padding: 10px 24px;
+    border-radius: 12px;
     font-weight: 600;
-    cursor: not-allowed !important;
-    opacity: 1 !important;
-    text-align: center;
+    transition: 0.2s;
 }
 
-/* Chat link */
-:deep(.chat-link-small) {
-    display: flex;
-    align-items: center;
+    .btn-add-product:hover {
+        background: #0086cc;
+        transform: translateY(-2px);
+    }
+
+/* =========================
+   7. GRID (FIXELVE)
+========================= */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 320px);
+    gap: 25px;
     justify-content: center;
-    gap: 5px;
-    font-size: 12.5px;
-    font-weight: 600;
-    color: #2563eb;
-    text-decoration: none;
-    padding: 5px;
-    border-radius: 8px;
-    transition: background 0.2s;
+    padding: 20px 10px;
+    width: 100%;
 }
 
-:deep(.chat-link-small:hover) {
-    background: #eff6ff;
-    text-decoration: none;
-}
-
-/* Elfakult kártya */
-:deep(.modern-product-card.card-claimed) {
-    opacity: 0.70;
-    filter: grayscale(20%);
-}
-
-:deep(.img-dimmed) {
-    opacity: 0.7;
-}
-
-/* ════════════════════════════════════════════════════════════════
-   7. LAPOZÁS
-   ════════════════════════════════════════════════════════════════ */
+/* =========================
+   8. PAGINATION
+========================= */
 .pagination-wrapper {
     display: flex;
-    align-items: center;
     justify-content: center;
-    gap: 8px;
-    padding: 24px 0 40px;
+    align-items: center;
+    gap: 12px;
 }
 
 .page-numbers {
     display: flex;
-    align-items: center;
-    gap: 4px;
-    flex-wrap: wrap;
+    gap: 8px;
 }
 
 .page-num {
-    min-width: 36px;
-    height: 36px;
-    padding: 0 8px;
-    background: #ffffff;
-    border: 1.5px solid #e4e8ed;
-    border-radius: 8px;
-    font-family: 'Sora', sans-serif;
-    font-size: 13px;
+    border: none;
+    background: white;
+    color: #334e68;
+    padding: 8px 14px;
+    border-radius: 10px;
     font-weight: 600;
-    color: #64748b;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    transition: 0.2s;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
 }
 
-    .page-num.active {
-        background: #2563eb;
-        border-color: #2563eb;
+    .page-num:hover {
+        background: #00a8ff;
         color: white;
-        box-shadow: 0 2px 8px rgba(37,99,235,0.35);
+        transform: translateY(-2px);
     }
 
-    .page-num:hover:not(.active) {
-        border-color: #2563eb;
-        color: #2563eb;
-        background: #eff6ff;
-        transform: translateY(-1px);
+    .page-num.active {
+        background: #00a8ff;
+        color: white;
+        box-shadow: 0 4px 12px rgba(0,168,255,0.4);
     }
 
 .pag-btn {
-    width: 36px;
-    height: 36px;
-    background: #ffffff;
-    border: 1.5px solid #e4e8ed;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    color: #64748b;
-    font-size: 14px;
-    transition: all 0.2s ease;
+    border: none;
+    background: white;
+    padding: 10px 14px;
+    border-radius: 10px;
+    transition: 0.2s;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
 }
 
     .pag-btn:hover:not(:disabled) {
-        border-color: #2563eb;
-        color: #2563eb;
-        background: #eff6ff;
+        background: #00a8ff;
+        color: white;
+        transform: translateY(-2px);
     }
 
     .pag-btn:disabled {
-        opacity: 0.35;
+        opacity: 0.4;
         cursor: not-allowed;
     }
 
-/* Spinner */
-.spinner-border.text-primary {
-    color: #2563eb !important;
-}
-
-/* ════════════════════════════════════════════════════════════════
-   RESZPONZÍV – MOBIL
-   ════════════════════════════════════════════════════════════════ */
-@media (max-width: 768px) {
-    .product-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
+/* MOBIL */
+@media (max-width: 360px) {
+    .container {
+        padding-left: 15px;
+        padding-right: 15px;
     }
 
-    .filter-card {
-        padding: 16px;
-    }
-
-    /* Bootstrap row g-3 fix mobilon */
-    .row.g-3 > * {
-        padding: 0 6px;
-    }
-}
-
-@media (max-width: 480px) {
     .product-grid {
         grid-template-columns: 1fr;
-    }
-
-    .page-numbers {
-        /* túl sok gomb mobilon, csak aktív körül mutasson */
-        display: flex;
-        gap: 4px;
-        overflow-x: auto;
-        max-width: 240px;
-    }
-
-    .page-num, .pag-btn {
-        min-width: 32px;
-        height: 32px;
-        font-size: 12px;
-    }
-
-    .filter-card {
-        padding: 14px 12px;
+        padding: 10px;
     }
 
     .page-title {
-        font-size: 1.2rem;
+        font-size: 1.5rem;
+        text-align: center;
     }
+
+    .btn-add-product {
+        width: 100%; /* Mobilon legyen teljes szélességű a gomb */
+        order: -1; /* Kerüljön a cím fölé vagy alá, ahogy tetszik */
+    }
+
+    .filter-card {
+        padding: 15px;
+        margin-bottom: 30px;
+    }
+
+    /* A lapozó gombjai mobilon hajlamosak egymásra csúszni */
+    .page-numbers {
+        display: none; /* Mobilon rejtsük el a számokat, csak előre/hátra maradjon */
+    }
+
+    /* Vagy ha meg akarod tartani a számokat, legyenek kisebbek: */
+    /* .page-num { padding: 6px 10px; font-size: 0.8rem; } */
+}
+
+/* FILTER CARD IGAZÍTÁSA */
+.filter-card .row > div {
+    margin-bottom: 10px;
 }

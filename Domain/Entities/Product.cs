@@ -17,12 +17,12 @@ namespace Domain.Entities
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         // Foreign Key
-        public int DonorId { get; set; }
+        public int SenderId { get; set; }
         public int ProductCategoryId { get; set; }
         public int CountyId { get; set; }
 
         // Navigáció
-        public User Donor { get; set; } = null!;
+        public User Sender { get; set; } = null!;
         public ProductCategory ProductCategory { get; set; } = null!;
         public County County { get; set; } = null!;
     }

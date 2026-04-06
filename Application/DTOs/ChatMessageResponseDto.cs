@@ -5,7 +5,7 @@
         public int Id { get; set; }
         public int RequestId { get; set; }
         public int SenderId{ get; set; }
-        public int DonorId{ get; set; } 
+        public int UserId{ get; set; } 
         public string OtherPartyName { get; set; } = string.Empty;
         public string Content { get; set; } = string.Empty;        
         public string SenderName { get; set; } = string.Empty;

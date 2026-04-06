@@ -86,7 +86,7 @@ namespace Application.Services
                 ProductStatus = p.ProductStatus,
                 CreatedAt = p.CreatedAt,
                 UpdatedAt = p.UpdatedAt,
-                DonorId = p.DonorId,
+                SenderId = p.SenderId,
                 ProductCategoryId = p.ProductCategoryId,
                 CountyId = p.CountyId,
             });

@@ -23,7 +23,7 @@ namespace Application.Services
             if (product == null)
                 return new ClaimResultDto { Success = false, Message = "A termék nem található." };
 
-            if (product.DonorId == userId)
+            if (product.SenderId == userId)
                 return new ClaimResultDto { Success = false, Message = "Saját termékedet nem igényelheted." };
 
             if (product.ProductStatus != ProductStatus.Active)
@@ -69,7 +69,7 @@ namespace Application.Services
             var requests = await _unitOfWork.ProductRequests.GetAllAsync();
             var dtos = new List<ProductRequestDto>();
             // Csak Pending igénylések jelennek meg a rec listájában
-            // Ha Completed vagy Failed → eltűnik (a donor lezárta)
+            // Ha Completed vagy Failed → eltűnik (a Sender lezárta)
             var activeRequests = requests
                 .Where(r => r.RequesterId == userId && r.RequestStatus == RequestStatus.Pending)
                 .ToList();
@@ -96,16 +96,17 @@ namespace Application.Services
             {
                 product.ProductStatus = ProductStatus.Active;
                 product.UpdatedAt = DateTime.UtcNow;
+                await _limitService.DecreaseLimitUsage(request.RequesterId, product.ProductCategoryId);
             }
 
             return await _unitOfWork.CompleteAsync() > 0;
         }
 
-        public async Task<IEnumerable<ProductRequestDto>> GetDonorRequestsAsync(int userId)
+        public async Task<IEnumerable<ProductRequestDto>> GetSenderRequestsAsync(int userId)
         {
             var myProducts = await _unitOfWork.Products.GetAllAsync();
             var myProductIds = myProducts
-                .Where(p => p.DonorId == userId &&
+                .Where(p => p.SenderId == userId &&
                     (p.ProductStatus == ProductStatus.Active || p.ProductStatus == ProductStatus.Pending))
                 .Select(p => p.ProductId)
                 .ToHashSet();
@@ -129,9 +130,9 @@ namespace Application.Services
             var request = await _unitOfWork.ProductRequests.GetByIdAsync(requestId);
             if (request == null) return false;
 
-            // Csak a termék donora zárhatja le
+            // Csak a termék Sendera zárhatja le
             var product = await _unitOfWork.Products.GetByIdAsync(request.ProductId);
-            if (product == null || product.DonorId != userId) return false;
+            if (product == null || product.SenderId != userId) return false;
 
             if (success)
             {
@@ -149,6 +150,7 @@ namespace Application.Services
                 request.ProcessedAt = DateTime.UtcNow;
                 product.ProductStatus = ProductStatus.Active;
                 product.UpdatedAt = DateTime.UtcNow;
+                await _limitService.DecreaseLimitUsage(request.RequesterId, product.ProductCategoryId);
             }
 
             return await _unitOfWork.CompleteAsync() > 0;

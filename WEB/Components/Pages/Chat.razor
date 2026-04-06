@@ -27,7 +27,7 @@
                 <span class="header-product">@productName</span>
             </div> 
         </div>
-        @if (!isChatLocked && isUserTheDonor)
+        @if (!isChatLocked && isUserTheSender)
         {
             <button type="button" class="btn-complete" @onclick="OpenStatusModal">
                    Átadás lezárása
@@ -195,7 +195,7 @@
     private bool showStatusModal = false;
     private bool isChatLocked = false;
     private string actionResult = string.Empty;
-    private bool isUserTheDonor = false;
+    private bool isUserTheSender = false;
     private string otherPartyName = string.Empty;
     private bool _poolingStarted = false;
     private bool _isLOadingMessages = false;
@@ -236,7 +236,7 @@
             if (info != null)
             {
                 otherPartyName = info.OtherPartyName;
-                isUserTheDonor = (info.DonorId == currentUserId);
+                isUserTheSender = (info.SenderId == currentUserId);
                 productName = info.ProductName;
             }
 
@@ -294,12 +294,12 @@
         currentUserId = await AuthStateProvider.GetCurrentUserIdAsync();
         if (messages != null && messages.Any())
         {
-            // Az üzenetben most már benne van a DonorId (az API-ból)
+            // Az üzenetben most már benne van a SenderId (az API-ból)
             var firstMsg = messages.FirstOrDefault();
             if (firstMsg != null)
             {
-                isUserTheDonor = (firstMsg.DonorId == currentUserId);
-                Console.WriteLine($"DEBUG: Felhasználó: {currentUserId} | Donor: {firstMsg.DonorId} | Egyezik: {isUserTheDonor}");
+                isUserTheSender = (firstMsg.SenderId == currentUserId);
+                Console.WriteLine($"DEBUG: Felhasználó: {currentUserId} | Sender: {firstMsg.SenderId} | Egyezik: {isUserTheSender}");
             }
         }
     }

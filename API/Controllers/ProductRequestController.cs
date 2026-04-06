@@ -48,14 +48,14 @@ namespace API.Controllers
         }
 
         [Authorize]
-        [HttpGet("donor-requests")]
-        public async Task<IActionResult> GetDonorRequests()
+        [HttpGet("Sender-requests")]
+        public async Task<IActionResult> GetSenderRequests()
         {
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-            return Ok(await _productRequestService.GetDonorRequestsAsync(userId));
+            return Ok(await _productRequestService.GetSenderRequestsAsync(userId));
         }
 
-        // Donor lezárja az igénylést: ?success=true → sikeres átadás, ?success=false → sikertelen
+        // Sender lezárja az igénylést: ?success=true → sikeres átadás, ?success=false → sikertelen
         [Authorize]
         [HttpPost("complete/{requestId}")]
         public async Task<IActionResult> Complete(int requestId, [FromQuery] bool success)

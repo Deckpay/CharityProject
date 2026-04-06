@@ -2,8 +2,8 @@
 {
     public enum UserRole
     {
-        Donor = 1,
-        Recipient = 2,
+        Sender = 1,
+        Requester = 2,
         Admin = 3
     }
 }

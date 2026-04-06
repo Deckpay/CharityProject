@@ -88,31 +88,60 @@
                 <!-- EDIT MODAL -->
                 @if (showEditModal && editingProduct != null)
                 {
-                    <div class="modal-backdrop">
-                        <div class="modal-content p-4">
+                    <div class="custom-modal-overlay">
+                        <div class="custom-modal-container shadow-lg">
+                            <div class="modal-header-custom">
+                                <h4 class="modal-title-custom"><i class="bi bi-pencil-square me-2"></i>Termék szerkesztése</h4>
+                                <button class="close-x" @onclick="CloseModal">&times;</button>
+                            </div>
 
-                            <h4>Szerkesztés</h4>
+                            <div class="modal-body-custom">
+                                <div class="mb-3">
+                                    <label class="filter-label">Termék neve</label>
+                                    <div class="custom-input-group">
+                                        <input class="clean-input" @bind="editingProduct.ProductName" placeholder="Termék neve..." />
+                                    </div>
+                                </div>
 
-                            <input class="form-control mb-2" @bind="editingProduct.ProductName" />
-                            <input class="form-control mb-2" @bind="editingProduct.ProductDescription" />
+                                <div class="mb-3">
+                                    <label class="filter-label">Leírás</label>
+                                    <div class="custom-input-group">
+                                        <textarea class="clean-input" rows="3" @bind="editingProduct.ProductDescription" placeholder="Rövid leírás..."></textarea>
+                                    </div>
+                                </div>
 
-                            <select class="form-control mb-2" @bind="editingProduct.ProductCategoryId">
-                                @foreach (var c in categories)
-                                {
-                                    <option value="@c.ProductCategoryId">@c.ProductCategoryName</option>
-                                }
-                            </select>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="filter-label">Kategória</label>
+                                        <div class="custom-input-group">
+                                            <select class="clean-input" @bind="editingProduct.ProductCategoryId">
+                                                @foreach (var c in categories)
+                                                {
+                                                    <option value="@c.ProductCategoryId">@c.ProductCategoryName</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="filter-label">Megye</label>
+                                        <div class="custom-input-group">
+                                            <select class="clean-input" @bind="editingProduct.CountyId">
+                                                @foreach (var c in counties)
+                                                {
+                                                    <option value="@c.CountyId">@c.CountyName</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
-                            <select class="form-control mb-2" @bind="editingProduct.CountyId">
-                                @foreach (var c in counties)
-                                {
-                                    <option value="@c.CountyId">@c.CountyName</option>
-                                }
-                            </select>
-
-                            <button class="btn btn-success me-2" @onclick="SaveProduct">Mentés</button>
-                            <button class="btn btn-secondary" @onclick="CloseModal">Bezárás</button>
-
+                            <div class="modal-footer-custom">
+                                <button class="btn-cancel" @onclick="CloseModal">Mégse</button>
+                                <button class="btn-save" @onclick="SaveProduct">
+                                    <i class="bi bi-check2-circle me-1"></i> Mentés
+                                </button>
+                            </div>
                         </div>
                     </div>
                 }
@@ -217,7 +246,7 @@
             // Ez feltölti a TokenStore-t is!
             var authState = await AuthStateProvider.GetAuthenticationStateAsync();
 
-            if (authState.User?.Identity == null || !authState.User.Identity.IsAuthenticated || !authState.User.IsInRole("Donor"))
+            if (authState.User?.Identity == null || !authState.User.Identity.IsAuthenticated || !authState.User.IsInRole("Sender"))
             {
                 Navigation.NavigateTo("/login");
                 return;

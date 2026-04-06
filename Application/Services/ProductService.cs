@@ -22,10 +22,10 @@ namespace Application.Services
                            .Select(MapToDto);
         }
 
-        public async Task<IEnumerable<ProductDto>> GetProductsByDonorAsync(int userId)
+        public async Task<IEnumerable<ProductDto>> GetProductsBySenderAsync(int userId)
         {
             var products = await _unitOfWork.Products.GetAllAsync();
-            return products.Where(p => p.DonorId == userId 
+            return products.Where(p => p.SenderId == userId 
                 && p.ProductStatus != ProductStatus.Deleted
                 && p.ProductStatus != ProductStatus.Completed)
                            .Select(MapToDto);
@@ -57,7 +57,7 @@ namespace Application.Services
                 CountyId = dto.CountyId,
                 CreatedAt = DateTime.Now,
                 ProductStatus = ProductStatus.Active,
-                DonorId = userId
+                SenderId = userId
             };
 
             await _unitOfWork.Products.AddAsync(newProduct);
@@ -102,7 +102,7 @@ namespace Application.Services
             ImagePath = p.ImagePath,
             ProductCategoryId = p.ProductCategoryId,
             CountyId = p.CountyId,
-            DonorId = p.DonorId,
+            SenderId = p.SenderId,
             ProductStatus = p.ProductStatus
         };
 

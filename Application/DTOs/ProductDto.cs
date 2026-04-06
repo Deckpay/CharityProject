@@ -23,7 +23,7 @@ namespace Application.DTOs
 
         public ProductStatus ProductStatus { get; set; }
 
-        public int DonorId { get; set; }
+        public int SenderId { get; set; }
 
         [Required]
         [Range(1, int.MaxValue, ErrorMessage = "Kategória választása kötelező")]

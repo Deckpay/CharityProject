@@ -185,7 +185,7 @@
         {
             var authState = await AuthStateProvider.GetAuthenticationStateAsync();
 
-            if (authState.User?.Identity == null || !authState.User.Identity.IsAuthenticated || !authState.User.IsInRole("Donor"))
+            if (authState.User?.Identity == null || !authState.User.Identity.IsAuthenticated || !authState.User.IsInRole("Sender"))
             {
                 Navigation.NavigateTo("/login");
                 return;

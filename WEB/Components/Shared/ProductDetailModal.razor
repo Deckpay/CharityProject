@@ -1,5 +1,4 @@
-﻿@inject LookupApiService LookupService
-@inject IConfiguration Configuration
+﻿@inject IConfiguration Configuration
 
 @if (IsVisible)
 {
@@ -24,7 +23,7 @@
                 <!-- ADATOK -->
                 <div class="modal-right">
                     <span class="badge-category">
-                        @LookupService.GetProductCategoryName(Product.ProductCategoryId)
+                        @CategoryName
                     </span>
 
                     <h2>@Product.ProductName</h2>
@@ -35,7 +34,7 @@
 
                     <div class="info-row">
                         <span class="info-label">📍 Megye</span>
-                        <span class="info-value">@LookupService.GetCountyName(Product.CountyId)</span>
+                        <span class="info-value">@CountyName</span>
                     </div>
 
                     <div class="divider"></div>

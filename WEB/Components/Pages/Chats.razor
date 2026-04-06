@@ -124,7 +124,7 @@
     private int? deletingConvId = null;
     private int currentUserId = 0;
     private string token = string.Empty;
-    private bool isDonor = false;
+    private bool isSender = false;
     private System.Threading.PeriodicTimer? _timer;
     private bool _isDisposed = false;
 
@@ -140,7 +140,7 @@
             return;
         }
 
-        isDonor = authState.User.IsInRole("Donor");
+        isSender = authState.User.IsInRole("Sender");
         currentUserId = await AuthStateProvider.GetCurrentUserIdAsync();
         token = await LocalStorage.GetItemAsync<string>("authToken") ?? string.Empty;
 
@@ -172,8 +172,8 @@
             var allProducts = (await ProductService.GetProductsAsync()).ToList();
             IEnumerable<ProductRequestDto> requests;
 
-            if (isDonor)
-                requests = await ProductRequestService.GetDonorRequestsAsync(token);
+            if (isSender)
+                requests = await ProductRequestService.GetSenderRequestsAsync(token);
             else
                 requests = await ProductRequestService.GetMyRequestsAsync(token);
 

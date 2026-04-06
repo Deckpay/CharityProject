@@ -83,8 +83,8 @@
                         <label>Regisztráció célja</label>
                         <InputSelect @bind-Value="registerModel.RoleId" class="form-control">
                             <option value="0">-- Válassz szerepkört --</option>
-                            <option value="1">Adományozó (Donor)</option>s
-                            <option value="2">Rászoruló (Recipient)</option>
+                            <option value="1">Adományozó (Sender)</option>s
+                            <option value="2">Rászoruló (Requester)</option>
                         </InputSelect>
                         <ValidationMessage For="@(() => registerModel.RoleId)" />
                     </div>

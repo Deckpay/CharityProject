@@ -7,7 +7,7 @@ namespace Application.Interfaces
     public interface IProductService
     {
         Task<IEnumerable<ProductDto>> GetProductsAsync();
-        Task<IEnumerable<ProductDto>> GetProductsByDonorAsync(int userId);
+        Task<IEnumerable<ProductDto>> GetProductsBySenderAsync(int userId);
         Task<bool> CreateProductAsync(ProductDto productDto, int userId, IFormFile imageFile);
         Task UpdateProductAsync(ProductDto productDto);
         Task DeleteProductAsync(int id);

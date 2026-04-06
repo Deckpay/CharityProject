@@ -15,9 +15,9 @@
     flex-direction: column;
 }
 
-.modern-product-card:hover {
-    transform: translateY(-10px);
-}
+    .modern-product-card:hover {
+        transform: translateY(-10px);
+    }
 
 /* FELSŐ RÉSZ: KÉP ÉS CÍMKE */
 .card-header-section {
@@ -166,15 +166,15 @@
     transition: all 0.3s ease;
 }
 
-.claim-action-btn:hover:not(:disabled) {
-    box-shadow: 0 0 20px rgba(0, 198, 255, 0.6);
-    transform: scale(1.02);
-}
+    .claim-action-btn:hover:not(:disabled) {
+        box-shadow: 0 0 20px rgba(0, 198, 255, 0.6);
+        transform: scale(1.02);
+    }
 
-.claim-action-btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
+    .claim-action-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
 
 .error-text {
     color: #fc8181;
@@ -192,14 +192,15 @@
     transition: 0.2s;
 }
 
-.product-details-link:hover {
-    color: #ffffff;
-}
+    .product-details-link:hover {
+        color: #ffffff;
+    }
 
 @media (max-width: 350px) {
     .card-content-section {
         flex-direction: column;
     }
+
     .content-left {
         border-right: none;
         border-bottom: 1px solid rgba(255,255,255,0.1);

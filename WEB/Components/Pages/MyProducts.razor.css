@@ -1,27 +1,48 @@
 ﻿/* =========================
+   0. RESET & ALAPOK
+========================= */
+* {
+    box-sizing: border-box; /* Ez megakadályozza, hogy a padding miatt kilógjanak az elemek */
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden; /* Megállítja az oldalsó görgetést mobilon */
+}
+
+/* =========================
    1. HÁTTÉR
 ========================= */
 .page-background-fix {
-    min-height: 100vh;
+    min-height: 100dvh;
     width: 100%;
     background: linear-gradient(135deg, #cfd9e6 0%, #9fb3c8 100%);
-    margin: 0;
-    padding: 0;
-    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+@supports not (height: 100dvh) {
+    .page-background-fix {
+        min-height: 100vh;
+    }
 }
 
 /* =========================
    2. LAYOUT
 ========================= */
 .container {
-    max-width: 1300px; /* kicsit szélesebb */
+    max-width: 1300px;
     margin: 0 auto;
+    width: 100%;
 }
 
 .page-title {
     font-family: 'Rubik', sans-serif;
     font-weight: 800;
     color: #1e222d;
+    margin: 0;
 }
 
 /* =========================
@@ -45,7 +66,7 @@
 }
 
 /* =========================
-   4. INPUT GROUP
+   4. INPUT GROUP & ELEMEK
 ========================= */
 .custom-input-group {
     position: relative;
@@ -56,28 +77,24 @@
     padding: 6px 14px;
     border: 2px solid transparent;
     transition: all 0.25s ease;
+    width: 100%;
 }
 
-.custom-input-group:hover {
-    background: #e6edf5;
-}
+    .custom-input-group:hover {
+        background: #e6edf5;
+    }
 
-/* FOCUS */
-.custom-input-group:focus-within {
-    border-color: #00a8ff;
-    background: white;
-    box-shadow: 0 0 0 4px rgba(0, 168, 255, 0.15);
-}
+    .custom-input-group:focus-within {
+        border-color: #00a8ff;
+        background: white;
+        box-shadow: 0 0 0 4px rgba(0,168,255,0.15);
+    }
 
-/* ICON */
 .group-icon {
     color: #00a8ff;
     margin-right: 10px;
 }
 
-/* =========================
-   5. INPUT / SELECT
-========================= */
 .clean-input {
     border: none;
     background: transparent;
@@ -88,30 +105,17 @@
     font-weight: 500;
 }
 
-/* SELECT RESET */
 select.clean-input {
     appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
     cursor: pointer;
-    padding-right: 30px;
 }
 
-/* CUSTOM NYÍL */
-.custom-input-group::after {
-    content: "";
-    position: absolute;
-    right: 12px;
-    width: 18px;
-    height: 18px;
-    pointer-events: none;
-    background-repeat: no-repeat;
-    background-position: center;
+option.clean-input {
+    height: 200px;
+    overflow-y: auto;
 }
 
-/* =========================
-   6. GOMB
-========================= */
+/* = :GOMB = */
 .btn-add-product {
     background: #00a8ff;
     color: white;
@@ -120,33 +124,35 @@ select.clean-input {
     border-radius: 12px;
     font-weight: 600;
     transition: 0.2s;
+    white-space: nowrap;
 }
 
-.btn-add-product:hover {
-    background: #0086cc;
-    transform: translateY(-2px);
-}
+    .btn-add-product:hover {
+        background: #0086cc;
+        transform: translateY(-2px);
+    }
 
 /* =========================
-   7. GRID (FIXELVE)
+   5. GRID (KÖZÉPRE IGAZÍTVA)
 ========================= */
 .product-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, 320px);
+    /* Automatikus rács, ami asztalin 320px-es kártyákat próbál elhelyezni */
+    grid-template-columns: repeat(auto-fit, minmax(280px, 320px));
     gap: 25px;
-    justify-content : center;
-    padding: 20px 10px;
-    width: 100%;
+    justify-content: center; /* Vízszintes középre igazítás */
+    padding: 20px 15px;
 }
 
 /* =========================
-   8. PAGINATION
+   6. PAGINATION
 ========================= */
 .pagination-wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 12px;
+    padding-bottom: 40px;
 }
 
 .page-numbers {
@@ -160,80 +166,175 @@ select.clean-input {
     color: #334e68;
     padding: 8px 14px;
     border-radius: 10px;
-    font-weight: 600;
     transition: 0.2s;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
 }
 
-.page-num:hover {
-    background: #00a8ff;
-    color: white;
-    transform: translateY(-2px);
-}
-
-.page-num.active {
-    background: #00a8ff;
-    color: white;
-    box-shadow: 0 4px 12px rgba(0,168,255,0.4);
-}
+    .page-num.active {
+        background: #00a8ff;
+        color: white;
+    }
 
 .pag-btn {
     border: none;
     background: white;
     padding: 10px 14px;
     border-radius: 10px;
-    transition: 0.2s;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
 }
 
-.pag-btn:hover:not(:disabled) {
+    .pag-btn:disabled {
+        opacity: 0.4;
+    }
+
+/* =========================
+   7. MODAL (SZERKESZTÉS)
+========================= */
+.custom-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 3000;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 15px; /* Megakadályozza, hogy tableten érintse a széleket */
+}
+
+.custom-modal-container {
+    width: 100%;
+    max-width: 600px;
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    max-height: 90vh;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+}
+
+.modal-header-custom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
     background: #00a8ff;
     color: white;
-    transform: translateY(-2px);
 }
 
-.pag-btn:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
+.modal-title-custom {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
 }
 
-/* MOBIL */
-@media (max-width: 360px) {
+.close-x {
+    border: none;
+    background: transparent;
+    color: white;
+    font-size: 2rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.modal-body-custom {
+    padding: 24px;
+    overflow-y: auto;
+    overflow-x: hidden; /* Row negatív margó fix */
+}
+
+.modal-footer-custom {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 20px;
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
+}
+
+.btn-cancel {
+    background: #e4e7eb;
+    color: #475a64;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+.btn-save {
+    background: #00a8ff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+/* =========================
+   8. MOBIL SPECIFIKUS FIXEK
+========================= */
+@media (max-width: 576px) {
+
     .container {
         padding-left: 15px;
         padding-right: 15px;
     }
 
-    .product-grid {
-        grid-template-columns: 1fr;
-        padding: 10px;
+    /* Fejléc elemek egymás alá */
+    .d-flex.justify-content-between {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 15px;
     }
 
     .page-title {
-        font-size: 1.5rem;
         text-align: center;
     }
 
     .btn-add-product {
-        width: 100%; /* Mobilon legyen teljes szélességű a gomb */
-        order: -1; /* Kerüljön a cím fölé vagy alá, ahogy tetszik */
+        width: 100%;
+        text-align: center;
     }
 
-    .filter-card {
+    /* GRID FIX: Kártyák középre és teljes szélességre */
+    .product-grid {
+        grid-template-columns: 1fr;
+        justify-items: center;
+        padding: 10px 0;
+    }
+
+        .product-grid > * {
+            grid-template-columns: 1fr;
+            justify-items: center;
+        }
+
+    /* MODAL FIX: Ne lógjon ki, alulról csússzon fel */
+    .custom-modal-overlay {
+        align-items: flex-start;
+        padding: 10px;
+    }
+
+    .custom-modal-container {
+        
+        border-radius: 20px;
+        
+    }
+
+    .modal-body-custom {
+        padding: 20px 15px;
+    }
+
+    .modal-footer-custom {
+        flex-direction: column;
         padding: 15px;
-        margin-bottom: 30px;
     }
 
-    /* A lapozó gombjai mobilon hajlamosak egymásra csúszni */
+    .btn-save, .btn-cancel {
+        width: 100%;
+        padding: 14px;
+    }
+
+    /* Lapozó elrejtése mobilon a gombok kivételével */
     .page-numbers {
-        display: none; /* Mobilon rejtsük el a számokat, csak előre/hátra maradjon */
+        display: none;
     }
-
-    /* Vagy ha meg akarod tartani a számokat, legyenek kisebbek: */
-    /* .page-num { padding: 6px 10px; font-size: 0.8rem; } */
-}
-
-/* FILTER CARD IGAZÍTÁSA */
-.filter-card .row > div {
-    margin-bottom: 10px;
 }

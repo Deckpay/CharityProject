@@ -126,5 +126,34 @@ namespace Application.Services
                 )
             };
         }
+
+        public async Task<bool> DecreaseLimitUsage(int userId, int categoryId)
+        {
+            var allRules = await _unitOfWork.RequesterLimitRules.GetAllAsync();
+            var rule = allRules.FirstOrDefault(r => r.RequesterLimitRuleCategoryId == categoryId && r.IsActive);
+
+            if (rule == null) return false;
+
+            var now = DateTime.UtcNow;
+
+            var allUsage = await _unitOfWork.RequesterLimitUsages.GetAllAsync();
+
+            var usage = allUsage
+                .FirstOrDefault(x =>
+                    x.RequesterId == userId &&
+                    x.RuleId == rule.RequesterLimitRuleId &&
+                    x.PeriodStart <= now &&
+                    x.PeriodEnd > now);
+
+            if (usage == null) return false;
+
+            if (usage.UsedQuantity > 0)
+                usage.UsedQuantity--;
+
+            _unitOfWork.RequesterLimitUsages.Update(usage);
+            await _unitOfWork.CompleteAsync();
+
+            return true;
+        }
     }
 }

@@ -135,7 +135,7 @@
         StateHasChanged();
 
         // Polling indítása: 5 másodpercenként újratölti az igényléseket
-        // Ha a donor lezárja az átadást, a Pending→Failed/Completed változás
+        // Ha a Sender lezárja az átadást, a Pending→Failed/Completed változás
         // miatt az igénylés automatikusan eltűnik a listából
         _ = StartPollingAsync();
     }

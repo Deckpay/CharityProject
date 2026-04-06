@@ -10,7 +10,7 @@ namespace Domain.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)] 
         public int ChatId { get; set; }
         public int ProductRequestId { get; set; }
-        public int DonorId { get; set; }
+        public int SenderId { get; set; }
         public int RequesterId { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }

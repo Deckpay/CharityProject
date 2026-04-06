@@ -97,7 +97,7 @@
                             }
                         </a>
 
-                        <AuthorizeView Roles="Recipient" Context="recAuth">
+                        <AuthorizeView Roles="Requester" Context="recAuth">
                             <Authorized>
                                 <div class="nav-divider"></div>
                                 @if (isOpened)
@@ -132,7 +132,7 @@
                             </Authorized>
                         </AuthorizeView>
 
-                        <AuthorizeView Roles="Donor" Context="donAuth">
+                        <AuthorizeView Roles="Sender" Context="donAuth">
                             <Authorized>
                                 <div class="nav-divider"></div>
                                 @if (isOpened)

@@ -40,7 +40,7 @@ namespace Application.Services
                 {
                     ProductRequestId = dto.RequestId,
                     RequesterId = request.RequesterId,
-                    DonorId = product.DonorId,
+                    SenderId = product.SenderId,
                     CreatedAt = DateTime.UtcNow
                 };
 
@@ -75,8 +75,8 @@ namespace Application.Services
             var allMessages = await _unitOfWork.ChatMessages.GetAllAsync();
             var allUsers = await _unitOfWork.Users.GetAllAsync();
 
-            // Ha a bejelentkezett user donor a másik fél az igénylő és forditva
-            var otherPartyId = (currentUserId == chat.DonorId) ? chat.RequesterId : chat.DonorId;
+            // Ha a bejelentkezett user Sender a másik fél az igénylő és forditva
+            var otherPartyId = (currentUserId == chat.SenderId) ? chat.RequesterId : chat.SenderId;
             var otherPartyName = allUsers.FirstOrDefault(u => u.UserId == otherPartyId)?.UserName ?? "Ismeretlen";
 
             return allMessages
@@ -87,7 +87,7 @@ namespace Application.Services
                     Id = m.ChatMessageId,
                     RequestId = requestId,
                     SenderId = m.SenderId,
-                    DonorId = chat.DonorId,
+                    UserId = chat.SenderId,
                     SenderName = allUsers.FirstOrDefault(u => u.UserId == m.SenderId) is var user && user != null
                         ? $"{user.FirstName} {user.LastName}" : "Ismeretlen",
                     OtherPartyName = otherPartyName,
@@ -121,9 +121,9 @@ namespace Application.Services
 
             var allUsers = await _unitOfWork.Users.GetAllAsync();
 
-            var otherPartyId = (currentUserId == product.DonorId)
+            var otherPartyId = (currentUserId == product.SenderId)
                 ? request.RequesterId
-                : product.DonorId;
+                : product.SenderId;
 
             var otherPartyName = allUsers.FirstOrDefault(u => u.UserId == otherPartyId) is var user && user != null
                         ? $"{user.FirstName} {user.LastName}" : "Ismeretlen";
@@ -131,7 +131,7 @@ namespace Application.Services
             return new ChatInfoDto 
             { 
                 OtherPartyName = otherPartyName,
-                DonorId = product.DonorId,
+                SenderId = product.SenderId,
                 ProductName = product.ProductName
             };
         }
@@ -150,7 +150,7 @@ namespace Application.Services
 
             // csak azokat a caheteket vesszük ahol a user résztvevő
             var userChatIds = allChats
-                .Where(c => (c.DonorId == currentUserId || c.RequesterId == currentUserId)
+                .Where(c => (c.SenderId == currentUserId || c.RequesterId == currentUserId)
                     && activeRequestsIds.Contains(c.ProductRequestId))
                 .Select(c => c.ChatId)
                 .ToHashSet();

@@ -46,7 +46,7 @@
     </div>
 
     <div class="card-action-footer">
-        <AuthorizeView Roles="Recipient">
+        <AuthorizeView Roles="Requester">
             <Authorized>
                 @if (claimError)
                 {
@@ -77,7 +77,7 @@
             </Authorized>
         </AuthorizeView>
 
-        <AuthorizeView Roles="Donor">
+        <AuthorizeView Roles="Sender">
             <Authorized>
                 @if (claimError)
                 {
