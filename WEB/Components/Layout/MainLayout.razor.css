@@ -152,3 +152,41 @@ html, body {
         pointer-events: none;
     }
 }
+.bottom-bar {
+    background-color: #0f172a; /* Sötétebb kék/fekete háttér */
+    color: #94a3b8;
+    padding: 1.5rem 0;
+    border-top: 1px solid #1e293b;
+    font-size: 0.9rem;
+}
+
+.footer-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.footer-links {
+    display: flex;
+    gap: 1.5rem;
+}
+
+    .footer-links a {
+        color: #94a3b8;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+        .footer-links a:hover {
+            color: #f8fafc;
+        }
+
+/* Mobilon középre igazítás */
+@media (max-width: 640px) {
+    .footer-flex {
+        flex-direction: column;
+        text-align: center;
+    }
+}

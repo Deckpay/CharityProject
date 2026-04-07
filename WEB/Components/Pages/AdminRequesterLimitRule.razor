@@ -39,7 +39,6 @@
                         <td>@limitRule.CreatedAt</td>
                         <td>@limitRule.UpdatedAt</td>
                         <td>
-                            <button class="btn btn-secondary btn-sm" @onclick="() => EditProductRequestLimitRule(limitRule)">Szerkesztés</button>
                             <button class="btn btn-danger btn-sm" @onclick="() => DeleteProductRequestLimitRule(limitRule.RequesterLimitRuleId)">Törlés</button>
                         </td>
                     </tr>
@@ -64,7 +63,7 @@
                 <div class="modal-content shadow-lg border-0">
                     <div class="modal-header text-black">
                         <h5 class="modal-title">
-                            @(editingLimitRule.RequesterLimitRuleId == 0 ? "Szabály létrehozása" : "Szabály szerkesztése")
+                            Szabály létrehozása
                         </h5>
                         <button type="button" class="btn-close" @onclick="CloseModal"></button>
                     </div>

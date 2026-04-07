@@ -41,6 +41,8 @@ namespace Application.Services
 
             user.UserStatus = UserStatus.Banned;
 
+            await SyncProductsWithUserAsync(user);
+
             await _unitOfWork.CompleteAsync();
         }
 
@@ -54,6 +56,8 @@ namespace Application.Services
             }
 
             user.UserStatus = UserStatus.Deleted;
+
+            await SyncProductsWithUserAsync(user);
 
             await _unitOfWork.CompleteAsync();
         }
@@ -69,6 +73,8 @@ namespace Application.Services
             user.UserRole = userDto.UserRole;
             user.UserStatus = userDto.UserStatus;
             user.UpdatedAt = DateTime.UtcNow;
+
+            await SyncProductsWithUserAsync(user);
 
             await _unitOfWork.CompleteAsync();
         }
@@ -105,6 +111,8 @@ namespace Application.Services
             product.ProductCategoryId = productDto.ProductCategoryId;
             product.UpdatedAt = DateTime.UtcNow;
 
+            await SyncRequestWithProductAsync(product);
+
             await _unitOfWork.CompleteAsync();
         }
 
@@ -118,6 +126,8 @@ namespace Application.Services
             }
 
             product.ProductStatus = ProductStatus.Deleted;
+
+            await SyncRequestWithProductAsync(product);
 
             await _unitOfWork.CompleteAsync();
         }
@@ -142,20 +152,45 @@ namespace Application.Services
 
         public async Task UpdateProductRequestAsync(ProductRequestDto requestDto)
         {
+            // igénylés betöltése
             var request = await _unitOfWork.ProductRequests.GetByIdAsync(requestDto.ProductRequestId);
-
             if (request == null) throw new Exception("Az igénylés nem található");
 
-            request.RequestStatus = requestDto.RequestStatus;
+            // kapcsolódó termék betöltése
+            var product = await _unitOfWork.Products.GetByIdAsync(request.ProductId);
 
-            if (requestDto.RequestStatus == RequestStatus.Failed)
+            switch (requestDto.RequestStatus)
             {
-                request.ProcessedAt = DateTime.UtcNow;
+                case RequestStatus.Pending:
+                    request.RequestStatus = RequestStatus.Pending;
+                    request.ProcessedAt = null;
+
+                    if (product != null)
+                        product.ProductStatus = ProductStatus.Pending;
+
+                    break;
+
+                case RequestStatus.Failed:
+                    request.RequestStatus = RequestStatus.Failed;
+                    request.ProcessedAt = DateTime.UtcNow;
+
+                    if (product != null)
+                        product.ProductStatus = ProductStatus.Active;
+
+                    break;
+
+                default:
+                    request.RequestStatus = requestDto.RequestStatus;
+                    request.ProcessedAt = DateTime.UtcNow;
+
+                    if (product != null)
+                        product.ProductStatus = ProductStatus.Completed;
+
+                    break;
             }
-            else
-            {
-                request.ProcessedAt = DateTime.MinValue;
-            }
+
+            if (product != null)
+                product.UpdatedAt = DateTime.UtcNow;
 
             await _unitOfWork.CompleteAsync();
         }
@@ -169,8 +204,17 @@ namespace Application.Services
                 return;
             }
 
+            // kapcsolódó termék betöltése
+            var product = await _unitOfWork.Products.GetByIdAsync(request.ProductId);
+
             request.RequestStatus = RequestStatus.Failed;
             request.ProcessedAt = DateTime.UtcNow;
+
+            if (product != null)
+            {
+                product.ProductStatus = ProductStatus.Active;
+                product.UpdatedAt = DateTime.UtcNow;
+            }
 
             await _unitOfWork.CompleteAsync();
         }
@@ -240,6 +284,63 @@ namespace Application.Services
             limitRule.IsActive = false;
 
             await _unitOfWork.CompleteAsync();
+        }
+
+        private async Task SyncRequestWithProductAsync(Product product)
+        {
+            var allRequests = await _unitOfWork.ProductRequests.GetAllAsync();
+            var request = allRequests.FirstOrDefault(r => r.ProductId == product.ProductId);
+
+            if (request == null)
+                return;
+
+            switch (product.ProductStatus)
+            {
+                case ProductStatus.Pending:
+                    request.RequestStatus = RequestStatus.Pending;
+                    request.ProcessedAt = null;
+                    break;
+
+                case ProductStatus.Completed:
+                    request.RequestStatus = RequestStatus.Completed;
+                    request.ProcessedAt = DateTime.UtcNow;
+                    break;
+
+                case ProductStatus.Deleted:
+                    request.RequestStatus = RequestStatus.Failed; // vagy Deleted, ha van ilyen enum
+                    request.ProcessedAt = DateTime.UtcNow;
+                    break;
+
+                case ProductStatus.Active:
+                    // csak akkor állítsd vissza, ha van értelme
+                    if (request.RequestStatus == RequestStatus.Pending)
+                    {
+                        request.RequestStatus = RequestStatus.Failed;
+                        request.ProcessedAt = DateTime.UtcNow;
+                    }
+                    break;
+            }
+        }
+        private async Task SyncProductsWithUserAsync(User user)
+        {
+            var allProducts = await _unitOfWork.Products.GetAllAsync();
+            var products = allProducts.Where(p => p.SenderId == user.UserId).ToList();
+
+            if (products == null)
+                return;
+
+            foreach (var product in products)
+            {
+                switch (user.UserStatus)
+                {
+                    case UserStatus.Banned:
+                    case UserStatus.Deleted:
+                        product.ProductStatus = ProductStatus.Deleted;
+                        product.UpdatedAt = DateTime.UtcNow;
+                        await SyncRequestWithProductAsync(product);
+                        break;
+                }
+            }
         }
     }
 }
