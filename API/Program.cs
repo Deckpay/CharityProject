@@ -11,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // --- 1. ADATBÁZIS ---
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<CharityDbContext>(options =>
+builder.Services.AddDbContext<ErtekmentoDbContext>(options =>
     options.UseSqlServer(connectionString));
 
 //adatbázis műveletek regisztrálása

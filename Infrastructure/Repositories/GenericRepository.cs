@@ -6,11 +6,11 @@ namespace Infrastructure.Repositories
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
-        protected readonly CharityDbContext _context; // Adatbázis
+        protected readonly ErtekmentoDbContext _context; // Adatbázis
         private readonly DbSet<T> _dbSet; // Adatbázis tábla
 
 
-        public GenericRepository(CharityDbContext context)
+        public GenericRepository(ErtekmentoDbContext context)
         {
             _context = context;
             _dbSet = _context.Set<T>();

@@ -22,9 +22,13 @@ namespace WEB.Services
                 var token = await _localStorage.GetItemAsync<string>("authToken");
 
                 if (string.IsNullOrWhiteSpace(token))
+                    return new AuthenticationState(CreateAnonymous());
+
+                if (IsTokenExpired(token))
                 {
-                    return new AuthenticationState(
-                        new ClaimsPrincipal(new ClaimsIdentity()));
+                    await _localStorage.RemoveItemAsync("authToken");
+                    _tokenStore.Token = null;
+                    return new AuthenticationState(CreateAnonymous());
                 }
 
                 // KRITIKUS: A TokenStore-t is frissíteni kell, hogy a többi Service lássa!
@@ -50,13 +54,18 @@ namespace WEB.Services
             catch
             {
                 // prerender alatt JS nem működik
-                return new AuthenticationState(
-                    new ClaimsPrincipal(new ClaimsIdentity()));
+                return new AuthenticationState(CreateAnonymous());
             }
         }
 
         public void NotifyUserAuthentication(string token)
         {
+            if (string.IsNullOrWhiteSpace(token) || IsTokenExpired(token))
+            {
+                NotifyUserLogout();
+                return;
+            }
+
             // Frissítsük a TokenStore-ot is, hogy a TokenHandler és az HttpClient-ek
             // azonnal lássák az új tokent.
             _tokenStore.Token = token;
@@ -109,6 +118,37 @@ namespace WEB.Services
             var idClaim = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             return int.TryParse(idClaim, out var id) ? id : 0;
+        }
+        private bool IsTokenExpired(string token)
+        {
+            var handler = new JwtSecurityTokenHandler();
+
+            if (!handler.CanReadToken(token))
+                return true;
+
+            var jwt = handler.ReadJwtToken(token);
+
+            return jwt.ValidTo <= DateTime.UtcNow;
+        }
+
+        private ClaimsPrincipal CreateAnonymous()
+        {
+            return new ClaimsPrincipal(new ClaimsIdentity());
+        }
+        public async Task<bool> ValidateTokenAsync()
+        {
+            var token = await _localStorage.GetItemAsync<string>("authToken");
+
+            if (string.IsNullOrWhiteSpace(token))
+                return false;
+
+            if (IsTokenExpired(token))
+            {
+                await LogoutAsync();
+                return false;
+            }
+
+            return true;
         }
     }
 }

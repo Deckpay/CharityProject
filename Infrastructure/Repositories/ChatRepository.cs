@@ -7,9 +7,9 @@ namespace Infrastructure.Repositories
 {
     public class ChatRepository : IChatRepository
     {
-        private readonly CharityDbContext _context;
+        private readonly ErtekmentoDbContext _context;
 
-        public ChatRepository(CharityDbContext context)
+        public ChatRepository(ErtekmentoDbContext context)
         {
             _context = context;
         }

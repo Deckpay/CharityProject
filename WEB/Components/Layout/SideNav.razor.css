@@ -323,3 +323,23 @@
         left: 0; /* Beúszik */
     }
 }
+
+.profile-open-btn {
+    width: 100%;
+    border: none;
+    background: transparent;
+    text-align: left;
+    padding: 0;
+    color: inherit;
+}
+
+    .profile-open-btn:hover {
+        opacity: 0.96;
+    }
+
+.user-subtitle {
+    display: block;
+    font-size: 0.78rem;
+    color: #6c757d;
+    margin-top: 2px;
+}

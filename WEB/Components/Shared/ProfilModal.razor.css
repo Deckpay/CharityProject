@@ -1,0 +1,238 @@
+﻿.profile-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(3px);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+.profile-modal {
+    width: 100%;
+    max-width: 460px;
+    background: #fff;
+    border-radius: 22px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+    padding: 22px;
+    animation: profileModalIn 0.18s ease-out;
+}
+
+@keyframes profileModalIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.profile-modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+    .profile-modal-header h4 {
+        margin: 0;
+        font-size: 1.25rem;
+        font-weight: 700;
+    }
+
+    .profile-modal-header p {
+        margin: 4px 0 0 0;
+        color: #6c757d;
+        font-size: 0.95rem;
+    }
+
+.profile-close-btn {
+    border: none;
+    background: #f3f4f6;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+    .profile-close-btn:hover {
+        background: #e9ecef;
+    }
+
+.profile-form-group {
+    margin-bottom: 14px;
+}
+
+    .profile-form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 6px;
+        font-size: 0.95rem;
+    }
+
+.profile-input {
+    border-radius: 14px;
+    padding: 12px 14px;
+    min-height: 46px;
+}
+
+.profile-save-btn {
+    width: 100%;
+    border-radius: 14px;
+    padding: 12px 16px;
+    font-weight: 600;
+    margin-top: 6px;
+}
+
+.profile-divider {
+    height: 1px;
+    background: #e9ecef;
+    margin: 22px 0 18px 0;
+}
+
+.danger-zone h5 {
+    margin: 0 0 8px 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #b02a37;
+}
+
+.danger-zone p {
+    margin: 0 0 14px 0;
+    color: #6c757d;
+    font-size: 0.93rem;
+}
+
+.profile-delete-btn {
+    width: 100%;
+    border-radius: 14px;
+    padding: 12px 16px;
+    font-weight: 600;
+}
+
+@media (max-width: 576px) {
+    .profile-modal-backdrop {
+        padding: 10px;
+        align-items: flex-end;
+    }
+
+    .profile-modal {
+        max-width: 100%;
+        border-radius: 20px 20px 12px 12px;
+        padding: 18px;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    .profile-modal-header h4 {
+        font-size: 1.1rem;
+    }
+
+    .profile-modal-header p {
+        font-size: 0.9rem;
+    }
+
+    .profile-input,
+    .profile-save-btn,
+    .profile-delete-btn {
+        min-height: 48px;
+    }
+}
+.profile-form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+    font-size: 0.95rem;
+    color: #1f2937;
+}
+
+.confirm-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2100;
+    padding: 16px;
+}
+
+.confirm-dialog {
+    width: 100%;
+    max-width: 380px;
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 22px;
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.18);
+    text-align: center;
+    animation: profileModalIn 0.18s ease-out;
+}
+
+.confirm-icon-wrap {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 14px auto;
+    border-radius: 50%;
+    background: rgba(239, 68, 68, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.confirm-icon {
+    color: #dc3545;
+    font-size: 30px;
+}
+
+.confirm-dialog h5 {
+    margin: 0 0 10px 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.confirm-dialog p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.confirm-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 22px;
+}
+
+    .confirm-actions button {
+        flex: 1;
+        min-height: 46px;
+        border-radius: 14px;
+        font-weight: 600;
+    }
+
+@media (max-width: 576px) {
+    .confirm-overlay {
+        align-items: flex-end;
+        padding: 10px;
+    }
+
+    .confirm-dialog {
+        max-width: 100%;
+        border-radius: 20px 20px 12px 12px;
+        padding: 18px;
+    }
+
+    .confirm-actions {
+        flex-direction: column;
+    }
+}

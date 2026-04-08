@@ -7,7 +7,7 @@ namespace Infrastructure.Repositories
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly CharityDbContext _context;
+        private readonly ErtekmentoDbContext _context;
         
 
         // Itt tároljuk a konkrét repository példányokat
@@ -21,7 +21,7 @@ namespace Infrastructure.Repositories
         public IGenericRepository<RequesterLimitRule> RequesterLimitRules { get; private set; }
         public IGenericRepository<RequesterLimitUsage> RequesterLimitUsages { get; private set; }
 
-        public UnitOfWork(CharityDbContext context)
+        public UnitOfWork(ErtekmentoDbContext context)
         {
             _context = context;
 

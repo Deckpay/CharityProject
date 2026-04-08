@@ -2,7 +2,9 @@
 using Application.Interfaces;
 using Domain.Enums;
 using Infrastructure.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace API.Controllers
 {
@@ -47,6 +49,41 @@ namespace API.Controllers
             var token = _jwtTokenGenerator.GenerateToken(user);
 
             return Ok(new LoginResponseDto { Token = token });
+        }
+
+        [Authorize]
+        [HttpDelete("delete-my-account")]
+        public async Task<IActionResult> DeleteMyAccount()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrWhiteSpace(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+                return Unauthorized("Érvénytelen token");
+
+            var success = await _authService.DeleteMyAccountAsync(userId);
+
+            if (!success)
+                return BadRequest("A fiók törlése sikertelen.");
+
+            return Ok("A fiók sikeresen törölve");
+        }
+
+
+        [Authorize]
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+                return Unauthorized("Érvénytelen token");
+
+            var success = await _authService.ChangePasswordAsync(userId, dto);
+
+            if (!success)
+                return BadRequest("A jelszó modosítása sikertelen.");
+
+            return Ok("A jelszó sikeresen módosítva.");
         }
     }
 }

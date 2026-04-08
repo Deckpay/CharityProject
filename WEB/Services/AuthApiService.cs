@@ -28,5 +28,24 @@ namespace WEB.Services
 
             return result?.Token;
         }
+
+        public async Task<bool> DeleteMyAccountAsync(string token)
+        {
+            _http.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+            var response = await _http.DeleteAsync("auth/delete-my-account");
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> ChangePasswordAsync(ChangePasswordDto dto, string token)
+        {
+            _http.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+            var response = await _http.PostAsJsonAsync("auth/change-password", dto);
+
+            return response.IsSuccessStatusCode;
+        }
     }
 }

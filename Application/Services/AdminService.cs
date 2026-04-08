@@ -42,6 +42,7 @@ namespace Application.Services
             user.UserStatus = UserStatus.Banned;
 
             await SyncProductsWithUserAsync(user);
+            await SyncRequestsWithRequesterAsync(user);
 
             await _unitOfWork.CompleteAsync();
         }
@@ -58,6 +59,7 @@ namespace Application.Services
             user.UserStatus = UserStatus.Deleted;
 
             await SyncProductsWithUserAsync(user);
+            await SyncRequestsWithRequesterAsync(user);
 
             await _unitOfWork.CompleteAsync();
         }
@@ -75,6 +77,7 @@ namespace Application.Services
             user.UpdatedAt = DateTime.UtcNow;
 
             await SyncProductsWithUserAsync(user);
+            await SyncRequestsWithRequesterAsync(user);
 
             await _unitOfWork.CompleteAsync();
         }
@@ -326,7 +329,7 @@ namespace Application.Services
             var allProducts = await _unitOfWork.Products.GetAllAsync();
             var products = allProducts.Where(p => p.SenderId == user.UserId).ToList();
 
-            if (products == null)
+            if (!products.Any())
                 return;
 
             foreach (var product in products)
@@ -339,6 +342,33 @@ namespace Application.Services
                         product.UpdatedAt = DateTime.UtcNow;
                         await SyncRequestWithProductAsync(product);
                         break;
+                }
+            }
+        }
+
+        private async Task SyncRequestsWithRequesterAsync(User user)
+        {
+            var allRequests = await _unitOfWork.ProductRequests.GetAllAsync();
+            var requesterRequests = allRequests
+                .Where(r => r.RequesterId == user.UserId)
+                .ToList();
+
+            var allProducts = await _unitOfWork.Products.GetAllAsync();
+
+            foreach (var request in requesterRequests)
+            {
+                if (request.RequestStatus != RequestStatus.Pending)
+                    continue;
+
+                request.RequestStatus = RequestStatus.Failed;
+                request.ProcessedAt = DateTime.UtcNow;
+
+                var relatedProduct = allProducts.FirstOrDefault(p => p.ProductId == request.ProductId);
+
+                if (relatedProduct != null && relatedProduct.ProductStatus != ProductStatus.Deleted)
+                {
+                    relatedProduct.ProductStatus = ProductStatus.Active;
+                    relatedProduct.UpdatedAt = DateTime.UtcNow;
                 }
             }
         }

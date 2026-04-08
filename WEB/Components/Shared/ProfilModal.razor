@@ -1,0 +1,199 @@
+﻿@using Application.DTOs
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.JSInterop
+@inject LocalStorageService Storage
+@inject AuthApiService AuthApiService
+@inject AuthenticationStateProvider AuthProvider
+@inject NavigationManager Navigation
+@inject ToastService ToastService
+@inject IJSRuntime JS
+
+@if (IsOpen)
+{
+    <div class="profile-modal-backdrop" @onclick="Close">
+        <div class="profile-modal" @onclick:stopPropagation="true">
+            <div class="profile-modal-header">
+                <div>
+                    <h4>Profil</h4>
+                    <p>Jelszó módosítása és fiókkezelés</p>
+                </div>
+
+                <button type="button" class="profile-close-btn" @onclick="Close">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            <EditForm Model="@model" OnValidSubmit="HandleChangePassword">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="profile-form-group">
+                    <label for="currentPassword">Jelenlegi jelszó</label>
+                    <InputText id="currentPassword"
+                               @bind-Value="model.CurrentPassword"
+                               type="password"
+                               class="form-control profile-input" />
+                </div>
+
+                <div class="profile-form-group">
+                    <label for="newPassword">Új jelszó</label>
+                    <InputText id="newPassword"
+                               @bind-Value="model.NewPassword"
+                               type="password"
+                               class="form-control profile-input" />
+                </div>
+
+                <div class="profile-form-group">
+                    <label for="confirmPassword">Új jelszó újra</label>
+                    <InputText id="confirmPassword"
+                               @bind-Value="model.ConfirmNewPassword"
+                               type="password"
+                               class="form-control profile-input" />
+                </div>
+
+                <button type="submit" class="btn btn-primary profile-save-btn" disabled="@isSaving">
+                    @(isSaving ? "Módosítás..." : "Jelszó módosítása")
+                </button>
+            </EditForm>
+
+            <div class="profile-divider"></div>
+
+            <div class="danger-zone">
+                <h5>Fiók törlése</h5>
+                <p>Ez a művelet nem visszavonható.</p>
+
+                <button type="button"
+                        class="btn btn-outline-danger profile-delete-btn"
+                        disabled="@isDeleting"
+                        @onclick="OpenDeleteConfirm">
+                    @(isDeleting ? "Törlés..." : "Fiók törlése")
+                </button>
+            </div>
+        </div>
+    </div>
+
+    @if (showDeleteConfirm)
+    {
+        <div class="confirm-overlay" @onclick="CloseDeleteConfirm">
+            <div class="confirm-dialog" @onclick:stopPropagation="true">
+                <div class="confirm-icon-wrap">
+                    <span class="material-symbols-outlined confirm-icon">warning</span>
+                </div>
+
+                <h5>Biztosan törlöd a fiókodat?</h5>
+                <p>
+                    A fiók törlése után a kapcsolódó adataid nem lesznek elérhetők.
+                    Ez a művelet nem visszavonható.
+                </p>
+
+                <div class="confirm-actions">
+                    <button type="button" class="btn btn-light confirm-cancel-btn" @onclick="CloseDeleteConfirm">
+                        Mégse
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-danger confirm-delete-btn"
+                            disabled="@isDeleting"
+                            @onclick="HandleDeleteAccount">
+                        @(isDeleting ? "Törlés..." : "Igen, törlöm")
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+@code {
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+
+    private ChangePasswordDto model = new();
+    private bool isSaving = false;
+    private bool isDeleting = false;
+    private bool showDeleteConfirm = false;
+
+    private async Task Close()
+    {
+        model = new ChangePasswordDto();
+        await OnClose.InvokeAsync();
+    }
+
+    private void OpenDeleteConfirm()
+    {
+        showDeleteConfirm = true;
+    }
+
+    private void CloseDeleteConfirm()
+    {
+        showDeleteConfirm = false;
+    }
+
+    private async Task HandleChangePassword()
+    {
+        try
+        {
+            isSaving = true;
+
+            var token = await Storage.GetItemAsync<string>("authToken") ?? "";
+
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                ToastService.ShowToast("Nincs bejelentkezve.", "error");
+                return;
+            }
+
+            var success = await AuthApiService.ChangePasswordAsync(model, token);
+
+            if (!success)
+            {
+                ToastService.ShowToast("A jelszó módosítása sikertelen.", "error");
+                return;
+            }
+
+            ToastService.ShowToast("A jelszó sikeresen módosítva.", "success");
+            await Close();
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+    private async Task HandleDeleteAccount()
+    {
+        try
+        {
+            isDeleting = true;
+
+            var token = await Storage.GetItemAsync<string>("authToken") ?? "";
+
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                ToastService.ShowToast("Nincs bejelentkezve.", "error");
+                return;
+            }
+
+            var success = await AuthApiService.DeleteMyAccountAsync(token);
+
+            if (!success)
+            {
+                ToastService.ShowToast("A fiók törlése sikertelen.", "error");
+                return;
+            }
+
+            var provider = (CustomAuthStateProvider)AuthProvider;
+            await provider.LogoutAsync();
+
+            showDeleteConfirm = false;
+
+            ToastService.ShowToast("A fiók törölve lett.", "success");
+            await Close();
+            Navigation.NavigateTo("/");
+        }
+        finally
+        {
+            showDeleteConfirm = false;
+            isDeleting = false;
+        }
+    }
+}
