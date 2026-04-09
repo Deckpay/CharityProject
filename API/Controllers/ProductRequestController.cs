@@ -17,6 +17,11 @@ namespace API.Controllers
             _productRequestService = productRequestService;
         }
 
+        /// <summary>
+        /// Igénylést hoz létre az adott termékre a bejelentkezett felhasználó számára.
+        /// </summary>
+        /// <param name="productId">A termék azonosítója.</param>
+        /// <returns>200 OK siker esetén, ellenkező esetben 400 BadRequest.</returns>
         [Authorize]
         [HttpPost("claim/{productId}")]
         public async Task<IActionResult> Claim(int productId)
@@ -30,6 +35,10 @@ namespace API.Controllers
             return BadRequest(result);
         }
 
+        /// <summary>
+        /// Lekéri a bejelentkezett felhasználó saját igényléseit.
+        /// </summary>
+        /// <returns>200 OK a felhasználó igényléseivel.</returns>
         [Authorize]
         [HttpGet("my-requests")]
         public async Task<IActionResult> GetMyRequests()
@@ -38,6 +47,11 @@ namespace API.Controllers
             return Ok(await _productRequestService.GetMyRequestsAsync(userId));
         }
 
+        /// <summary>
+        /// Törli a bejelentkezett felhasználó egyik igénylését.
+        /// </summary>
+        /// <param name="requestId">Az igénylés azonosítója.</param>
+        /// <returns>200 OK siker esetén, 403 Forbidden, ha a művelet nem engedélyezett.</returns>
         [Authorize]
         [HttpDelete("request/{requestId}")]
         public async Task<IActionResult> DeleteRequest(int requestId)
@@ -47,6 +61,10 @@ namespace API.Controllers
             return success ? Ok() : Forbid();
         }
 
+        /// <summary>
+        /// Lekéri a bejelentkezett felhasználó termékeihez tartozó igényléseket.
+        /// </summary>
+        /// <returns>200 OK a beérkezett igénylések listájával.</returns>
         [Authorize]
         [HttpGet("Sender-requests")]
         public async Task<IActionResult> GetSenderRequests()
@@ -55,7 +73,12 @@ namespace API.Controllers
             return Ok(await _productRequestService.GetSenderRequestsAsync(userId));
         }
 
-        // Sender lezárja az igénylést: ?success=true → sikeres átadás, ?success=false → sikertelen
+        /// <summary>
+        /// Lezárja az adott igénylést.
+        /// </summary>
+        /// <param name="requestId">Az igénylés azonosítója.</param>
+        /// <param name="success">True esetén sikeres átadás, false esetén sikertelen lezárás történik.</param>
+        /// <returns>200 OK siker esetén, ellenkező esetben 400 BadRequest.</returns>
         [Authorize]
         [HttpPost("complete/{requestId}")]
         public async Task<IActionResult> Complete(int requestId, [FromQuery] bool success)
@@ -65,7 +88,11 @@ namespace API.Controllers
             return result ? Ok() : BadRequest("Nem sikerült lezárni az igénylést.");
         }
 
-        // Lekérdezi, hogy az adott termékre van-e aktív igénylés a bejelentkezett usertől.
+        /// <summary>
+        /// Lekéri, hogy a bejelentkezett felhasználónak van-e aktív igénylése az adott termékre.
+        /// </summary>
+        /// <param name="productId">A termék azonosítója.</param>
+        /// <returns>200 OK az aktív igénylés azonosítójával, vagy 404 NotFound, ha nincs aktív igénylés.</returns>
         [Authorize]
         [HttpGet("active-for-product/{productId}")]
         public async Task<IActionResult> GetActiveForProduct(int productId)
@@ -79,8 +106,11 @@ namespace API.Controllers
             return NotFound();
         }
 
-        // Lekérdezi, hogy az adott termékre van-e aktív igénylés BÁRKI által.
-        // 200 OK = foglalt, 404 = szabad
+        /// <summary>
+        /// Megvizsgálja, hogy az adott termékre van-e aktív igénylés bármely felhasználó által.
+        /// </summary>
+        /// <param name="productId">A termék azonosítója.</param>
+        /// <returns>200 OK, ha a termék foglalt; 404 NotFound, ha nincs aktív igénylés.</returns>
         [Authorize]
         [HttpGet("is-claimed/{productId}")]
         public async Task<IActionResult> IsClaimed(int productId)

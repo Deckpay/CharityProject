@@ -12,11 +12,9 @@ namespace Domain.Entities
         public string? ProductDescription { get; set; }
         public string? ImagePath { get; set; }
 
-        public ProductStatus ProductStatus { get; set; } = ProductStatus.Active; // Enum használata status ként
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow; // szerveridőt utcnow ban kell tárolni
+        public ProductStatus ProductStatus { get; set; } = ProductStatus.Active;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-
-        // Foreign Key
         public int SenderId { get; set; }
         public int ProductCategoryId { get; set; }
         public int CountyId { get; set; }

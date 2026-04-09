@@ -82,7 +82,7 @@
             if (!string.IsNullOrEmpty(token))
             {
                 await localStorage.SetItemAsync("authToken", token);
-                TokenStore.Token = token; // <-- EZ A HIÁNYZÓ SOR
+                TokenStore.Token = token;
 
                 var customAuth = (CustomAuthStateProvider)AuthStateProvider;
                 customAuth.NotifyUserAuthentication(token);

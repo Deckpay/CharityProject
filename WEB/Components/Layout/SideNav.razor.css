@@ -1,10 +1,4 @@
-﻿/* ══════════════════════════════════════════════════════════
-   CHARITY APP - VÉGLEGESÍTETT SIDEBAR (ALL-IN-ONE)
-   Javítások: Gomb alul, Felső rés csökkentve, Toggle fix
-   ══════════════════════════════════════════════════════════ */
-
-/* 1. SZÜLŐ KONTEÉNEREK FIXÁLÁSA (hogy a 100% magasság működjön) */
-.page-wrapper {
+﻿.page-wrapper {
     height: 100vh;
     display: flex;
     flex-direction: column;
@@ -13,7 +7,7 @@
 
 .content-wrapper {
     display: flex;
-    flex: 1; /* Kitölti a maradék helyet a header alatt */
+    flex: 1;
     overflow: hidden;
 }
 
@@ -24,7 +18,6 @@
     z-index: 100;
 }
 
-/* 2. SIDEBAR ALAPSTRUKTÚRA */
 .sidebar {
     position: relative;
     background: #0f1923;
@@ -43,26 +36,23 @@
     width: 68px;
 }
 
-/* Az ikon forgatása */
 .rotate-icon {
     transition: transform 0.3s ease;
 }
 
 .is-mirror {
-    transform: rotate(180deg); /* Megfordítja a nyilat, ha zárva van */
+    transform: rotate(180deg);
 }
 
-/* Ha a sidebar csukva van, a gombot középre igazítjuk */
 .sidebar-closed .toggle-btn {
-    right: 50%; /* Középre igazítás csukott állapotban */
+    right: 50%;
     transform: translateX(50%);
     top: 15px;
 }
 
-/* 3. NYITÓ/CSUKÓ GOMB (Toggle) */
 .toggle-btn {
     position: absolute;
-    top: 20px; /* Pontosan az első menüpont magasságában */
+    top: 20px;
     right: 10px;
     width: 28px;
     height: 28px;
@@ -83,15 +73,13 @@
     background: #2563eb;
 }
 
-/* 4. NAVIGÁCIÓS TARTALOM (Középső rész) */
 .nav-scroll {
-    flex: 1; /* Ez engedi a margin-top: auto-t az alján */
+    flex: 1;
     overflow-y: auto;
-    padding-top: 15px; /* Minimális felső hely a Navigáció feliratnak */
+    padding-top: 15px;
     padding-bottom: 20px;
 }
 
-/* Szekció feliratok (Navigáció, Adományozás) */
 .section-label {
     display: block;
     padding: 20px 20px 10px;
@@ -116,26 +104,25 @@
     cursor: pointer;
 }
 
-    .nav-item:hover {
-        background: rgba(37, 99, 235, 0.12);
-        color: #7eb3ff;
-    }
+.nav-item:hover {
+    background: rgba(37, 99, 235, 0.12);
+    color: #7eb3ff;
+}
 
-    .nav-item.active {
-        background: rgba(37, 99, 235, 0.18);
-        color: #60a5fa;
-    }
+.nav-item.active {
+    background: rgba(37, 99, 235, 0.18);
+    color: #60a5fa;
+}
 
-/* 5. ALSÓ RÉSZ (Profil + Kijelentkezés) - FIXEN ALUL */
 .sidebar-bottom {
-    margin-top: auto; /* Ez tolja le a legaljára */
+    margin-top: auto;
     padding: 16px 12px;
     border-top: 1px solid rgba(255, 255, 255, 0.08);
     background: #0f1923;
     display: flex;
     flex-direction: column;
     gap: 8px;
-    flex-shrink: 0; /* Ne engedje összenyomni kicsi képernyőn */
+    flex-shrink: 0;
 }
 
 .user-card {
@@ -175,13 +162,12 @@
     transition: 0.2s;
 }
 
-    .logout-btn:hover {
-        background: rgba(239, 68, 68, 0.2) !important;
-    }
+.logout-btn:hover {
+    background: rgba(239, 68, 68, 0.2) !important;
+}
 
-/* 6. CSUKOTT ÁLLAPOT KORREKCIÓI (Closed) */
 .sidebar-closed .nav-scroll {
-    padding-top: 40px; /* Csukva kell a hely, hogy az első ikon ne legyen a toggle alatt */
+    padding-top: 40px;
 }
 
 .sidebar-closed .section-label,
@@ -213,13 +199,11 @@
     margin: 0 auto;
 }
 
-/* Ikonok fix mérete */
 .material-symbols-outlined {
     font-size: 22px;
     flex-shrink: 0;
 }
 
-/* Bejelentkezés gomb egyedi dizájn */
 .auth-action.login-btn {
     display: flex;
     align-items: center;
@@ -228,19 +212,18 @@
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    background: rgba(37, 99, 235, 0.1) !important; /* Halvány kék háttér */
-    color: #60a5fa !important; /* Világoskék szöveg */
+    background: rgba(37, 99, 235, 0.1) !important;
+    color: #60a5fa !important;
     font-size: 13.5px;
     font-weight: 500;
     transition: 0.2s;
     width: 100%;
 }
 
-    .auth-action.login-btn:hover {
-        background: rgba(37, 99, 235, 0.2) !important;
-    }
+.auth-action.login-btn:hover {
+    background: rgba(37, 99, 235, 0.2) !important;
+}
 
-/* Regisztráció gomb egyedi dizájn */
 .auth-action.register-btn {
     display: flex;
     align-items: center;
@@ -249,19 +232,18 @@
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    background: rgba(16, 185, 129, 0.1) !important; /* Halvány zöldes háttér */
-    color: #34d399 !important; /* Világoszöld szöveg */
+    background: rgba(16, 185, 129, 0.1) !important;
+    color: #34d399 !important;
     font-size: 13.5px;
     font-weight: 500;
     transition: 0.2s;
     width: 100%;
 }
 
-    .auth-action.register-btn:hover {
-        background: rgba(16, 185, 129, 0.2) !important;
-    }
+.auth-action.register-btn:hover {
+    background: rgba(16, 185, 129, 0.2) !important;
+}
 
-/* Csukott állapot fix (hogy ne lógjanak ki) */
 .sidebar-closed .auth-action {
     justify-content: center;
     width: 42px;
@@ -270,48 +252,44 @@
 }
 
 .nav-badge {
-    background-color: #ef4444; /* Élénk piros (Tailwind red-500) */
-    color: white; /* Fehér szám */
-    font-size: 11px; /* Kicsit kisebb, hogy esztétikus legyen */
-    font-weight: 700; /* Vastagabb szám */
-    min-width: 18px; /* Minimum szélesség, hogy egy számnál is kör legyen */
+    background-color: #ef4444;
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    min-width: 18px;
     height: 18px;
-    border-radius: 10px; /* Lekerekítés */
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 0 5px;
-    margin-left: auto; /* Kitolja a jobb szélre a menüponton belül */
-    box-shadow: 0 0 8px rgba(239, 68, 68, 0.4); /* Enyhe piros izzás */
-    border: 1.5px solid #0f1923; /* Egy vékony keret, ami megegyezik a sidebar színével (ettől "lebegősebb") */
+    margin-left: auto;
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+    border: 1.5px solid #0f1923;
 }
 
 @media (max-width: 768px) {
-    /* 1. Rejtsük el a belső kis kerek nyilacskát mobilon */
     .mobile-hide-toggle {
         display: none !important;
     }
 
-    /* 2. Kényszerítsük a SideNav-ot, hogy mobilon MINDIG nyitva legyen, 
-       függetlenül a belső isOpened változótól */
     .sidebar {
-        width: 100% !important; /* Kitölti a sidenav-container 260px-ét */
+        width: 100% !important;
         display: flex !important;
     }
 
-        /* 3. Mobilon minden elemet mutassunk meg (ne tűnjenek el az ikonok mellől a szövegek) */
-        .sidebar .section-label,
-        .sidebar .nav-item span:not(.material-symbols-outlined),
-        .sidebar .user-info,
-        .sidebar .logout-btn span:not(.material-symbols-outlined) {
-            display: block !important;
-        }
+      
+    .sidebar .section-label,
+    .sidebar .nav-item span:not(.material-symbols-outlined),
+    .sidebar .user-info,
+    .sidebar .logout-btn span:not(.material-symbols-outlined) {
+        display: block !important;
+    }
 
-    /* 4. A container maradjon a korábbi beállításodon */
     .sidenav-container {
         position: fixed;
         top: 60px;
-        left: -280px; /* Alapból elrejtve */
+        left: -280px;
         width: 260px;
         height: calc(100% - 60px);
         z-index: 999;
@@ -320,7 +298,7 @@
     }
 
     .mobile-menu-active .sidenav-container {
-        left: 0; /* Beúszik */
+        left: 0;
     }
 }
 
@@ -333,9 +311,9 @@
     color: inherit;
 }
 
-    .profile-open-btn:hover {
-        opacity: 0.96;
-    }
+.profile-open-btn:hover {
+    opacity: 0.96;
+}
 
 .user-subtitle {
     display: block;

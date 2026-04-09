@@ -2,8 +2,8 @@
 {
     public enum UserRole
     {
-        Sender = 1,
-        Requester = 2,
-        Admin = 3
+        Sender = 1, // Feladó
+        Requester = 2, // Igényélő
+        Admin = 3 // Admin
     }
 }

@@ -11,7 +11,7 @@
 
 <nav class="sidebar @(isOpened ? "sidebar-opened" : "sidebar-closed") mobile-sidebar-fix">
 
-    @* Toggle *@
+    @* Nyitó/Záró gomb *@
     <button class="toggle-btn mobile-hide-toggle" @onclick="ToggleSidebar">
         <span class="material-symbols-outlined rotate-icon @(isOpened ? "" : "is-mirror")">
             chevron_left
@@ -285,7 +285,6 @@
             return;
         }
 
-
         Navigation.LocationChanged += OnLocationChanged;
 
         var token = await Storage.GetItemAsync<string>("authToken") ?? "";
@@ -300,12 +299,22 @@
 
     private async void OnLocationChanged(object? sender, LocationChangedEventArgs e)
     {
-        var token = await Storage.GetItemAsync<string>("authToken") ?? "";
-        if (!string.IsNullOrEmpty(token))
+        _ = InvokeAsync(async () =>
         {
-            unreadCount = await ChatService.GetUnreadCountAsync(token);
-            await InvokeAsync(StateHasChanged);
-        }
+            try
+            {
+                var token = await Storage.GetItemAsync<string>("authToken") ?? "";
+                if (!string.IsNullOrEmpty(token))
+                {
+                    unreadCount = await ChatService.GetUnreadCountAsync(token);
+                    StateHasChanged();
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        });
     }
 
     private async Task StartPollingAsync(string token)

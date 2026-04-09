@@ -58,16 +58,16 @@
     transition: all 0.25s ease;
 }
 
-    .custom-input-group:hover {
-        background: #e6edf5;
-    }
+.custom-input-group:hover {
+    background: #e6edf5;
+}
 
-    /* FOCUS */
-    .custom-input-group:focus-within {
-        border-color: #00a8ff;
-        background: white;
-        box-shadow: 0 0 0 4px rgba(0, 168, 255, 0.15);
-    }
+/* FOCUS */
+.custom-input-group:focus-within {
+    border-color: #00a8ff;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(0, 168, 255, 0.15);
+}
 
 /* ICON */
 .group-icon {
@@ -122,10 +122,10 @@ select.clean-input {
     transition: 0.2s;
 }
 
-    .btn-add-product:hover {
-        background: #0086cc;
-        transform: translateY(-2px);
-    }
+.btn-add-product:hover {
+    background: #0086cc;
+    transform: translateY(-2px);
+}
 
 /* =========================
    7. GRID (FIXELVE)
@@ -165,17 +165,17 @@ select.clean-input {
     box-shadow: 0 2px 6px rgba(0,0,0,0.08);
 }
 
-    .page-num:hover {
-        background: #00a8ff;
-        color: white;
-        transform: translateY(-2px);
-    }
+ .page-num:hover {
+     background: #00a8ff;
+     color: white;
+     transform: translateY(-2px);
+ }
 
-    .page-num.active {
-        background: #00a8ff;
-        color: white;
-        box-shadow: 0 4px 12px rgba(0,168,255,0.4);
-    }
+ .page-num.active {
+     background: #00a8ff;
+     color: white;
+     box-shadow: 0 4px 12px rgba(0,168,255,0.4);
+ }
 
 .pag-btn {
     border: none;
@@ -186,16 +186,16 @@ select.clean-input {
     box-shadow: 0 2px 6px rgba(0,0,0,0.08);
 }
 
-    .pag-btn:hover:not(:disabled) {
-        background: #00a8ff;
-        color: white;
-        transform: translateY(-2px);
-    }
+ .pag-btn:hover:not(:disabled) {
+     background: #00a8ff;
+     color: white;
+     transform: translateY(-2px);
+ }
 
-    .pag-btn:disabled {
-        opacity: 0.4;
-        cursor: not-allowed;
-    }
+ .pag-btn:disabled {
+     opacity: 0.4;
+     cursor: not-allowed;
+ }
 
 /* MOBIL */
 @media (max-width: 360px) {
@@ -215,8 +215,8 @@ select.clean-input {
     }
 
     .btn-add-product {
-        width: 100%; /* Mobilon legyen teljes szélességű a gomb */
-        order: -1; /* Kerüljön a cím fölé vagy alá, ahogy tetszik */
+        width: 100%;
+        order: -1;
     }
 
     .filter-card {
@@ -224,16 +224,11 @@ select.clean-input {
         margin-bottom: 30px;
     }
 
-    /* A lapozó gombjai mobilon hajlamosak egymásra csúszni */
     .page-numbers {
-        display: none; /* Mobilon rejtsük el a számokat, csak előre/hátra maradjon */
+        display: none; 
     }
-
-    /* Vagy ha meg akarod tartani a számokat, legyenek kisebbek: */
-    /* .page-num { padding: 6px 10px; font-size: 0.8rem; } */
 }
 
-/* FILTER CARD IGAZÍTÁSA */
 .filter-card .row > div {
     margin-bottom: 10px;
 }

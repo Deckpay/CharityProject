@@ -1,11 +1,11 @@
 ﻿using Application.DTOs;
-using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text.Json.Nodes;
-using System.Text.Json;
 
 namespace WEB.Services
 {
+    /// <summary>
+    /// Chat végpontok hívásáért felelős frontend API service.
+    /// </summary>
     public class ChatApiService
     {
         private readonly HttpClient _http;
@@ -15,6 +15,9 @@ namespace WEB.Services
             _http = http;
         }
 
+        /// <summary>
+        /// Auth headerrel ellátott HTTP kérés létrehozása.
+        /// </summary>
         private static HttpRequestMessage CreateAuthRequest(HttpMethod method, string url, string token)
         {
             var request = new HttpRequestMessage(method, url);
@@ -44,42 +47,6 @@ namespace WEB.Services
             return response.IsSuccessStatusCode;
         }
 
-        /// <summary>
-        /// asasasasa
-        /// </summary>
-        /// <param name="requestId"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public async Task<ProductRequestDto?> GetRequestDetailsAsync(int requestId, string token)
-        {
-            _http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-            // Az útvonalat ellenőrizd az API kontrolleredben (pl. api/ProductRequest/{id})
-            var response = await _http.GetAsync($"ProductRequest/{requestId}");
-            if (response.IsSuccessStatusCode)
-            {
-                return await response.Content.ReadFromJsonAsync<ProductRequestDto>();
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// sasasasa
-        /// </summary>
-        /// <param name="productId"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public async Task<ProductDto?> GetProductByIdAsync(int productId, string token)
-        {
-            var request = CreateAuthRequest(HttpMethod.Get, $"Product/{productId}", token);
-            var response = await _http.SendAsync(request);
-
-            if (response.IsSuccessStatusCode)
-            {
-                return await response.Content.ReadFromJsonAsync<ProductDto>();
-            }
-            return null;
-        }
-
         public async Task<ChatInfoDto?> GetChatInfoAsync(int requestId, string token)
         {
             var request = CreateAuthRequest(HttpMethod.Get, $"Chat/info/{requestId}", token);
@@ -87,7 +54,6 @@ namespace WEB.Services
             if (!response.IsSuccessStatusCode) return null;
             return await response.Content.ReadFromJsonAsync<ChatInfoDto>();
         }
-
 
         public async Task<int> GetUnreadCountAsync(string token)
         {

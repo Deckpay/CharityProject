@@ -2,7 +2,7 @@
 {
     public class ChatMessageRequestDto
     {
-        public int RequestId { get; set; } // itt kutjuk ossze a chatet matchel
+        public int RequestId { get; set; }
         
         public string Content { get; set; } = string.Empty;
     }

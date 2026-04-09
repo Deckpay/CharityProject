@@ -1,5 +1,4 @@
 ﻿using Application.DTOs;
-using Domain.Entities;
 using Microsoft.AspNetCore.Http;
 
 namespace Application.Interfaces
@@ -11,8 +10,5 @@ namespace Application.Interfaces
         Task<bool> CreateProductAsync(ProductDto productDto, int userId, IFormFile imageFile);
         Task UpdateProductAsync(ProductDto productDto);
         Task DeleteProductAsync(int id);
-
-
-
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Application.Interfaces
 {
@@ -15,9 +16,9 @@ namespace Application.Interfaces
         IGenericRepository<ProductRequest> ProductRequests { get; }
         IGenericRepository<RequesterLimitRule> RequesterLimitRules { get; }
         IGenericRepository<RequesterLimitUsage> RequesterLimitUsages { get; }
+        Task<IDbContextTransaction> BeginTransactionAsync();
 
         // Ez a metódus menti el az összes változtatást (Tranzakció kezelés)
         Task<int> CompleteAsync();
-
     }
 }

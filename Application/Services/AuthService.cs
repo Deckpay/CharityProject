@@ -3,8 +3,11 @@ using Application.Interfaces;
 using Domain.Entities;
 using Domain.Enums;
 
-namespace Infrastructure.Services
+namespace Application.Services
 {
+    /// <summary>
+    /// Hitelesítési és felhasználói fiókkezelési műveletekért felelős szolgáltatás.
+    /// </summary>
     public class AuthService : IAuthService
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -16,14 +19,12 @@ namespace Infrastructure.Services
 
         public async Task<bool> RegisterAsync(RegisterDto registerDto)
         {
-            // 1. Ellenőrizzük, létezik-e már a felhasználó
             var existingUsers = await _unitOfWork.Users.GetAllAsync();
             if (existingUsers.Any(u => u.Email == registerDto.Email || u.UserName == registerDto.UserName))
             {
                 return false;
             }
 
-            // 2. Felhasználó létrehozása és jelszó titkosítás
             var newUser = new User
             {
                 UserName = registerDto.UserName,
@@ -32,7 +33,7 @@ namespace Infrastructure.Services
                 LastName = registerDto.LastName,
                 UserRole = (Domain.Enums.UserRole)registerDto.RoleId,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(registerDto.Password),
-                CreatedAt = DateTime.Now,
+                CreatedAt = DateTime.UtcNow,
                 UserStatus = UserStatus.Active
             };
 
@@ -47,7 +48,7 @@ namespace Infrastructure.Services
 
             if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
             {
-                return null; // Hibás jelszó vagy felhasznláló
+                return null;
             }
 
             return user;

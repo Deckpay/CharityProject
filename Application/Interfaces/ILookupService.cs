@@ -8,9 +8,8 @@ namespace Application.Interfaces
         Task<IEnumerable<ProductCategory>> GetProductCategoriesAsync();
         Task<IEnumerable<User>> GetUsersAsync();
         Task<IEnumerable<Product>> GetProductsAsync();
-
         string GetCountiesNameString(int id);
-        string GetProductCatergoriesNameString(int id);
+        string GetProductCategoriesNameString(int id);
         string GetUserNameString(int id);
         string GetProductNameString(int id);
     }

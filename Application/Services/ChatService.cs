@@ -5,6 +5,10 @@ using Domain.Enums;
 
 namespace Application.Services
 {
+    /// <summary>
+    /// A chat funkciókért felelős szolgáltatás.
+    /// Kezeli az üzenetküldést, az előzmények lekérdezését és az olvasatlan üzenetek állapotát.
+    /// </summary>
     public class ChatService : IChatService
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -20,17 +24,14 @@ namespace Application.Services
         {
             var currentUserId = _currentUserService.UserId;
 
-            // 1. Igénylés megkeresése
             var request = await _unitOfWork.ProductRequests.GetByIdAsync(dto.RequestId);
             if (request == null)
                 throw new Exception("Nincs ilyen igénylés.");
 
-            // 2. Termék megkeresése
             var product = await _unitOfWork.Products.GetByIdAsync(request.ProductId);
             if (product == null)
                 throw new Exception($"A termék nem található (ID: {request.ProductId}).");
 
-            // 3. Chat keresése – ha nincs, csak akkor hozzuk létre
             var allChats = await _unitOfWork.Chats.GetAllAsync();
             var chat = allChats.FirstOrDefault(c => c.ProductRequestId == dto.RequestId);
 
@@ -44,12 +45,10 @@ namespace Application.Services
                     CreatedAt = DateTime.UtcNow
                 };
 
-                // ✅ AddAsync csak akkor, ha VALÓBAN új chat
                 await _unitOfWork.Chats.AddAsync(chat);
-                await _unitOfWork.CompleteAsync(); // ID generáláshoz mentés
+                await _unitOfWork.CompleteAsync();
             }
 
-            // 4. Üzenet hozzáadása
             var message = new ChatMessage
             {
                 ChatId = chat.ChatId,
@@ -68,14 +67,12 @@ namespace Application.Services
             var allChats = await _unitOfWork.Chats.GetAllAsync();
             var chat = allChats.FirstOrDefault(c => c.ProductRequestId == requestId);
 
-            // Ha még nincs chat (nem küldtek üzenetet), üres listát adunk vissza
             if (chat == null)
                 return new List<ChatMessageResponseDto>();
 
             var allMessages = await _unitOfWork.ChatMessages.GetAllAsync();
             var allUsers = await _unitOfWork.Users.GetAllAsync();
 
-            // Ha a bejelentkezett user Sender a másik fél az igénylő és forditva
             var otherPartyId = (currentUserId == chat.SenderId) ? chat.RequesterId : chat.SenderId;
             var otherPartyName = allUsers.FirstOrDefault(u => u.UserId == otherPartyId)?.UserName ?? "Ismeretlen";
 
@@ -108,7 +105,6 @@ namespace Application.Services
                 await _unitOfWork.CompleteAsync();
             }
         }
-
         public async Task<ChatInfoDto> GetChatInfoAsync(int requestId, int currentUserId)
         {
             var request = await _unitOfWork.ProductRequests.GetByIdAsync(requestId);
@@ -136,10 +132,9 @@ namespace Application.Services
             };
         }
 
-        // olvasatlan uzenetek számolása
         public async Task<int> GetTotalUnreadCountAsync(int currentUserId)
         {
-            var allMesages = await _unitOfWork.ChatMessages.GetAllAsync();
+            var allMessages = await _unitOfWork.ChatMessages.GetAllAsync();
             var allChats = await _unitOfWork.Chats.GetAllAsync();
             var allRequests = await _unitOfWork.ProductRequests.GetAllAsync();
 
@@ -148,14 +143,13 @@ namespace Application.Services
                 .Select(r => r.ProductRequestId)
                 .ToHashSet();
 
-            // csak azokat a caheteket vesszük ahol a user résztvevő
             var userChatIds = allChats
                 .Where(c => (c.SenderId == currentUserId || c.RequesterId == currentUserId)
                     && activeRequestsIds.Contains(c.ProductRequestId))
                 .Select(c => c.ChatId)
                 .ToHashSet();
 
-            return allMesages.Count(m =>
+            return allMessages.Count(m =>
                 userChatIds.Contains(m.ChatId) &&
                 !m.IsRead &&
                 m.SenderId != currentUserId
@@ -183,17 +177,16 @@ namespace Application.Services
 
             if (!unread.Any()) return;
 
-            foreach (var  id in unread)
+            foreach (var id in unread)
             {
                 var msg = await _unitOfWork.ChatMessages.GetByIdAsync(id);
                 if (msg == null) continue;
                 msg.IsRead = true;
                 msg.ReadAt = DateTime.UtcNow;
-                _unitOfWork.ChatMessages.Update(msg); // EZ HIÁNYZOTT
+                _unitOfWork.ChatMessages.Update(msg);
             }
 
-            var saved = await _unitOfWork.CompleteAsync();
-            Console.WriteLine($"MarkAsAllRead: {saved} sor mentve");
+            await _unitOfWork.CompleteAsync();
         }
     }
 }

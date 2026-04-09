@@ -1,4 +1,4 @@
-﻿/* RESET (ajánlott) */
+﻿/* RESET */
 html, body {
     height: 100%;
     margin: 0;
@@ -7,13 +7,12 @@ html, body {
 /* HÁTTÉR ÉS KÁRTYA */
 .create-product-bg {
     background: linear-gradient(135deg, #7a98a3 0%, #46788a 100%);
-    min-height: 100dvh; /* FIX: mobil viewport bug ellen */
+    min-height: 100dvh;
     width: 100%;
     display: flex;
     align-items: center;
 }
 
-/* fallback régebbi böngészőkhöz */
 @supports not (height: 100dvh) {
     .create-product-bg {
         min-height: 100vh;
@@ -39,12 +38,12 @@ html, body {
     transition: all 0.2s ease-in-out;
 }
 
-    .custom-input:focus {
-        background: #fff;
-        transform: scale(1.01);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        border-color: #4e73df;
-    }
+.custom-input:focus {
+    background: #fff;
+    transform: scale(1.01);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    border-color: #4e73df;
+}
 
 /* GOMBOK */
 .btn-primary-custom {
@@ -56,10 +55,10 @@ html, body {
     transition: all 0.3s;
 }
 
-    .btn-primary-custom:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 20px rgba(34, 74, 190, 0.4);
-    }
+.btn-primary-custom:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(34, 74, 190, 0.4);
+}
 
 .btn-cancel {
     background: rgba(255, 255, 255, 0.15);
@@ -69,10 +68,10 @@ html, body {
     backdrop-filter: blur(5px);
 }
 
-    .btn-cancel:hover {
-        background: rgba(255, 255, 255, 0.25);
-        color: #ffcccc;
-    }
+.btn-cancel:hover {
+    background: rgba(255, 255, 255, 0.25);
+    color: #ffcccc;
+}
 
 /* KÉPFELTÖLTŐ */
 .upload-dropzone {
@@ -94,10 +93,10 @@ html, body {
     letter-spacing: 1px;
 }
 
-    .upload-dropzone:hover {
-        background: rgba(255, 255, 255, 0.15);
-        border-color: #fff;
-    }
+.upload-dropzone:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: #fff;
+}
 
 .selected-file-info {
     display: flex;
@@ -178,6 +177,6 @@ html, body {
     .create-product-bg {
         align-items: flex-start;
         padding: 20px 0;
-        min-height: 100dvh; /* FIX: nincs több kilógás */
+        min-height: 100dvh;
     }
 }

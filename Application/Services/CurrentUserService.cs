@@ -4,6 +4,10 @@ using System.Security.Claims;
 
 namespace Application.Services
 {
+    /// <summary>
+    /// A bejelentkezett felhasználó adatait biztosító szolgáltatás.
+    /// A HttpContext-ből olvassa ki a felhasználó azonosítóját.
+    /// </summary>
     public class CurrentUserService : ICurrentUserService
     {
         private readonly IHttpContextAccessor _contextAccessor;
@@ -22,8 +26,6 @@ namespace Application.Services
                     .FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
                 return string.IsNullOrEmpty(id) ? 0 : int.Parse(id);
             }
-
-            //int ICurrentUserService.UserId { get => UserId; set => throw new NotImplementedException(); }
         }
     }
 }

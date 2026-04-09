@@ -1,13 +1,12 @@
 ﻿using Application.Interfaces;
-using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize (Roles = "Admin")]
     public class LimitController : ControllerBase
     {
         private readonly ILimitService _limitService;
@@ -17,7 +16,12 @@ namespace API.Controllers
             _limitService = limitService;
         }
 
-        // GET: api/limit/can-request?userId=1&categoryId=2
+        /// <summary>
+        /// Megvizsgálja, hogy a felhasználó küldhet-e új igénylést az adott kategóriában.
+        /// </summary>
+        /// <param name="userId">A felhasználó azonosítója.</param>
+        /// <param name="categoryId">A kategória azonosítója.</param>
+        /// <returns>True, ha a kérés engedélyezett; különben false.</returns>
         [HttpGet("can-request")]
         public async Task<IActionResult> CanRequest(int userId, int categoryId)
         {
@@ -25,7 +29,12 @@ namespace API.Controllers
             return Ok(new { canRequest });
         }
 
-        // POST: api/limit/use
+        /// <summary>
+        /// Frissíti a felhasználó limit használatát (egy új igénylés után).
+        /// </summary>
+        /// <param name="userId">A felhasználó azonosítója.</param>
+        /// <param name="categoryId">A kategória azonosítója.</param>
+        /// <returns>True, ha a frissítés sikeres.</returns>
         [HttpPost("use")]
         public async Task<IActionResult> UseLimit(int userId, int categoryId)
         {

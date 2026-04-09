@@ -185,7 +185,6 @@
                 ? req.ProductName
                 : (found != null ? found.ProductName : "Termék #" + req.ProductId);
 
-                Console.WriteLine($"RequestId: {req.ProductRequestId}, ProductId: {req.ProductId}, Found: {found?.ProductName}");
                 List<ChatMessageResponseDto> msgs = new();
                 try { msgs = await ChatService.GetHistoryAsync(req.ProductRequestId, token); }
                 catch { }
@@ -205,9 +204,9 @@
             }
             conversations = result;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            Console.WriteLine("Hiba: " + ex.Message);
+            throw;
         }
     }
 
@@ -229,14 +228,6 @@
             RequestStatus.Failed => "Sikertelen",
             _ => status.ToString()
         };
-    }
-
-    private string GetStatusClass(int s)
-    {
-        if (s == 0) return "st-pending";
-        if (s == 1) return "st-accepted";
-        if (s == 2) return "st-rejected";
-        return string.Empty;
     }
 
     public void Dispose()

@@ -11,12 +11,12 @@
     margin-bottom: 20px;
 }
 
-    .chats-header h2 {
-        font-size: 22px;
-        font-weight: 700;
-        color: #1a2332;
-        margin: 0;
-    }
+.chats-header h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1a2332;
+    margin: 0;
+}
 
 .badge-count {
     background: #e8f0fe;
@@ -27,7 +27,6 @@
     border-radius: 20px;
 }
 
-/* ── Skeleton loader ── */
 .chats-loading {
     display: flex;
     flex-direction: column;
@@ -104,16 +103,16 @@
     color: #8a9bb0;
 }
 
-    .chats-empty span {
-        font-size: 56px;
-        display: block;
-        margin-bottom: 12px;
-    }
+.chats-empty span {
+    font-size: 56px;
+    display: block;
+    margin-bottom: 12px;
+}
 
-    .chats-empty p {
-        font-size: 15px;
-        margin-bottom: 20px;
-    }
+.chats-empty p {
+    font-size: 15px;
+    margin-bottom: 20px;
+}
 
 .link-btn {
     display: inline-block;
@@ -149,13 +148,13 @@
     border-bottom: 1px solid #f1f5f9;
 }
 
-    .conv-row:last-child {
-        border-bottom: none;
-    }
+.conv-row:last-child {
+    border-bottom: none;
+}
 
-    .conv-row:hover {
-        background: #f8fafc;
-    }
+.conv-row:hover {
+    background: #f8fafc;
+}
 
 .conv-deleting {
     opacity: 0.35;
@@ -370,13 +369,13 @@
     transition: background 0.15s;
 }
 
-    .modal-close-btn:hover {
-        background: #e2e8f0;
-    }
+.modal-close-btn:hover {
+    background: #e2e8f0;
+}
 
-    .modal-close-btn .material-symbols-outlined {
-        font-size: 16px !important;
-    }
+.modal-close-btn .material-symbols-outlined {
+    font-size: 16px !important;
+}
 
 .modal-danger-icon {
     width: 64px;
@@ -389,10 +388,10 @@
     margin: 0 auto 18px;
 }
 
-    .modal-danger-icon .material-symbols-outlined {
-        font-size: 30px !important;
-        color: #dc2626;
-    }
+.modal-danger-icon .material-symbols-outlined {
+    font-size: 30px !important;
+    color: #dc2626;
+}
 
 .modal-title {
     font-size: 18px;
@@ -426,9 +425,9 @@
     transition: background 0.15s;
 }
 
-    .btn-modal-cancel:hover {
-        background: #f8fafc;
-    }
+.btn-modal-cancel:hover {
+    background: #f8fafc;
+}
 
 .btn-modal-danger {
     flex: 1;
@@ -447,11 +446,11 @@
     transition: background 0.15s;
 }
 
-    .btn-modal-danger:hover {
-        background: #b91c1c;
-    }
+.btn-modal-danger:hover {
+    background: #b91c1c;
+}
 
-    .btn-modal-danger:disabled {
-        opacity: 0.65;
-        cursor: not-allowed;
-    }
+.btn-modal-danger:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}

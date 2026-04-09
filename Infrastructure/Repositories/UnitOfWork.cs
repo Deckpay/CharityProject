@@ -1,7 +1,7 @@
 ﻿using Application.Interfaces;
 using Domain.Entities;
 using Infrastructure.Data;
-using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Infrastructure.Repositories
 {
@@ -43,12 +43,13 @@ namespace Infrastructure.Repositories
             return await _context.SaveChangesAsync();
         }
 
+        public async Task<IDbContextTransaction> BeginTransactionAsync() =>
+            await _context.Database.BeginTransactionAsync();
+
         // Felszabadítjuk az erőforrásokat, ha végeztünk
         public void Dispose()
         {
             _context.Dispose();
         }
-
-        
     }
 }

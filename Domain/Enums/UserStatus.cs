@@ -2,9 +2,9 @@
 {
     public enum UserStatus
     {
-        Active = 1,
-        Deleted = 2,
-        Suspended = 3,
-        Banned = 4
+        Active = 1, // Aktív
+        Deleted = 2, // Törölt
+        Suspended = 3, // Felfüggesztett
+        Banned = 4 // Kitiltott
     }
 }

@@ -2,37 +2,38 @@ using Application.Interfaces;
 using Application.Services;
 using Infrastructure.Data;
 using Infrastructure.Repositories;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// --- 1. ADATBÁZIS ---
+// --- ADATBÁZIS ---
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
 builder.Services.AddDbContext<ErtekmentoDbContext>(options =>
     options.UseSqlServer(connectionString));
 
-//adatbázis műveletek regisztrálása
+// --- DEPENDENCY INJECTION (Services + Repositories) ---
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IProductService, ProductService>();
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<JwtTokenGenerator>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<ILookupService, LookupService>();
-builder.Services.AddScoped<IChatRepository, ChatRepository>();
 builder.Services.AddScoped<IChatService, ChatService>();
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.AddScoped<IProductRequestService, ProductRequestService>();
 builder.Services.AddScoped<ILimitService, LimitService>();
 
+builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
-// --- DINAMIKUS CORS BEÁLLÍTÁS (Módosítva) ---
-// Megpróbáljuk kiolvasni az appsettings-ből, ha nincs ott, a 7189-et használjuk alapértelmezettként
+builder.Services.AddHttpContextAccessor();
+
+
+// --- CORS BEÁLLÍTÁS ---
+// Frontend elérésének engedélyezése
 var allowedWebOrigin = builder.Configuration.GetValue<string>("AllowedWebOrigin") ?? "https://localhost:7189";
 
 builder.Services.AddCors(options =>
@@ -43,6 +44,7 @@ builder.Services.AddCors(options =>
               .AllowAnyHeader());
 });
 
+// --- AUTHENTICATION (JWT) ---
 var jwtKey = builder.Configuration["Jwt:Key"];
 
 builder.Services.AddAuthentication("Bearer")
@@ -60,8 +62,9 @@ builder.Services.AddAuthentication("Bearer")
     };
 });
 
+// --- CONTROLLERS + SWAGGER ---
+
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(c => {
@@ -92,13 +95,11 @@ builder.Services.AddSwaggerGen(c => {
             new string[] {}
         }
     });
-
 });
-
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// --- MIDDLEWARE PIPELINE ---
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -107,11 +108,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// Fontos: a CORS-nak az Auth előtt kell lennie!
-app.UseCors("BlazorPolicy"); 
-app.UseStaticFiles(); // fontos a sorrend
-app.UseAuthentication(); // fontos a sorrend
-app.UseAuthorization(); // fontos a sorrend
+// Fontos a sorrend!
+app.UseCors("BlazorPolicy"); // 1.
+app.UseStaticFiles(); // 2.
+app.UseAuthentication(); // 3.
+app.UseAuthorization(); // 4.
 
 app.MapControllers();
 

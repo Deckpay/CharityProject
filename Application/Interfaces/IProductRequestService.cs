@@ -1,9 +1,4 @@
 ﻿using Application.DTOs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Interfaces
 {
@@ -16,7 +11,5 @@ namespace Application.Interfaces
         Task<bool> CompleteRequestAsync(int requestId, int userId, bool success);
         Task<int?> GetActiveRequestIdForProductAsync(int productId, int userId);
         Task<bool> IsProductClaimedAsync(int productId);
-
-
     }
 }

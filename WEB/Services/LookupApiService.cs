@@ -2,6 +2,9 @@
 
 namespace WEB.Services
 {
+    /// <summary>
+    /// Lookup adatok lekérdezéséért és kliensoldali gyorsítótárazásáért felelős API service.
+    /// </summary>
     public class LookupApiService
     {
         private readonly HttpClient _httpClient;

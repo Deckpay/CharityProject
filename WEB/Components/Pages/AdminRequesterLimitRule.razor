@@ -22,7 +22,7 @@
                     <th scope="col">Mennyiség</th>
                     <th scope="col">Állapot</th>
                     <th scope="col">Létrehozva</th>
-                    <th scope="col">Modosítva</th>
+                    <th scope="col">Módosítva</th>
                     <th scope="col">Műveletek</th>
                 </tr>
             </thead>
@@ -180,12 +180,10 @@
 
         if (editingLimitRule.RequesterLimitRuleId == 0)
         {
-            // ÚJ LÉTREHOZÁSA
             await AdminService.CreateRequesterLimitRuleAsync(editingLimitRule);
         }
         else
         {
-            // MEGLÉVŐ FRISSÍTÉSE
             await AdminService.UpdateRequesterLimitRuleAsync(editingLimitRule);
         }
 

@@ -5,6 +5,10 @@ using Domain.Enums;
 
 namespace Application.Services
 {
+    /// <summary>
+    /// A termékigénylések kezeléséért felelős szolgáltatás.
+    /// Kezeli az igénylés létrehozását, lekérdezését, törlését és lezárását.
+    /// </summary>
     public class ProductRequestService : IProductRequestService
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -18,58 +22,59 @@ namespace Application.Services
 
         public async Task<ClaimResultDto> ClaimProductAsync(int productId, int userId)
         {
-            var product = await _unitOfWork.Products.GetByIdAsync(productId);
+            using var transaction = await _unitOfWork.BeginTransactionAsync();
 
-            if (product == null)
-                return new ClaimResultDto { Success = false, Message = "A termék nem található." };
-
-            if (product.SenderId == userId)
-                return new ClaimResultDto { Success = false, Message = "Saját termékedet nem igényelheted." };
-
-            if (product.ProductStatus != ProductStatus.Active)
-                return new ClaimResultDto { Success = false, Message = "A termék nem igényelhető." };
-
-            // Limit ellenőrzés
-            var canRequest = await _limitService.CanUserRequestProduct(userId, product.ProductCategoryId);
-            if (!canRequest)
-                return new ClaimResultDto { Success = false, Message = "Elérted az igénylési limitet erre a periódusra." };
-
-            // Limit frissítés
-            bool consumed = await _limitService.UpdateLimitUsage(userId, product.ProductCategoryId);
-            if (!consumed)
-                return new ClaimResultDto { Success = false, Message = "Elérted az igénylési limitet." };
-
-
-            // Foglalt-e már a termék
-            var allRequests = await _unitOfWork.ProductRequests.GetAllAsync();
-            if (allRequests.Any(r => r.ProductId == productId && r.RequestStatus == RequestStatus.Pending))
-                return new ClaimResultDto { Success = false, Message = "A termék már foglalt." };
-
-
-            // Ha ennek a usernek már volt korábban igénylése (pl. törölt) → új igénylés
-            var newRequest = new ProductRequest
+            try
             {
-                ProductId = productId,
-                RequesterId = userId,
-                RequestStatus = RequestStatus.Pending,
-                RequestedAt = DateTime.Now
-            };
+                var product = await _unitOfWork.Products.GetByIdAsync(productId);
 
-            // Termék státusz frissítése
-            product.ProductStatus = ProductStatus.Pending;
-            product.UpdatedAt = DateTime.UtcNow;
+                if (product == null)
+                    return new ClaimResultDto { Success = false, Message = "A termék nem található." };
 
-            await _unitOfWork.ProductRequests.AddAsync(newRequest);
-            await _unitOfWork.CompleteAsync();
-            return new ClaimResultDto { Success = true, RequestId = newRequest.ProductRequestId, Message = "Sikeres igénylés!" };
+                if (product.SenderId == userId)
+                    return new ClaimResultDto { Success = false, Message = "Saját termékedet nem igényelheted." };
+
+                if (product.ProductStatus != ProductStatus.Active)
+                    return new ClaimResultDto { Success = false, Message = "A termék nem igényelhető." };
+
+                var canRequest = await _limitService.CanUserRequestProduct(userId, product.ProductCategoryId);
+                if (!canRequest)
+                    return new ClaimResultDto { Success = false, Message = "Elérted az igénylési limitet erre a periódusra." };
+
+                bool consumed = await _limitService.UpdateLimitUsage(userId, product.ProductCategoryId);
+                if (!consumed)
+                    return new ClaimResultDto { Success = false, Message = "Elérted az igénylési limitet." };
+
+                var allRequests = await _unitOfWork.ProductRequests.GetAllAsync();
+                if (allRequests.Any(r => r.ProductId == productId && r.RequestStatus == RequestStatus.Pending))
+                    return new ClaimResultDto { Success = false, Message = "A termék már foglalt." };
+
+                var newRequest = new ProductRequest
+                {
+                    ProductId = productId,
+                    RequesterId = userId,
+                    RequestStatus = RequestStatus.Pending,
+                    RequestedAt = DateTime.UtcNow
+                };
+
+                product.ProductStatus = ProductStatus.Pending;
+                product.UpdatedAt = DateTime.UtcNow;
+
+                await _unitOfWork.ProductRequests.AddAsync(newRequest);
+                await _unitOfWork.CompleteAsync();
+                return new ClaimResultDto { Success = true, RequestId = newRequest.ProductRequestId, Message = "Sikeres igénylés!" };
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
-
         public async Task<IEnumerable<ProductRequestDto>> GetMyRequestsAsync(int userId)
         {
             var requests = await _unitOfWork.ProductRequests.GetAllAsync();
             var dtos = new List<ProductRequestDto>();
-            // Csak Pending igénylések jelennek meg a rec listájában
-            // Ha Completed vagy Failed → eltűnik (a Sender lezárta)
+
             var activeRequests = requests
                 .Where(r => r.RequesterId == userId && r.RequestStatus == RequestStatus.Pending)
                 .ToList();
@@ -90,7 +95,6 @@ namespace Application.Services
             request.RequestStatus = RequestStatus.Failed;
             request.ProcessedAt = DateTime.UtcNow;
 
-            // Ha a rec visszavonja az igénylést, a termék visszakerül Active-ba
             var product = await _unitOfWork.Products.GetByIdAsync(request.ProductId);
             if (product != null)
             {
@@ -124,19 +128,16 @@ namespace Application.Services
 
             return dtos;
         }
-
         public async Task<bool> CompleteRequestAsync(int requestId, int userId, bool success)
         {
             var request = await _unitOfWork.ProductRequests.GetByIdAsync(requestId);
             if (request == null) return false;
 
-            // Csak a termék Sendera zárhatja le
             var product = await _unitOfWork.Products.GetByIdAsync(request.ProductId);
             if (product == null || product.SenderId != userId) return false;
 
             if (success)
             {
-                // Sikeres átadás → termék Completed, igénylés Completed
                 request.RequestStatus = RequestStatus.Completed;
                 request.ProcessedAt = DateTime.UtcNow;
                 product.ProductStatus = ProductStatus.Completed;
@@ -144,8 +145,6 @@ namespace Application.Services
             }
             else
             {
-                // Sikertelen átadás → termék visszakerül Active-ba, igénylés Failed
-                // Így más rec-ek újra tudják igényelni
                 request.RequestStatus = RequestStatus.Failed;
                 request.ProcessedAt = DateTime.UtcNow;
                 product.ProductStatus = ProductStatus.Active;

@@ -80,15 +80,15 @@ html, body {
     width: 100%;
 }
 
-    .custom-input-group:hover {
-        background: #e6edf5;
-    }
+.custom-input-group:hover {
+    background: #e6edf5;
+}
 
-    .custom-input-group:focus-within {
-        border-color: #00a8ff;
-        background: white;
-        box-shadow: 0 0 0 4px rgba(0,168,255,0.15);
-    }
+.custom-input-group:focus-within {
+    border-color: #00a8ff;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(0,168,255,0.15);
+}
 
 .group-icon {
     color: #00a8ff;
@@ -127,10 +127,10 @@ option.clean-input {
     white-space: nowrap;
 }
 
-    .btn-add-product:hover {
-        background: #0086cc;
-        transform: translateY(-2px);
-    }
+.btn-add-product:hover {
+    background: #0086cc;
+    transform: translateY(-2px);
+}
 
 /* =========================
    5. GRID (KÖZÉPRE IGAZÍTVA)
@@ -169,10 +169,10 @@ option.clean-input {
     transition: 0.2s;
 }
 
-    .page-num.active {
-        background: #00a8ff;
-        color: white;
-    }
+.page-num.active {
+    background: #00a8ff;
+    color: white;
+}
 
 .pag-btn {
     border: none;
@@ -181,9 +181,9 @@ option.clean-input {
     border-radius: 10px;
 }
 
-    .pag-btn:disabled {
-        opacity: 0.4;
-    }
+.pag-btn:disabled {
+    opacity: 0.4;
+}
 
 /* =========================
    7. MODAL (SZERKESZTÉS)
@@ -302,10 +302,10 @@ option.clean-input {
         padding: 10px 0;
     }
 
-        .product-grid > * {
-            grid-template-columns: 1fr;
-            justify-items: center;
-        }
+    .product-grid > * {
+        grid-template-columns: 1fr;
+        justify-items: center;
+    }
 
     /* MODAL FIX: Ne lógjon ki, alulról csússzon fel */
     .custom-modal-overlay {

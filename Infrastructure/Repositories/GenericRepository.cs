@@ -9,7 +9,6 @@ namespace Infrastructure.Repositories
         protected readonly ErtekmentoDbContext _context; // Adatbázis
         private readonly DbSet<T> _dbSet; // Adatbázis tábla
 
-
         public GenericRepository(ErtekmentoDbContext context)
         {
             _context = context;

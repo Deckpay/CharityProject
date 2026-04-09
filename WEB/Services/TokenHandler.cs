@@ -2,6 +2,9 @@
 
 namespace WEB.Services
 {
+    /// <summary>
+    /// Automatikusan hozzáadja a JWT tokent minden kimenő HTTP kéréshez.
+    /// </summary>
     public class TokenHandler : DelegatingHandler
     {
         private readonly TokenStore _tokenStore;

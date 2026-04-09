@@ -1,7 +1,5 @@
 ﻿using Application.DTOs;
 using Application.Interfaces;
-using Application.Services;
-using Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -10,6 +8,7 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ProductController : ControllerBase
     {
         private readonly IProductService _productService;
@@ -19,10 +18,17 @@ namespace API.Controllers
             _productService = productService;
         }
 
+        /// <summary>
+        /// Lekéri az összes terméket.
+        /// </summary>
+        /// <returns>200 OK a termékek listájával.</returns>
         [HttpGet]
         public async Task<IActionResult> GetAll() => Ok(await _productService.GetProductsAsync());
 
-        [Authorize]
+        /// <summary>
+        /// Lekéri a bejelentkezett felhasználó saját termékeit.
+        /// </summary>
+        /// <returns>200 OK a felhasználó termékeivel.</returns>
         [HttpGet("my-products")]
         public async Task<IActionResult> GetMyProducts()
         {
@@ -30,7 +36,12 @@ namespace API.Controllers
             return Ok(await _productService.GetProductsBySenderAsync(userId));
         }
 
-        [Authorize]
+        /// <summary>
+        /// Új termék létrehozása.
+        /// </summary>
+        /// <param name="dto">A termék adatai.</param>
+        /// <param name="imageFile">A termékhez tartozó kép.</param>
+        /// <returns>200 OK, ha sikeres; 400 BadRequest hiba esetén.</returns>
         [HttpPost]
         public async Task<IActionResult> Create([FromForm] ProductDto dto, IFormFile imageFile)
         {
@@ -39,6 +50,11 @@ namespace API.Controllers
             return success ? Ok() : BadRequest("Hiba a mentés során.");
         }
 
+        /// <summary>
+        /// Termék adatainak frissítése.
+        /// </summary>
+        /// <param name="productDto">A módosítandó termék adatai.</param>
+        /// <returns>200 OK, ha a frissítés sikeres.</returns>
         [HttpPut("update-product")]
         public async Task<IActionResult> UpdateProducts(ProductDto productDto)
         {
@@ -46,7 +62,11 @@ namespace API.Controllers
             return Ok();
         }
 
-        [Authorize]
+        /// <summary>
+        /// Termék törlése (soft delete).
+        /// </summary>
+        /// <param name="id">A törlendő termék azonosítója.</param>
+        /// <returns>200 OK, ha a törlés sikeres.</returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

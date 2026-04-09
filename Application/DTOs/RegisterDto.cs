@@ -7,7 +7,7 @@ namespace Application.DTOs
         [Required(ErrorMessage = "A felhasználónév kötelező")]
         public string UserName { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "At email cím kötelező")]
+        [Required(ErrorMessage = "Az email cím kötelező")]
         [EmailAddress(ErrorMessage = "Érvénytelen email formátum")]
         public string Email { get; set; } = string.Empty;
 
@@ -25,6 +25,6 @@ namespace Application.DTOs
         public string LastName { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "A szerepkör kiválasztása kötelező")]
-        public int RoleId { get; set; } // Az enum értékét int-ként kezeljük a lenyílóban
+        public int RoleId { get; set; }
     }
 }

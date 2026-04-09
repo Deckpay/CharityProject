@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Domain.Enums;
 
 namespace Domain.Entities
 {
-    [Table("ProductRequests")] // megmondja EF-nek hogy egyes számban van a tábla neve
+    [Table("ProductRequests")]
     public class ProductRequest
     {
         [Key]

@@ -3,19 +3,26 @@ using System.Text.Json;
 
 namespace WEB.Services
 {
+    /// <summary>
+    /// LocalStorage elérés JSInterop segítségével.
+    /// JSON formátumban tárol és olvas adatokat.
+    /// </summary>
     public class LocalStorageService
     {
         private readonly IJSRuntime _js;
         public LocalStorageService(IJSRuntime js) { _js = js; }
 
-        // A JSInterop (IJSRuntime) segítségével "átkiabálunk" a böngészőnek.
-
+        /// <summary>
+        /// Érték mentése a localStorage-ba JSON formátumban.
+        /// </summary>
         public async Task SetItemAsync<T>(string key, T value)
         {
-            // A C# objektumot (pl. User) JSON szöveggé alakítjuk, mert a böngésző csak szöveget tud tárolni.
             await _js.InvokeVoidAsync("localStorage.setItem", key, JsonSerializer.Serialize(value));
         }
 
+        /// <summary>
+        /// Érték lekérése és visszaalakítása a megadott típusra.
+        /// </summary>
         public async Task<T?> GetItemAsync<T>(string key)
         {
             // Lekérjük a szöveget, és ha létezik, visszalakítjuk C# objektummá.
@@ -23,6 +30,9 @@ namespace WEB.Services
             return json == null ? default : JsonSerializer.Deserialize<T>(json);
         }
 
+        /// <summary>
+        /// Érték mentése a localStorage-ba JSON formátumban.
+        /// </summary>
         public async Task RemoveItemAsync(string key)
         {
             // Törlés kijelentkezéskor.

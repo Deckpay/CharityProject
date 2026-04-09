@@ -40,17 +40,17 @@
     margin-bottom: 18px;
 }
 
-    .profile-modal-header h4 {
-        margin: 0;
-        font-size: 1.25rem;
-        font-weight: 700;
-    }
+.profile-modal-header h4 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+}
 
-    .profile-modal-header p {
-        margin: 4px 0 0 0;
-        color: #6c757d;
-        font-size: 0.95rem;
-    }
+.profile-modal-header p {
+    margin: 4px 0 0 0;
+    color: #6c757d;
+    font-size: 0.95rem;
+}
 
 .profile-close-btn {
     border: none;
@@ -64,20 +64,20 @@
     cursor: pointer;
 }
 
-    .profile-close-btn:hover {
-        background: #e9ecef;
-    }
+.profile-close-btn:hover {
+    background: #e9ecef;
+}
 
 .profile-form-group {
     margin-bottom: 14px;
 }
 
-    .profile-form-group label {
-        display: block;
-        font-weight: 600;
-        margin-bottom: 6px;
-        font-size: 0.95rem;
-    }
+.profile-form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+    font-size: 0.95rem;
+}
 
 .profile-input {
     border-radius: 14px;
@@ -213,12 +213,12 @@
     margin-top: 22px;
 }
 
-    .confirm-actions button {
-        flex: 1;
-        min-height: 46px;
-        border-radius: 14px;
-        font-weight: 600;
-    }
+.confirm-actions button {
+    flex: 1;
+    min-height: 46px;
+    border-radius: 14px;
+    font-weight: 600;
+}
 
 @media (max-width: 576px) {
     .confirm-overlay {

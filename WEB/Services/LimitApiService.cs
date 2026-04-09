@@ -1,8 +1,10 @@
 ﻿using Application.DTOs;
-using Domain.Entities;
 
 namespace WEB.Services
 {
+    /// <summary>
+    /// Limit ellenőrző végpontok hívásáért felelős frontend API service.
+    /// </summary>
     public class LimitApiService
     {
         private readonly HttpClient _httpClient;

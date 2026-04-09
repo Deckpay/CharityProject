@@ -109,7 +109,7 @@
     private bool isDeleting = false;
     private int? deletingId = null;
     private string token = "";
-    private PeriodicTimer? _timer; // polling timer
+    private PeriodicTimer? _timer;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -134,9 +134,6 @@
         isLoading = false;
         StateHasChanged();
 
-        // Polling indítása: 5 másodpercenként újratölti az igényléseket
-        // Ha a Sender lezárja az átadást, a Pending→Failed/Completed változás
-        // miatt az igénylés automatikusan eltűnik a listából
         _ = StartPollingAsync();
     }
 
@@ -195,6 +192,5 @@
         };
     }
 
-    // Timer cleanup az oldal elhagyásakor
     public void Dispose() => _timer?.Dispose();
 }

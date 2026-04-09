@@ -3,6 +3,9 @@ using Domain.Entities;
 
 namespace Application.Services
 {
+    /// <summary>
+    /// Lookup adatok lekérdezéséért felelős szolgáltatás.
+    /// </summary>
     public class LookupService : ILookupService
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -40,9 +43,8 @@ namespace Application.Services
             return _productCategories;
         }
 
-        public string GetProductCatergoriesNameString(int id) =>
+        public string GetProductCategoriesNameString(int id) =>
             _productCategories?.FirstOrDefault(c => c.ProductCategoryId == id)?.ProductCategoryName ?? "Ismeretlen";
-
 
         public async Task<IEnumerable<User>> GetUsersAsync()
         {

@@ -1,11 +1,13 @@
 ﻿using Application.DTOs;
 using Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin")]
     public class AdminController : ControllerBase
     {
         private readonly IAdminService _adminService;
@@ -15,7 +17,9 @@ namespace API.Controllers
             _adminService = adminService;
         }
 
-        // user
+        /// <summary>
+        /// Lekéri az összes felhasználót admin számára.
+        /// </summary>
         [HttpGet("users")]
         public async Task<IActionResult> GetUsers()
         {
@@ -23,6 +27,11 @@ namespace API.Controllers
             return Ok(users);
         }
 
+        /// <summary>
+        /// Felhasználó tiltása (soft-ban).
+        /// Nem törli az adatbázisból, csak deaktiválja.
+        /// </summary>
+        /// <param name="id">Felhasználó azonosítója</param>
         [HttpPut("ban-user/{id}")]
         public async Task<IActionResult> BanUser(int id)
         {
@@ -30,13 +39,22 @@ namespace API.Controllers
             return Ok();
         }
 
-        [HttpPut("delete-user/{id}")]
+        /// <summary>
+        /// Felhasználó törlése (soft-del).
+        /// Nem törli az adatbázisból, csak deaktiválja.
+        /// </summary>
+        /// <param name="id">Felhasználó azonosítója</param>        
+        [HttpDelete("delete-user/{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
             await _adminService.DeleteUserAsync(id);
             return Ok();
         }
 
+        /// <summary>
+        /// Felhasználó adatainak frissítése.
+        /// </summary>
+        /// <param name="userDto">A DTO tartalmazza az ID-t és a módosítandó mezőket.</param>        
         [HttpPut("update-user")]
         public async Task<IActionResult> UpdateUser(UserDto userDto)
         {
@@ -44,7 +62,9 @@ namespace API.Controllers
             return Ok();
         }
 
-        // product
+        /// <summary>
+        /// Lekérdezi az összes terméket.
+        /// </summary>        
         [HttpGet("products")]
         public async Task<IActionResult> GetProducts()
         {
@@ -52,6 +72,10 @@ namespace API.Controllers
             return Ok(products);
         }
 
+        /// <summary>
+        /// Frissítí a termék adatait.
+        /// </summary>
+        /// <param name="productDto">A dto tartalmazza a modosítandó mezőket és az id-t</param>        
         [HttpPut("update-product")]
         public async Task<IActionResult> UpdateProducts(ProductDto productDto)
         {
@@ -59,14 +83,20 @@ namespace API.Controllers
             return Ok();
         }
 
-        [HttpPut("delete-product/{id}")]
+        /// <summary>
+        /// Törli a terméket (soft-del).
+        /// </summary>
+        /// <param name="id">Termék azonosítója.</param>        
+        [HttpDelete("delete-product/{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
             await _adminService.DeleteProductAsync(id);
             return Ok();
         }
 
-        // request
+        /// <summary>
+        /// Lekéri az összes igénylést.
+        /// </summary>        
         [HttpGet("product-requests")]
         public async Task<IActionResult> GetProductRequests()
         {
@@ -74,6 +104,10 @@ namespace API.Controllers
             return Ok(requests);
         }
 
+        /// <summary>
+        /// Frissíti az igénylést.
+        /// </summary>
+        /// <param name="requestDto">A dto az igénylés modosítandó paramétereit tartalmazza.</param>        
         [HttpPut("update-product-requests")]
         public async Task<IActionResult> UpdateProductRequests(ProductRequestDto requestDto)
         {
@@ -81,39 +115,58 @@ namespace API.Controllers
             return Ok();
         }
 
-        [HttpPut("delete-product-requests/{id}")]
+        /// <summary>
+        /// Törli az igénylést
+        /// </summary>
+        /// <param name="id">Igénylés azonosítója</param>        
+        [HttpDelete("delete-product-requests/{id}")]
         public async Task<IActionResult> DeleteProductRequests(int id)
         {
             await _adminService.DeleteProductRequestAsync(id);
             return Ok();
         }
 
-        // limitrule
+        /// <summary>
+        /// Lekéri a requesterekhez tartozó limit szabályokat.
+        /// Ezek határozzák meg, hogy egy user hány kérést küldhet.
+        /// </summary>        
         [HttpGet("requester-limitrules")]
         public async Task<IActionResult> GetRequesterLimitRules()
         {
-            var limitRules = await _adminService.GetRequesterLimitRules();
+            var limitRules = await _adminService.GetRequesterLimitRulesAsync();
             return Ok(limitRules);
         }
 
+        /// <summary>
+        /// Létrehozza az igénylés szabályát.
+        /// </summary>
+        /// <param name="limitRuleDto">A dto tartalmazza a szabály paramétereit.</param>        
         [HttpPost("create-requester-limitrule")]
-        public async Task<IActionResult> CreateRequesertLimitRule(RequesterLimitRuleDto limitRuleDto)
+        public async Task<IActionResult> CreateRequeserLimitRule(RequesterLimitRuleDto limitRuleDto)
         {
-            await _adminService.CreateRequesterLimitRule(limitRuleDto);
+            await _adminService.CreateRequesterLimitRuleAsync(limitRuleDto);
             return Ok();
         }
 
+        /// <summary>
+        /// Módosítja a szabályt.
+        /// </summary>
+        /// <param name="limitRuleDto">>A dto tartalmazza a szabály paramétereit.</param>        
         [HttpPut("update-requester-limitrule")]
-        public async Task<IActionResult> UpdateRequesertLimitRule(RequesterLimitRuleDto limitRuleDto)
+        public async Task<IActionResult> UpdateRequesterLimitRule(RequesterLimitRuleDto limitRuleDto)
         {
-            await _adminService.UpdateRequesterLimitRule(limitRuleDto);
+            await _adminService.UpdateRequesterLimitRuleAsync(limitRuleDto);
             return Ok();
         }
 
-        [HttpPut("delete-requester-limitrule/{id}")]
+        /// <summary>
+        /// Törli a szabályt.
+        /// </summary>
+        /// <param name="id">Szabély azonosítója.</param>        
+        [HttpDelete("delete-requester-limitrule/{id}")]
         public async Task<IActionResult> DeleteRequesterLimitRule(int id)
         {
-            await _adminService.DeleteRequesterLimitRule(id);
+            await _adminService.DeleteRequesterLimitRuleAsync(id);
             return Ok();
         }
     }

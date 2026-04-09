@@ -197,8 +197,8 @@
     private string actionResult = string.Empty;
     private bool isUserTheSender = false;
     private string otherPartyName = string.Empty;
-    private bool _poolingStarted = false;
-    private bool _isLOadingMessages = false;
+    private bool _pollingStarted = false;
+    private bool _isLoadingMessages = false;
     private string? productName = "";
 
     private bool CanSend => !isSending && !string.IsNullOrWhiteSpace(newMessage);
@@ -223,31 +223,25 @@
             currentUserId = await AuthStateProvider.GetCurrentUserIdAsync();
             token = await LocalStorage.GetItemAsync<string>("authToken") ?? "";
 
-            // Párhuzamosan kérjük le a pertner nevét
-            //var info = await ChatService.GetChatInfoAsync(RequestId, token);
             var infoTask = ChatService.GetChatInfoAsync(RequestId, token);
             var messagesTask = LoadMessages();
 
             await Task.WhenAll(infoTask, messagesTask);
 
-            await CheckUserPermissions();
-
             var info = await infoTask;
             if (info != null)
             {
                 otherPartyName = info.OtherPartyName;
-                isUserTheSender = (info.SenderId == currentUserId);
                 productName = info.ProductName;
+                isUserTheSender = (info.SenderId == currentUserId);
             }
-
-
 
             isLoading = false;
             StateHasChanged();
             await ScrollToBottom();
-            if (!_poolingStarted)
+            if (!_pollingStarted)
             {
-                _poolingStarted = true;
+                _pollingStarted = true;
                 _ = StartPollingAsync();
             }
         }
@@ -255,8 +249,8 @@
 
     private async Task LoadMessages()
     {
-        if (_isLOadingMessages) return;
-        _isLOadingMessages = true;
+        if (_isLoadingMessages) return;
+        _isLoadingMessages = true;
 
         try
         {
@@ -278,29 +272,13 @@
 
             await ChatService.MarkAsReadAllAsync(RequestId, token);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            Console.WriteLine($"Chat betöltési hiba: {ex.Message}");
             errorMessage = "Nem sikerült betölteni az üzeneteket.";
         }
         finally
         {
-            _isLOadingMessages = false;   
-        }
-    }
-
-    private async Task CheckUserPermissions()
-    {
-        currentUserId = await AuthStateProvider.GetCurrentUserIdAsync();
-        if (messages != null && messages.Any())
-        {
-            // Az üzenetben most már benne van a SenderId (az API-ból)
-            var firstMsg = messages.FirstOrDefault();
-            if (firstMsg != null)
-            {
-                isUserTheSender = (firstMsg.SenderId == currentUserId);
-                Console.WriteLine($"DEBUG: Felhasználó: {currentUserId} | Sender: {firstMsg.SenderId} | Egyezik: {isUserTheSender}");
-            }
+            _isLoadingMessages = false;   
         }
     }
 
@@ -335,9 +313,9 @@
         {
             await ChatService.SendMessageAsync(RequestId, systemMsg, token);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            Console.WriteLine($"Rendszerüzenet hiba: {ex.Message}");
+            throw;
         }
 
         // 2. Termék + igénylés státusz frissítése az API-n
@@ -347,9 +325,8 @@
             if (!ok)
                 errorMessage = "Figyelem: az igénylés lezárása nem sikerült teljesen.";
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            Console.WriteLine($"Lezárási hiba: {ex.Message}");
             errorMessage = "Nem sikerült lezárni az igénylést.";
         }
 
@@ -380,11 +357,10 @@
                 newMessage = content; // visszaírjuk, ha sikertelen
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             errorMessage = "Hálózati hiba történt.";
             newMessage = content;
-            Console.WriteLine($"Küldési hiba: {ex.Message}");
         }
         finally
         {

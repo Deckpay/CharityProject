@@ -1,10 +1,12 @@
 ﻿using Application.DTOs;
 using Microsoft.AspNetCore.Components.Forms;
 using System.Net.Http.Headers;
-using System.Text.Json;
 
 namespace WEB.Services
 {
+    /// <summary>
+    /// Product végpontok hívásáért felelős frontend API service.
+    /// </summary>
     public class ProductApiService
     {
         private readonly HttpClient _http;
@@ -27,8 +29,8 @@ namespace WEB.Services
             content.Add(new StringContent(productDto.ProductCategoryId.ToString()), "ProductCategoryId");
             content.Add(new StringContent(productDto.CountyId.ToString()), "CountyId");
 
-            var stream = imageFile.OpenReadStream(10 * 1024 * 1024);
-            var fileContent = new StreamContent(stream);
+            using var stream = imageFile.OpenReadStream(10 * 1024 * 1024);
+            using var fileContent = new StreamContent(stream);
             fileContent.Headers.ContentType = new MediaTypeHeaderValue(imageFile.ContentType);
             content.Add(fileContent, "ImageFile", imageFile.Name);
 
@@ -62,8 +64,8 @@ namespace WEB.Services
         public async Task<bool> DeleteProductAsync(int id, string token)
         {
             var request = CreateAuthRequest(HttpMethod.Delete, $"Product/{id}", token);
-            var response = _http.SendAsync(request);
-            return response.IsCompletedSuccessfully;
+            var response = await _http.SendAsync(request);
+            return response.IsSuccessStatusCode;
         }  
     }
 }

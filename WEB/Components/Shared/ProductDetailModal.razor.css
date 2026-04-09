@@ -24,17 +24,17 @@
     padding: 20px;
 }
 
-    .modal-left img {
-        max-width: 100%;
-        max-height: 420px;
-        border-radius: 14px;
-        object-fit: cover;
-        transition: transform 0.3s ease;
-    }
+.modal-left img {
+    max-width: 100%;
+    max-height: 420px;
+    border-radius: 14px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
 
-        .modal-left img:hover {
-            transform: scale(1.03);
-        }
+.modal-left img:hover {
+    transform: scale(1.03);
+}
 
 /* JOBB OLDAL */
 .modal-right {
@@ -45,13 +45,13 @@
     gap: 14px;
 }
 
-    /* CÍM */
-    .modal-right h2 {
-        font-size: 1.9rem;
-        font-weight: 700;
-        margin: 0;
-        color: #1e222d;
-    }
+/* CÍM */
+.modal-right h2 {
+    font-size: 1.9rem;
+    font-weight: 700;
+    margin: 0;
+    color: #1e222d;
+}
 
 /* LEÍRÁS */
 .description {
@@ -97,10 +97,10 @@
     transition: 0.2s;
 }
 
-    .primary-btn:hover {
-        background: #0086cc;
-        transform: translateY(-2px);
-    }
+.primary-btn:hover {
+    background: #0086cc;
+    transform: translateY(-2px);
+}
 
 /* CLOSE */
 .modal-close {

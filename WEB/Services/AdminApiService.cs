@@ -2,6 +2,9 @@
 
 namespace WEB.Services
 {
+    /// <summary>
+    /// Admin végpontok hívásáért felelős API service (frontend → backend).
+    /// </summary>
     public class AdminApiService
     {
         private readonly HttpClient _httpClient;

@@ -10,8 +10,5 @@ namespace Domain.Entities
 
         // Navigáció
         public ICollection<Product> Products { get; set; } = new List<Product>();
-        //Ez az Inverz Navigáció. Lehetővé teszi, hogy ha van egy kategória objektumod,
-        //egyetlen mozdulattal lekérd az összes oda tartozó terméket
-        //pl.: Keresed a Budapesti usereket county.Users
     }
 }

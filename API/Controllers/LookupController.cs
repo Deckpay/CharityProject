@@ -1,10 +1,13 @@
-﻿using Application.Interfaces;
+﻿using Application.DTOs;
+using Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class LookupController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -14,6 +17,10 @@ namespace API.Controllers
             _unitOfWork = unitOfWork;
         }
 
+        /// <summary>
+        /// Lekéri az összes termékkategóriát.
+        /// </summary>
+        /// <returns>200 OK a termékkategóriák listájával.</returns>
         [HttpGet("product-categories")]
         public async Task<IActionResult> GetProductCategories()
         {
@@ -21,6 +28,10 @@ namespace API.Controllers
             return Ok(categories);
         }
 
+        /// <summary>
+        /// Lekéri az összes megyét.
+        /// </summary>
+        /// <returns>200 OK a megyék listájával.</returns>
         [HttpGet("counties")]
         public async Task<IActionResult> GetCounties()
         {
@@ -28,13 +39,29 @@ namespace API.Controllers
             return Ok(counties);
         }
 
+        /// <summary>
+        /// Lekéri a felhasználók alapadatait.
+        /// </summary>
+        /// <returns>200 OK a felhasználók listájával.</returns>
         [HttpGet("users")]
         public async Task<IActionResult> GetUsers()
         {
             var users = await _unitOfWork.Users.GetAllAsync();
-            return Ok(users);
+
+            var userDots = users.Select(u => new UserDto
+            {
+                UserName = u.UserName,
+                UserRole = u.UserRole,
+                UserStatus = u.UserStatus
+            });
+
+            return Ok(userDots);
         }
 
+        /// <summary>
+        /// Lekéri az összes terméket.
+        /// </summary>
+        /// <returns>200 OK a termékek listájával.</returns>
         [HttpGet("products")]
         public async Task<IActionResult> GetProducts()
         {

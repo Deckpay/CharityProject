@@ -43,7 +43,7 @@
                     <div>
                         <label>Email cím</label>
                         
-                        <InputText @bind-Value="registerModel.Email" class="form-control" placeholder="Kérlek add meg az email cíned"  />
+                        <InputText @bind-Value="registerModel.Email" class="form-control" placeholder="Kérlek add meg az email címed"  />
                         <ValidationMessage For="@(() => registerModel.Email)" />
                     </div>
 
@@ -83,14 +83,22 @@
                         <label>Regisztráció célja</label>
                         <InputSelect @bind-Value="registerModel.RoleId" class="form-control">
                             <option value="0">-- Válassz szerepkört --</option>
-                            <option value="1">Adományozó (Sender)</option>s
+                            <option value="1">Adományozó (Sender)</option>
                             <option value="2">Rászoruló (Requester)</option>
                         </InputSelect>
                         <ValidationMessage For="@(() => registerModel.RoleId)" />
                     </div>
                     <div class="actions">
-
-                        <button type="submit" class="actions">Regisztráció</button>
+                        <button type="submit" class="actions" disabled="@isSubmitting">
+                            @if (isSubmitting)
+                            {
+                                <span>Folyamatban...</span>
+                            }
+                            else
+                            {
+                                <span>Regisztráció</span>
+                            }
+                        </button>
                     </div>
                 </EditForm>
             </div>
@@ -101,20 +109,35 @@
 @code {
     private RegisterDto registerModel = new();
     private string? errorMessage;
+    private bool isSubmitting = false;
 
     private async Task HandleRegistration()
     {
-        var result = await AuthService.RegisterAsync(registerModel);
+        if (isSubmitting) return;
 
-        if (result)
+        isSubmitting = true;
+        errorMessage = null;
+
+        try
         {
-            ToastService.ShowToast("Sikeres Regisztráció!", "success");
-            // Sikeres regisztráció után átirányítás (pl. a bejelentkezéshez)
-            NavigationManager.NavigateTo("/login");
+            var result = await AuthService.RegisterAsync(registerModel);
+
+            if (result)
+            {
+                ToastService.ShowToast("Sikeres Regisztráció!", "success");
+                // Sikeres regisztráció után átirányítás (pl. a bejelentkezéshez)
+                NavigationManager.NavigateTo("/login");
+            }
+            else
+            {
+                errorMessage = "A regisztráció nem sikerült. Lehet, hogy már létezik ilyen felhasználó.";
+                isSubmitting = false;
+            }
         }
-        else
+        catch (Exception)
         {
-            errorMessage = "A regisztráció nem sikerült. Lehet, hogy már létezik ilyen felhasználó.";
+            errorMessage = "Váratlan hiba történt a hálózati kommunikáció során.";
+            isSubmitting = false;
         }
     }
 

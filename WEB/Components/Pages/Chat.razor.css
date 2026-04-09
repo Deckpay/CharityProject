@@ -608,22 +608,22 @@
     color: #00a854;
 }
 
-    .btn-success-modern:hover {
-        background-color: #00a854;
-        color: white;
-        transform: translateY(-2px);
-    }
+.btn-success-modern:hover {
+    background-color: #00a854;
+    color: white;
+    transform: translateY(-2px);
+}
 
 .btn-danger-modern {
     background-color: #fff1f0;
     color: #f5222d;
 }
 
-    .btn-danger-modern:hover {
-        background-color: #f5222d;
-        color: white;
-        transform: translateY(-2px);
-    }
+.btn-danger-modern:hover {
+    background-color: #f5222d;
+    color: white;
+    transform: translateY(-2px);
+}
 
 .btn-cancel-modern {
     background-color: #f0f2f5;
@@ -631,10 +631,10 @@
     margin-top: 10px;
 }
 
-    .btn-cancel-modern:hover {
-        background-color: #e4e6ea;
-        color: #1c1e21;
-    }
+.btn-cancel-modern:hover {
+    background-color: #e4e6ea;
+    color: #1c1e21;
+}
 
 .btn-icon {
     font-size: 1.2rem;

@@ -111,10 +111,10 @@
     transition: box-shadow 0.2s, transform 0.15s;
 }
 
-    .request-card:hover {
-        box-shadow: 0 6px 20px rgba(0,0,0,0.07);
-        transform: translateY(-2px);
-    }
+.request-card:hover {
+    box-shadow: 0 6px 20px rgba(0,0,0,0.07);
+    transform: translateY(-2px);
+}
 
 .card-top-row {
     display: flex;
@@ -160,14 +160,14 @@
     transition: background 0.15s, color 0.15s;
 }
 
-    .delete-icon-btn:hover {
-        background: #fee2e2;
-        color: #dc2626;
-    }
+.delete-icon-btn:hover {
+    background: #fee2e2;
+    color: #dc2626;
+}
 
-    .delete-icon-btn .material-symbols-outlined {
-        font-size: 18px !important;
-    }
+.delete-icon-btn .material-symbols-outlined {
+    font-size: 18px !important;
+}
 
 .card-product-name {
     font-size: 16px;
@@ -183,9 +183,9 @@
     gap: 4px;
 }
 
-    .card-date .material-symbols-outlined {
-        font-size: 13px !important;
-    }
+.card-date .material-symbols-outlined {
+    font-size: 13px !important;
+}
 
 /* Chat gomb */
 .btn-chat {
@@ -205,13 +205,13 @@
     margin-top: 4px;
 }
 
-    .btn-chat:hover {
-        background: #dbeafe;
-    }
+.btn-chat:hover {
+    background: #dbeafe;
+}
 
-    .btn-chat .material-symbols-outlined {
-        font-size: 17px !important;
-    }
+.btn-chat .material-symbols-outlined {
+    font-size: 17px !important;
+}
 
 /* ══════════════════════════════════
    MODAL — fix középre pozícionálva
@@ -279,13 +279,13 @@
     transition: background 0.15s;
 }
 
-    .modal-close-btn:hover {
-        background: #e2e8f0;
-    }
+.modal-close-btn:hover {
+    background: #e2e8f0;
+}
 
-    .modal-close-btn .material-symbols-outlined {
-        font-size: 16px !important;
-    }
+.modal-close-btn .material-symbols-outlined {
+    font-size: 16px !important;
+}
 
 .modal-danger-icon {
     width: 64px;
@@ -298,10 +298,10 @@
     margin: 0 auto 18px;
 }
 
-    .modal-danger-icon .material-symbols-outlined {
-        font-size: 30px !important;
-        color: #dc2626;
-    }
+.modal-danger-icon .material-symbols-outlined {
+    font-size: 30px !important;
+    color: #dc2626;
+}
 
 .modal-title {
     font-size: 18px;
@@ -335,9 +335,9 @@
     transition: background 0.15s;
 }
 
-    .btn-modal-cancel:hover {
-        background: #f8fafc;
-    }
+.btn-modal-cancel:hover {
+    background: #f8fafc;
+}
 
 .btn-modal-danger {
     flex: 1;
@@ -356,11 +356,11 @@
     transition: background 0.15s;
 }
 
-    .btn-modal-danger:hover {
-        background: #b91c1c;
-    }
+ .btn-modal-danger:hover {
+     background: #b91c1c;
+ }
 
-    .btn-modal-danger:disabled {
-        opacity: 0.65;
-        cursor: not-allowed;
-    }
+ .btn-modal-danger:disabled {
+     opacity: 0.65;
+     cursor: not-allowed;
+ }

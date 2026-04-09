@@ -121,7 +121,6 @@
                         </button>
                     </div>
                 }
-
             </div>
         </div>
     </div>
@@ -171,7 +170,6 @@
         {
             // 1. Megvárjuk, amíg a Provider beolvassa a tokent a LocalStorage-ból
             // Ez feltölti a TokenStore-t is!
-            await AuthStateProvider.GetAuthenticationStateAsync();
             var authState = await AuthStateProvider.GetAuthenticationStateAsync();
 
             if (authState.User?.Identity == null || !authState.User.Identity.IsAuthenticated || !authState.User.IsInRole("Requester"))
@@ -194,7 +192,6 @@
                 Console.WriteLine($"Hiba a betöltésnél: {ex.Message}");
             }
 
-            await LoadFilters();
             isLoading = false;
             StateHasChanged(); // Frissítjük a UI-t
         }

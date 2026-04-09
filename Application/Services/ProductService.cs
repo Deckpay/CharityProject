@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Http;
 
 namespace Application.Services
 {
+    /// <summary>
+    /// A termékek kezeléséért felelős szolgáltatás.
+    /// </summary>
     public class ProductService : IProductService
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -55,7 +58,7 @@ namespace Application.Services
                 ProductCategoryId = dto.ProductCategoryId,
                 ImagePath = dto.ImagePath,
                 CountyId = dto.CountyId,
-                CreatedAt = DateTime.Now,
+                CreatedAt = DateTime.UtcNow,
                 ProductStatus = ProductStatus.Active,
                 SenderId = userId
             };
@@ -63,7 +66,6 @@ namespace Application.Services
             await _unitOfWork.Products.AddAsync(newProduct);
             return await _unitOfWork.CompleteAsync() > 0;
         }
-
         public async Task UpdateProductAsync(ProductDto productDto)
         {
             var product = await _unitOfWork.Products.GetByIdAsync(productDto.ProductId);
@@ -81,7 +83,6 @@ namespace Application.Services
 
             await _unitOfWork.CompleteAsync();
         }
-
         public async Task DeleteProductAsync(int id)
         {
             var product = await _unitOfWork.Products.GetByIdAsync(id);
@@ -105,7 +106,5 @@ namespace Application.Services
             SenderId = p.SenderId,
             ProductStatus = p.ProductStatus
         };
-
-
     }
 }

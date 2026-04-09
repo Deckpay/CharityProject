@@ -2,6 +2,9 @@
 
 namespace WEB.Services
 {
+    /// <summary>
+    /// Auth végpontok hívásáért felelős frontend API service.
+    /// </summary>
     public class AuthApiService
     {
         private readonly HttpClient _http;

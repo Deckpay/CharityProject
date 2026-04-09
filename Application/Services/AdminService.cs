@@ -5,6 +5,10 @@ using Domain.Enums;
 
 namespace Application.Services
 {
+    /// <summary>
+    /// Adminisztrációs műveletekért felelős szolgáltatás.
+    /// Kezeli a felhasználók, termékek, igénylések és limit szabályok admin oldali műveleteit.
+    /// </summary>
     public class AdminService : IAdminService
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -14,7 +18,6 @@ namespace Application.Services
             _unitOfWork = unitOfWork;
         }
 
-        // user
         public async Task<IEnumerable<UserDto>> GetUsersAsync()
         {
             var users = await _unitOfWork.Users.GetAllAsync();
@@ -46,7 +49,6 @@ namespace Application.Services
 
             await _unitOfWork.CompleteAsync();
         }
-
         public async Task DeleteUserAsync(int id)
         {
             var user = await _unitOfWork.Users.GetByIdAsync(id);
@@ -82,7 +84,6 @@ namespace Application.Services
             await _unitOfWork.CompleteAsync();
         }
 
-        // product
         public async Task<IEnumerable<ProductDto>> GetProductsAsync()
         {
             var producst = await _unitOfWork.Products.GetAllAsync();
@@ -118,7 +119,6 @@ namespace Application.Services
 
             await _unitOfWork.CompleteAsync();
         }
-
         public async Task DeleteProductAsync(int id)
         {
             var product = await _unitOfWork.Products.GetByIdAsync(id);
@@ -135,7 +135,6 @@ namespace Application.Services
             await _unitOfWork.CompleteAsync();
         }
 
-        // request
         public async Task<IEnumerable<ProductRequestDto>> GetProductRequestsAsync()
         {
             var requests = await _unitOfWork.ProductRequests.GetAllAsync();
@@ -155,11 +154,9 @@ namespace Application.Services
 
         public async Task UpdateProductRequestAsync(ProductRequestDto requestDto)
         {
-            // igénylés betöltése
             var request = await _unitOfWork.ProductRequests.GetByIdAsync(requestDto.ProductRequestId);
             if (request == null) throw new Exception("Az igénylés nem található");
 
-            // kapcsolódó termék betöltése
             var product = await _unitOfWork.Products.GetByIdAsync(request.ProductId);
 
             switch (requestDto.RequestStatus)
@@ -197,7 +194,6 @@ namespace Application.Services
 
             await _unitOfWork.CompleteAsync();
         }
-
         public async Task DeleteProductRequestAsync(int id)
         {
             var request = await _unitOfWork.ProductRequests.GetByIdAsync(id);
@@ -207,7 +203,6 @@ namespace Application.Services
                 return;
             }
 
-            // kapcsolódó termék betöltése
             var product = await _unitOfWork.Products.GetByIdAsync(request.ProductId);
 
             request.RequestStatus = RequestStatus.Failed;
@@ -222,8 +217,7 @@ namespace Application.Services
             await _unitOfWork.CompleteAsync();
         }
 
-        // limit rule
-        public async Task<IEnumerable<RequesterLimitRuleDto>> GetRequesterLimitRules()
+        public async Task<IEnumerable<RequesterLimitRuleDto>> GetRequesterLimitRulesAsync()
         {
             var limitRules = await _unitOfWork.RequesterLimitRules.GetAllAsync();
 
@@ -242,7 +236,7 @@ namespace Application.Services
             });
         }
 
-        public async Task CreateRequesterLimitRule(RequesterLimitRuleDto limitRuleDto)
+        public async Task CreateRequesterLimitRuleAsync(RequesterLimitRuleDto limitRuleDto)
         {
             var limitRule = new RequesterLimitRule
             {
@@ -259,7 +253,7 @@ namespace Application.Services
             await _unitOfWork.CompleteAsync();
         }
 
-        public async Task UpdateRequesterLimitRule(RequesterLimitRuleDto limitRuleDto)
+        public async Task UpdateRequesterLimitRuleAsync(RequesterLimitRuleDto limitRuleDto)
         {
             var limitRule = await _unitOfWork.RequesterLimitRules.GetByIdAsync(limitRuleDto.RequesterLimitRuleId);
 
@@ -274,8 +268,7 @@ namespace Application.Services
 
             await _unitOfWork.CompleteAsync();
         }
-
-        public async Task DeleteRequesterLimitRule(int id)
+        public async Task DeleteRequesterLimitRuleAsync(int id)
         {
             var limitRule = await _unitOfWork.RequesterLimitRules.GetByIdAsync(id);
 
@@ -288,7 +281,6 @@ namespace Application.Services
 
             await _unitOfWork.CompleteAsync();
         }
-
         private async Task SyncRequestWithProductAsync(Product product)
         {
             var allRequests = await _unitOfWork.ProductRequests.GetAllAsync();
@@ -310,12 +302,11 @@ namespace Application.Services
                     break;
 
                 case ProductStatus.Deleted:
-                    request.RequestStatus = RequestStatus.Failed; // vagy Deleted, ha van ilyen enum
+                    request.RequestStatus = RequestStatus.Failed;
                     request.ProcessedAt = DateTime.UtcNow;
                     break;
 
                 case ProductStatus.Active:
-                    // csak akkor állítsd vissza, ha van értelme
                     if (request.RequestStatus == RequestStatus.Pending)
                     {
                         request.RequestStatus = RequestStatus.Failed;

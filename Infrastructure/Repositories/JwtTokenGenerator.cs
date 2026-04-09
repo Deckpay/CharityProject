@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using Application.Interfaces;
+using Domain.Entities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -7,9 +8,9 @@ using System.Text;
 
 namespace Infrastructure.Repositories
 {
-    public class JwtTokenGenerator
+    public class JwtTokenGenerator : IJwtTokenGenerator
     {
-        public readonly IConfiguration _configuration;
+        private readonly IConfiguration _configuration;
 
         public JwtTokenGenerator(IConfiguration configuration)
         {

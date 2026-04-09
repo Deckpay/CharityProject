@@ -3,7 +3,7 @@
 
 <div class="page-wrapper @(isMobileMenuOpen ? "mobile-menu-active" : "")">
     <Toast />
-    @* 1. FELSŐ MODERN SÁV *@
+    @* FELSŐ MODERN SÁV *@
     <header class="top-bar">
         <div class="header-left">
             @* MOBIL HAMBURGER GOMB *@
@@ -11,7 +11,7 @@
                 <span class="material-symbols-outlined">@(isMobileMenuOpen ? "close" : "menu")</span>
             </button>
 
-            @* STÍLUSOS LOGÓ *@
+            @* LOGÓ *@
             <a class="logo-wrapper" href="/">
                 <div class="logo-icon">
                     <span class="material-symbols-outlined">volunteer_activism</span>
@@ -28,12 +28,12 @@
     </header>
 
     <div class="content-wrapper">
-        @* 2. OLDALSÁV TÁROLÓ *@
+        @* OLDALSÁV TÁROLÓ *@
         <aside class="sidenav-container">
             <SideNav OnNavigate="CloseMenu" />
         </aside>
 
-        @* 3. FŐ TARTALOM (kattintásra bezárja a mobilmenüt) *@
+        @* FŐ TARTALOM (kattintásra bezárja a mobilmenüt) *@
         <main class="main-content" @onclick="CloseMenu">
             @Body
         </main>

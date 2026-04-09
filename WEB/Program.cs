@@ -5,73 +5,32 @@ using WEB.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// --- Razor komponensek ---
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-// Kiolvassuk az appsettings.json-ből az API címét
+// --- API base url ---
 var apiBaseUrl = builder.Configuration["ApiSettings:BaseUrl"];
 if (string.IsNullOrEmpty(apiBaseUrl))
 {
     throw new Exception("ApiSettings:BaseUrl nincs beállítva az appsettings.json-ben");
 }
 
-// TokenStore és TokenHandler regisztrálása a kliensek előtt
-// TokenStore-ot egyszer regisztráljuk és a TokenHandler ezt használja.
+// --- Application szolgáltatások ---
 builder.Services.AddSingleton<TokenStore>();
 builder.Services.AddScoped<TokenHandler>();
 builder.Services.AddScoped<ToastService>();
+builder.Services.AddScoped<LocalStorageService>();
 
-builder.Services.AddHttpClient<AuthApiService>(client =>
-{
-    client.BaseAddress = new Uri(apiBaseUrl);
-})
-.AddHttpMessageHandler<TokenHandler>();
-
-// Product API Kliens – TokenHandler NÉLKÜL, mert a token paraméterként érkezik a komponensből
-// (Blazor Server-ben a JS Interop csak komponens szinten működik, ezért a token
-// közvetlenül a razor oldalakról kerül átadásra a service metódusoknak)
-builder.Services.AddHttpClient<ProductApiService>(client =>
-{
-    client.BaseAddress = new Uri(apiBaseUrl);
-});
-
-builder.Services.AddHttpClient<AdminApiService>(client =>
-{
-    client.BaseAddress = new Uri(apiBaseUrl);
-})
-.AddHttpMessageHandler<TokenHandler>();
-
-builder.Services.AddHttpClient<LookupApiService>(client =>
-{
-    client.BaseAddress = new Uri(apiBaseUrl);
-})
-.AddHttpMessageHandler<TokenHandler>();
-
-builder.Services.AddHttpClient<ProductRequestApiService>(client =>
-{
-    client.BaseAddress = new Uri(apiBaseUrl);
-});
-
-builder.Services.AddHttpClient<LimitApiService>(client =>
-{
-    client.BaseAddress = new Uri(apiBaseUrl);
-});
-
+/// --- Authentikáció ---
+builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
 builder.Services.AddScoped<CustomAuthStateProvider>(sp =>
     (CustomAuthStateProvider)sp.GetRequiredService<AuthenticationStateProvider>());
 
-// WEB Program.cs
-// A Web-es implementációk (amik az API-t hívják)
-builder.Services.AddScoped<LocalStorageService>();
-builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
 builder.Services.AddAuthorizationCore();
 builder.Services.AddCascadingAuthenticationState();
 
-
-// Register cookie authentication but suppress automatic redirect on challenge so
-// Blazor auth uses the CustomAuthStateProvider and HTTP requests get 401s
-// instead of redirects.
+// --- Cookie auth regisztráció úgy, hogy ne irányítson át login oldalra ---
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -90,19 +49,51 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         };
     });
 
+// --- HTTP kliensek ---
+builder.Services.AddHttpClient<AuthApiService>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl);
+})
+.AddHttpMessageHandler<TokenHandler>();
+
+builder.Services.AddHttpClient<AdminApiService>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl);
+})
+.AddHttpMessageHandler<TokenHandler>();
+
+builder.Services.AddHttpClient<LookupApiService>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl);
+})
+.AddHttpMessageHandler<TokenHandler>();
+
+builder.Services.AddHttpClient<ProductApiService>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl);
+});
+
+builder.Services.AddHttpClient<ProductRequestApiService>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl);
+});
+
+builder.Services.AddHttpClient<LimitApiService>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl);
+});
+
 builder.Services.AddHttpClient<ChatApiService>(client =>
 {
     client.BaseAddress = new Uri(apiBaseUrl);
 });
-//.AddHttpMessageHandler<TokenHandler>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// --- MIDDLEWARE PIPELINE ---
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -110,10 +101,6 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
 
-// Blazor Server uses the custom AuthenticationStateProvider and AddAuthorizationCore.
-// Do not register cookie authentication here to avoid automatic redirects/challenges
-// that would send users to an external login page. Keep authorization middleware
-// if needed by other middleware.
 app.UseAuthentication();
 app.UseAuthorization();
 
