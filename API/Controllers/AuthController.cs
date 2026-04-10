@@ -40,19 +40,16 @@ namespace API.Controllers
         /// <param name="dto">Email vagy felhasználónév és jelszó.</param>
         /// <returns>JWT token sikeres bejelentkezés esetén.</returns>
         [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginDto dto)
+        public async Task<IActionResult> Login([FromBody]LoginDto dto)
         {
             var user = await _authService.LoginAsync(dto.EmailOrUserName, dto.Password);
 
             if (user == null)
                 return Unauthorized();
 
-            if (user.UserStatus != UserStatus.Active)
-                return Unauthorized("User not active");
+            Console.WriteLine($"LOGIN TOKEN: {user.Token}");
 
-            var token = _jwtTokenGenerator.GenerateToken(user);
-
-            return Ok(new LoginResponseDto { Token = token });
+            return Ok(user);
         }
 
         /// <summary>

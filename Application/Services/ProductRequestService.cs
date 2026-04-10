@@ -62,6 +62,7 @@ namespace Application.Services
 
                 await _unitOfWork.ProductRequests.AddAsync(newRequest);
                 await _unitOfWork.CompleteAsync();
+                await transaction.CommitAsync();
                 return new ClaimResultDto { Success = true, RequestId = newRequest.ProductRequestId, Message = "Sikeres igénylés!" };
             }
             catch (Exception)

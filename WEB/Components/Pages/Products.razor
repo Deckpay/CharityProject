@@ -10,6 +10,7 @@
 @inject ProductApiService productService
 @inject CustomAuthStateProvider AuthStateProvider
 @inject LookupApiService Lookup
+@inject LocalStorageService LocalStorage
 
 <div class="page-background-fix">
     <div class="container py-5">
@@ -135,6 +136,7 @@
     private int selectedCategoryId = 0;
     private int selectedCountyId = 0;
     private bool isLoading = true;
+    private string token = "";
 
      private int currentPage = 1;
     private int pageSize = 20; // 30 elem / oldal
@@ -181,6 +183,7 @@
             // 2. Csak ezután hívjuk meg az API-t
             try
             {
+                token = await LocalStorage.GetItemAsync<string>("authToken") ?? "";
                 var tasks = new Task[] {
                     LoadProducts(),
                     LoadFilters()
@@ -197,7 +200,10 @@
         }
     }
 
-    private async Task LoadProducts() => allProducts = (await productService.GetProductsAsync()).ToList();
+    private async Task LoadProducts()
+    {
+        allProducts = (await productService.GetProductsAsync(token)).ToList();
+    }
     private async Task LoadFilters()
     {
         categories = (await Lookup.GetProductCategoriesAsync()).ToList();

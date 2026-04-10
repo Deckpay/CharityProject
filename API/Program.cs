@@ -1,6 +1,7 @@
 using Application.Interfaces;
 using Application.Services;
 using Infrastructure.Data;
+using Infrastructure.Hubs;
 using Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -30,7 +31,7 @@ builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
 builder.Services.AddHttpContextAccessor();
-
+builder.Services.AddSignalR();
 
 // --- CORS BEÁLLÍTÁS ---
 // Frontend elérésének engedélyezése
@@ -41,21 +42,27 @@ builder.Services.AddCors(options =>
     options.AddPolicy("BlazorPolicy", policy =>
         policy.WithOrigins(allowedWebOrigin)
               .AllowAnyMethod()
-              .AllowAnyHeader());
+              .AllowAnyHeader()
+              .AllowCredentials());
 });
 
 // --- AUTHENTICATION (JWT) ---
 var jwtKey = builder.Configuration["Jwt:Key"];
+var jwtIssuer = builder.Configuration["Jwt:Issuer"];
+var jwtAudience = builder.Configuration["Jwt:Audience"];
 
 builder.Services.AddAuthentication("Bearer")
 .AddJwtBearer("Bearer", options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidateIssuer = false,
-        ValidateAudience = false,
+        ValidateIssuer = true,
+        ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
+
+        ValidIssuer = jwtIssuer,
+        ValidAudience = jwtAudience,
 
         IssuerSigningKey = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(jwtKey!))
@@ -97,6 +104,8 @@ builder.Services.AddSwaggerGen(c => {
     });
 });
 
+Console.WriteLine("JWT KEY: " + jwtKey);
+
 var app = builder.Build();
 
 // --- MIDDLEWARE PIPELINE ---
@@ -113,6 +122,8 @@ app.UseCors("BlazorPolicy"); // 1.
 app.UseStaticFiles(); // 2.
 app.UseAuthentication(); // 3.
 app.UseAuthorization(); // 4.
+
+app.MapHub<ChatHub>("/chathub");
 
 app.MapControllers();
 

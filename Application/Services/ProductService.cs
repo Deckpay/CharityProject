@@ -89,7 +89,7 @@ namespace Application.Services
             if (product != null)
             {
                 product.ProductStatus = ProductStatus.Deleted;
-                product.UpdatedAt = DateTime.Now;
+                product.UpdatedAt = DateTime.UtcNow;
                 _unitOfWork.Products.Update(product);
                 await _unitOfWork.CompleteAsync();
             }

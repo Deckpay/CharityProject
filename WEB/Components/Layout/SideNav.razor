@@ -275,6 +275,12 @@
     {
         if (!firstRender) return;
 
+        Navigation.LocationChanged += OnLocationChanged;
+
+        var token = await Storage.GetItemAsync<string>("authToken");
+
+        if (string.IsNullOrEmpty(token)) return;
+
         var provider = (CustomAuthStateProvider)AuthProvider;
         var isValid = await provider.ValidateTokenAsync();
 
@@ -285,16 +291,9 @@
             return;
         }
 
-        Navigation.LocationChanged += OnLocationChanged;
-
-        var token = await Storage.GetItemAsync<string>("authToken") ?? "";
-
-        if (!string.IsNullOrEmpty(token))
-        {
-            unreadCount = await ChatService.GetUnreadCountAsync(token);
-            StateHasChanged();
-            _ = StartPollingAsync(token);
-        }
+        unreadCount = await ChatService.GetUnreadCountAsync(token);
+        _ = StartPollingAsync(token);
+        StateHasChanged();
     }
 
     private async void OnLocationChanged(object? sender, LocationChangedEventArgs e)

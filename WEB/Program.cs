@@ -17,7 +17,7 @@ if (string.IsNullOrEmpty(apiBaseUrl))
 }
 
 // --- Application szolgáltatások ---
-builder.Services.AddSingleton<TokenStore>();
+builder.Services.AddScoped<TokenStore>();
 builder.Services.AddScoped<TokenHandler>();
 builder.Services.AddScoped<ToastService>();
 builder.Services.AddScoped<LocalStorageService>();
@@ -71,22 +71,26 @@ builder.Services.AddHttpClient<LookupApiService>(client =>
 builder.Services.AddHttpClient<ProductApiService>(client =>
 {
     client.BaseAddress = new Uri(apiBaseUrl);
-});
+})
+.AddHttpMessageHandler<TokenHandler>();
 
 builder.Services.AddHttpClient<ProductRequestApiService>(client =>
 {
     client.BaseAddress = new Uri(apiBaseUrl);
-});
+})
+.AddHttpMessageHandler<TokenHandler>();
 
 builder.Services.AddHttpClient<LimitApiService>(client =>
 {
     client.BaseAddress = new Uri(apiBaseUrl);
-});
+})
+.AddHttpMessageHandler<TokenHandler>();
 
 builder.Services.AddHttpClient<ChatApiService>(client =>
 {
     client.BaseAddress = new Uri(apiBaseUrl);
-});
+})
+.AddHttpMessageHandler<TokenHandler>();
 
 var app = builder.Build();
 

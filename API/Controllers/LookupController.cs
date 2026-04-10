@@ -50,9 +50,9 @@ namespace API.Controllers
 
             var userDots = users.Select(u => new UserDto
             {
-                UserName = u.UserName,
-                UserRole = u.UserRole,
-                UserStatus = u.UserStatus
+                UserId = u.UserId,
+                UserName = u.UserName
+
             });
 
             return Ok(userDots);

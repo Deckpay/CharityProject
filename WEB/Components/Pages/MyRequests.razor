@@ -127,7 +127,7 @@
         try
         {
             requests = (await ProductRequestService.GetMyRequestsAsync(token)).ToList();
-            products = (await ProductService.GetProductsAsync()).ToList();
+            products = (await ProductService.GetProductsAsync(token)).ToList();
         }
         catch (Exception ex) { Console.WriteLine($"Hiba: {ex.Message}"); }
 

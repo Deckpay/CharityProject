@@ -93,6 +93,8 @@ namespace WEB.Services
 
         public void NotifyUserLogout()
         {
+            _tokenStore.Token = null;
+
             var anonymous = new ClaimsPrincipal(new ClaimsIdentity());
 
             NotifyAuthenticationStateChanged(

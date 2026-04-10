@@ -28,7 +28,7 @@
                     <th scope="col">Termék Név</th>
                     <th scope="col">Termékleírás</th>
                     <th scope="col">Állapot</th>
-                    <th scope="col">Feladó</th> 
+                    <th scope="col">Feladó</th>
                     <th scope="col">Kategória</th>
                     <th scope="col">Hely</th>
                     <th scope="col">Létrehozva</th>
@@ -134,12 +134,17 @@
             return;
         }
 
-        await LookupService.GetCountiesAsync();
-        await LookupService.GetProductCategoriesAsync();
-        await LookupService.GetUsersAsync();
+        try
+        {
+            categories = (await LookupService.GetProductCategoriesAsync()).ToList();
+            counties = (await LookupService.GetCountiesAsync()).ToList();
+            await LookupService.GetUsersAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Hiba a szűrők betöltésekor: {ex.Message}");
+        }
 
-        categories = (await LookupService.GetProductCategoriesAsync()).ToList();
-        counties = (await LookupService.GetCountiesAsync()).ToList();
         products = (await AdminService.GetProductsAsync()).ToList();
         isLoading = false;
     }

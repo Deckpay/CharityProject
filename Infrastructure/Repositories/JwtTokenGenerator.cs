@@ -20,7 +20,7 @@ namespace Infrastructure.Repositories
         public string GenerateToken(User user)
         {
             var key = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
+                Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
 
             var credentials = new SigningCredentials(key,
                 SecurityAlgorithms.HmacSha256);
@@ -36,11 +36,13 @@ namespace Infrastructure.Repositories
             };
 
             var token = new JwtSecurityToken(
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddDays(7),
+                expires: DateTime.UtcNow.AddMinutes(Convert.ToDouble(_configuration["Jwt:DurationInMinutes"])),
                 signingCredentials: credentials
             );
-
+            Console.WriteLine("GEN KEY: " + _configuration["Jwt:Key"]);
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }

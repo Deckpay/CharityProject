@@ -11,10 +11,11 @@ namespace Application.Services
     public class AuthService : IAuthService
     {
         private readonly IUnitOfWork _unitOfWork;
-
-        public AuthService(IUnitOfWork unitOfWork)
+        private readonly IJwtTokenGenerator _jwtTokenGenerator;
+        public AuthService(IUnitOfWork unitOfWork, IJwtTokenGenerator jwtTokenGenerator)
         {
             _unitOfWork = unitOfWork;
+            _jwtTokenGenerator = jwtTokenGenerator;
         }
 
         public async Task<bool> RegisterAsync(RegisterDto registerDto)
@@ -41,7 +42,7 @@ namespace Application.Services
             return await _unitOfWork.CompleteAsync() > 0;
         }
 
-        public async Task<User?> LoginAsync(string emailOrUserName, string password)
+        public async Task<LoginResponseDto?> LoginAsync(string emailOrUserName, string password)
         {
             var users = await _unitOfWork.Users.GetAllAsync();
             var user = users.FirstOrDefault(u => u.Email == emailOrUserName || u.UserName == emailOrUserName);
@@ -51,7 +52,12 @@ namespace Application.Services
                 return null;
             }
 
-            return user;
+            var token = _jwtTokenGenerator.GenerateToken(user);
+
+            return new LoginResponseDto
+            {
+                Token = token
+            };
         }
 
         public async Task<bool> DeleteMyAccountAsync(int userId)

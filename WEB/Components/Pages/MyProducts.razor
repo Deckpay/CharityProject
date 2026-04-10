@@ -12,6 +12,7 @@
 @inject CustomAuthStateProvider AuthStateProvider
 @inject LookupApiService Lookup
 @inject LocalStorageService LocalStorage
+@inject ToastService ToastService
 
 <div class="page-background-fix">
     <div class="container py-5">
@@ -46,8 +47,7 @@
                             <label class="filter-label">Kategória</label>
                             <div class="custom-input-group">
                                 <select class="clean-input"
-                                        @bind="selectedCategoryId"
-                                        >
+                                        @bind="selectedCategoryId">
                                     <option value="0">Összes kategória</option>
                                     @foreach (var cat in categories)
                                     {
@@ -61,8 +61,7 @@
                             <label class="filter-label">Megye</label>
                             <div class="custom-input-group">
                                 <select class="clean-input"
-                                        @bind="selectedCountyId"
-                                        >
+                                        @bind="selectedCountyId">
                                     <option value="0">Összes megye</option>
                                     @foreach (var county in counties)
                                     {
@@ -262,7 +261,14 @@
                 Console.WriteLine($"Hiba a betöltésnél: {ex.Message}");
             }
 
-            await LoadFilters();
+            try
+            {
+                await LoadFilters();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Hiba a szűrők betöltésekor: {ex.Message}");
+            }
             isLoading = false;
             StateHasChanged(); // Frissítjük a UI-t
         }
@@ -296,7 +302,7 @@
     {
         if (editingProduct == null) return;
 
-        await productService.UpdateProductAsync(editingProduct);
+        await productService.UpdateProductAsync(editingProduct, token);
 
         var existing = allProducts.First(x => x.ProductId == editingProduct.ProductId);
 
@@ -305,6 +311,8 @@
         existing.ProductCategoryId = editingProduct.ProductCategoryId;
         existing.CountyId = editingProduct.CountyId;
         existing.ProductStatus = editingProduct.ProductStatus;
+
+        ToastService.ShowToast("A szerkesztés sikeres volt", "success");
 
         CloseModal();
     }
@@ -318,7 +326,7 @@
         StateHasChanged();
     }
 
-    private async Task LoadProducts() => allProducts = (await productService.GetProductsAsync()).ToList();
+    private async Task LoadProducts() => allProducts = (await productService.GetProductsAsync(token)).ToList();
     private async Task LoadFilters()
     {
         categories = (await Lookup.GetProductCategoriesAsync()).ToList();

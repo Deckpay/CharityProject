@@ -169,7 +169,7 @@
     {
         try
         {
-            var allProducts = (await ProductService.GetProductsAsync()).ToList();
+            var allProducts = (await ProductService.GetProductsAsync(token)).ToList();
             IEnumerable<ProductRequestDto> requests;
 
             if (isSender)
