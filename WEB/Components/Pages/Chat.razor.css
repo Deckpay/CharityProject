@@ -4,7 +4,7 @@
 .chat-shell {
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 60px); /* fejléc magasságát vonjuk le */
+    height: calc(100vh - 60px); /* fejléc magasságát vonjuk le */    
     max-width: 780px;
     margin: 0 auto;
     background: #f0f2f5;
@@ -368,7 +368,7 @@
    Beviteli sáv (footer)
    ═══════════════════════════════════════════ */
 .chat-footer {
-    padding: 10px 12px;
+    padding: 10px 12px;    
     background: #ffffff;
     border-top: 1px solid #e4e6ea;
     flex-shrink: 0;
@@ -442,11 +442,22 @@
     .chat-shell {
         border-left: none;
         border-right: none;
+        height: calc(100dvh - 60px);
     }
 
     .bubble-wrap {
         max-width: 80%;
     }
+
+    .chat-footer {
+        padding-bottom: calc(10px + env(safe-area-insent-bottom));
+    }
+
+    .msg-input {
+        font-size:16px;
+    }
+
+   
 }
 
 /* ═══════════════════════════════════════════
@@ -639,3 +650,4 @@
 .btn-icon {
     font-size: 1.2rem;
 }
+

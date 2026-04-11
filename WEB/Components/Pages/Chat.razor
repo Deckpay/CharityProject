@@ -166,7 +166,8 @@
                           @bind="newMessage"
                           @bind:event="oninput"
                           @onkeydown="HandleKeyDown"
-                          disabled="@(isSending ? "disabled" : null)" />
+                          disabled="@(isSending ? "disabled" : null)" 
+                          style="font-size: 16px !important"/>
                 <button class="send-btn @(CanSend ? "send-active" : "")"
                         @onclick="SendMessage"
                         disabled="@(!CanSend ? "disabled" : null)">
@@ -380,8 +381,8 @@
     {
         try
         {
-            await Task.Delay(50);
-            await JS.InvokeVoidAsync("scrollToBottom", scrollAnchor);
+            await Task.Delay(100);
+            await JS.InvokeVoidAsync("scrollToBottom", messagesEndRef);
         }
         catch { }
     }

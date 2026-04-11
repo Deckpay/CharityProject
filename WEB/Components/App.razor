@@ -3,13 +3,14 @@
 
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <base href="/" />
     
     <script>
         window.scrollToBottom = (element) => {
             if (element) {
-                element.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                element.scrollTop = element.scrollHeight;
+                setTimeout(()=> { element.scrollTop = element.scrollHeight; }, 100);
             }
         };
     </script>
