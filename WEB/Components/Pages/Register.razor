@@ -12,7 +12,7 @@
 
 <PageTitle>Regisztráció</PageTitle>
 <div class="register-container">
-    <div class="registration-card form-control">
+    <div class="registration-card ">
         <div>
             <div>
                 <h3>Új fiók létrehozása</h3>
@@ -89,7 +89,7 @@
                         <ValidationMessage For="@(() => registerModel.RoleId)" />
                     </div>
                     <div class="actions">
-                        <button type="submit" class="actions" disabled="@isSubmitting">
+                        <button type="submit" disabled="@isSubmitting">
                             @if (isSubmitting)
                             {
                                 <span>Folyamatban...</span>
