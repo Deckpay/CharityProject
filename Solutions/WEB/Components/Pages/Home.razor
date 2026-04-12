@@ -2,7 +2,7 @@
 @inject NavigationManager Navigation
 @rendermode InteractiveServer
 
-@* 1. SZEKCIÓ: KAPCSOLAT / LÁBJEGYZÉK *@
+@* 1. SZEKCIÓ: HERO *@
 <section id="home" class="bg-slate-900">
     <div class="hero-container">
         
@@ -64,7 +64,7 @@
     <div class="content-container centered-layout">
         <span class="sub-title">Amiért dolgozunk</span>
         <h2>Eddigi hatásunk számokban</h2>
-        <p class="section-desc">Közösségünk ereje abban rejlik, hogy minden apró felajánlás valaki másnak a világot jelentheti.</p>
+        <p class="section-desc">Közösségünk ereje abban rejlik, hogy minden apró felajánlás valaki másnak a világot jelentheti.*</p>
 
         <div class="stats-grid">
             <div class="stat-card given-items">
@@ -145,30 +145,13 @@
                 </div>
             </div>
         </div>
-
-        <div class="contact-form-wrapper">
-            <form class="contact-form">
-                <div class="form-group">
-                    <label>Név</label>
-                    <input type="text" placeholder="Az Ön neve" />
-                </div>
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" placeholder="pelda@email.hu" />
-                </div>
-                <div class="form-group">
-                    <label>Üzenet</label>
-                    <textarea placeholder="Miben segíthetünk?"></textarea>
-                </div>
-                <button type="button">Üzenet küldése</button>
-            </form>
-        </div>
     </div>
 </section>
 <footer class="bottom-bar">
     <div class="content-container">
         <div class="footer-flex">
             <p>&copy; @DateTime.Now.Year Értékmentő. Minden jog fenntartva.</p>
+            <p>*A statisztika eredményei csak tájékoztató jellegűek, nem a valoságot mutatják.</p>
         </div>
     </div>
 </footer>
