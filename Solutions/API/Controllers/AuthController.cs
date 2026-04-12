@@ -44,10 +44,8 @@ namespace API.Controllers
         {
             var user = await _authService.LoginAsync(dto.EmailOrUserName, dto.Password);
 
-            if (user == null)
-                return Unauthorized();
-
-            Console.WriteLine($"LOGIN TOKEN: {user.Token}");
+            if (!string.IsNullOrEmpty(user?.ErrorMessage))
+                return Unauthorized(user.ErrorMessage);
 
             return Ok(user);
         }

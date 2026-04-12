@@ -42,7 +42,7 @@ namespace Infrastructure.Repositories
                 expires: DateTime.UtcNow.AddMinutes(Convert.ToDouble(_configuration["Jwt:DurationInMinutes"])),
                 signingCredentials: credentials
             );
-            Console.WriteLine("GEN KEY: " + _configuration["Jwt:Key"]);
+
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }

@@ -48,9 +48,16 @@ namespace Application.Services
             var user = users.FirstOrDefault(u => u.Email == emailOrUserName || u.UserName == emailOrUserName);
 
             if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
-            {
-                return null;
-            }
+                return new LoginResponseDto { ErrorMessage = "Hibás e-mail cím vagy jelszó." };
+
+            if (user.UserStatus == UserStatus.Banned)
+                return new LoginResponseDto { ErrorMessage = "Ez a fiók le van tiltva." };
+
+            if (user.UserStatus == UserStatus.Suspended)
+                return new LoginResponseDto { ErrorMessage = "Ez a fiók fel lett függesztve." };
+
+            if (user.UserStatus == UserStatus.Deleted)
+                return new LoginResponseDto { ErrorMessage = "Ez a fiók törölve lett." };
 
             var token = _jwtTokenGenerator.GenerateToken(user);
 

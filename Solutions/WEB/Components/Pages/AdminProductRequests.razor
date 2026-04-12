@@ -109,9 +109,9 @@
             await LookupService.GetUsersAsync();
             await LookupService.GetProductsAsync();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            Console.WriteLine($"Hiba a szűrők betöltésekor: {ex.Message}");
+            return;
         }
 
         requests = (await AdminService.GetProductsRequestsAsync()).ToList();

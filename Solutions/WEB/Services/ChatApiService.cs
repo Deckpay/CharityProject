@@ -63,12 +63,10 @@ namespace WEB.Services
                 var response = await _http.SendAsync(request);
                 if (!response.IsSuccessStatusCode) return 0;
                 var raw = await response.Content.ReadAsStringAsync();
-                Console.WriteLine($"unread-count raw response: '{raw}'");
                 return int.Parse(raw);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"GetUnreadCountAsync hiba: {ex.Message}");
                 return 0;
             }
         }

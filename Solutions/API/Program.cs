@@ -104,8 +104,6 @@ builder.Services.AddSwaggerGen(c => {
     });
 });
 
-Console.WriteLine("JWT KEY: " + jwtKey);
-
 var app = builder.Build();
 
 // --- MIDDLEWARE PIPELINE ---

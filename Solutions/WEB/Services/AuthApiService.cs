@@ -20,16 +20,15 @@ namespace WEB.Services
         }
 
         // LOGIN → JWT TOKEN-t ad vissza
-        public async Task<string?> LoginAsync(LoginDto dto)
+        public async Task<LoginResponseDto?> LoginAsync(LoginDto dto)
         {
             var response = await _http.PostAsJsonAsync("auth/login", dto);
 
-            if (!response.IsSuccessStatusCode)
-                return null;
+            if (response.IsSuccessStatusCode)
+                return await response.Content.ReadFromJsonAsync<LoginResponseDto>();
 
-            var result = await response.Content.ReadFromJsonAsync<LoginResponseDto>();
-
-            return result?.Token;
+            var errorMessage = await response.Content.ReadAsStringAsync();
+            return new LoginResponseDto { ErrorMessage = errorMessage };
         }
 
         public async Task<bool> DeleteMyAccountAsync(string token)

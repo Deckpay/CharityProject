@@ -163,7 +163,6 @@ namespace Application.Services
             var chat = allChats.FirstOrDefault(c => c.ProductRequestId == requestId);
             if (chat == null)
             {
-                Console.WriteLine($"MarkAsAllRead: chat nem található requestId={requestId}");
                 return;
             } 
 
@@ -172,8 +171,6 @@ namespace Application.Services
                 .Where(m => m.ChatId == chat.ChatId && m.SenderId != currentUserId && !m.IsRead)
                 .Select(m=> m.ChatMessageId)
                 .ToList();
-
-            Console.WriteLine($"MarkAsAllRead: {unread.Count} olvasatlan üzenet, chatId={chat.ChatId}");
 
             if (!unread.Any()) return;
 

@@ -256,18 +256,18 @@
             {
                 allProducts = (await productService.GetMyProductsAsync(token)).ToList();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Console.WriteLine($"Hiba a betöltésnél: {ex.Message}");
+                return;
             }
 
             try
             {
                 await LoadFilters();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Console.WriteLine($"Hiba a szűrők betöltésekor: {ex.Message}");
+                return;
             }
             isLoading = false;
             StateHasChanged(); // Frissítjük a UI-t

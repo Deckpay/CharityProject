@@ -78,27 +78,26 @@
 
         try
         {
-            var token = await AuthApiService.LoginAsync(loginDto);
-            if (!string.IsNullOrEmpty(token))
+            var result = await AuthApiService.LoginAsync(loginDto);
+
+            if (!string.IsNullOrEmpty(result?.Token))
             {
-                await localStorage.SetItemAsync("authToken", token);
-                TokenStore.Token = token;
+                await localStorage.SetItemAsync("authToken", result.Token);
+                TokenStore.Token = result.Token;
 
                 var customAuth = (CustomAuthStateProvider)AuthStateProvider;
-                customAuth.NotifyUserAuthentication(token);
+                customAuth.NotifyUserAuthentication(result.Token);
 
                 ToastService.ShowToast("Sikeres Bejelentkezés!", "success");
-
                 Navigation.NavigateTo("/");
             }
             else
             {
-                errorMessage = "Hibás adatok.";
+                errorMessage = result?.ErrorMessage ?? "Hibás adatok.";
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            Console.WriteLine($"Login hiba: {ex.Message}");
             errorMessage = "Hálózati hiba történt.";
         }
         finally

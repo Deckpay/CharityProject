@@ -129,7 +129,10 @@
             requests = (await ProductRequestService.GetMyRequestsAsync(token)).ToList();
             products = (await ProductService.GetProductsAsync(token)).ToList();
         }
-        catch (Exception ex) { Console.WriteLine($"Hiba: {ex.Message}"); }
+        catch (Exception)
+        {
+            return;
+        }
 
         isLoading = false;
         StateHasChanged();
@@ -149,7 +152,7 @@
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Polling hiba: {ex.Message}");
+                return;
             }
         }
     }
@@ -166,7 +169,7 @@
             await ProductRequestService.DeleteRequestAsync(deletingId.Value, token);
             requests.RemoveAll(r => r.ProductRequestId == deletingId.Value);
         }
-        catch (Exception ex) { Console.WriteLine($"Törlési hiba: {ex.Message}"); }
+        catch (Exception) { return; }
         finally 
         { 
             isDeleting = false; 

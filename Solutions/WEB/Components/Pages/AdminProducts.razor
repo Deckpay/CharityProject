@@ -140,9 +140,9 @@
             counties = (await LookupService.GetCountiesAsync()).ToList();
             await LookupService.GetUsersAsync();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            Console.WriteLine($"Hiba a szűrők betöltésekor: {ex.Message}");
+            return;
         }
 
         products = (await AdminService.GetProductsAsync()).ToList();
