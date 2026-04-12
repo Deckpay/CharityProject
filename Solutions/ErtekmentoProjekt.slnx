@@ -3,5 +3,6 @@
   <Project Path="Application/Application.csproj" />
   <Project Path="Domain/Domain.csproj" />
   <Project Path="Infrastructure/Infrastructure.csproj" />
+  <Project Path="Tests/Tests.csproj" Id="9e1f70ef-031c-41a2-9c31-8e42767ca237" />
   <Project Path="WEB/WEB.csproj" />
 </Solution>
