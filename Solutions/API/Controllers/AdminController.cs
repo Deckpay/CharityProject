@@ -35,8 +35,15 @@ namespace API.Controllers
         [HttpPut("ban-user/{id}")]
         public async Task<IActionResult> BanUser(int id)
         {
-            await _adminService.BanUserAsync(id);
-            return Ok();
+            try
+            {
+                await _adminService.BanUserAsync(id);
+                return Ok();
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         /// <summary>
@@ -47,8 +54,15 @@ namespace API.Controllers
         [HttpDelete("delete-user/{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
-            await _adminService.DeleteUserAsync(id);
-            return Ok();
+            try
+            {
+                await _adminService.DeleteUserAsync(id);
+                return Ok();
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         /// <summary>

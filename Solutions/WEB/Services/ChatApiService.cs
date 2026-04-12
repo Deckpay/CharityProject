@@ -65,7 +65,7 @@ namespace WEB.Services
                 var raw = await response.Content.ReadAsStringAsync();
                 return int.Parse(raw);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return 0;
             }

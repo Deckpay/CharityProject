@@ -6,6 +6,7 @@
 @inject CustomAuthStateProvider AuthStateProvider
 @inject NavigationManager Navigation
 @inject AdminApiService AdminService
+@inject ToastService ToastService
 
 <div class="page-container">
     <h2>Felhasználók kezelése</h2>
@@ -85,7 +86,7 @@
                         <div class="mb-3">
                             <label class="form-label text-black">Státusz</label>
                             <select class="form-control" @bind="editingUser.UserStatus">
-                                @foreach (var status in Enum.GetValues<UserStatus>())
+                                @foreach (var status in new[] { UserStatus.Active })
                                 {
                                     <option value="@status">@status</option>
                                 }
@@ -106,6 +107,7 @@
     private UserDto? editingUser;
     private bool showEditModal = false;
     private bool isLoading = true;
+    private string? errorMessage;
 
     protected override async Task OnInitializedAsync()
     {
@@ -125,15 +127,27 @@
 
     private async Task BanUser(int userId)
     {
-        await AdminService.BanUserAsync(userId);
-
+        var error = await AdminService.BanUserAsync(userId);
+        if (error != null)
+        {
+            errorMessage = error;
+            ToastService.ShowToast(errorMessage, "error");
+            return;
+        }
+        errorMessage = null;
         users = (await AdminService.GetUsersAsync()).ToList();
     }
 
     private async Task DeleteUser(int userId)
     {
-        await AdminService.DeleteUserAsync(userId);
-
+        var error = await AdminService.DeleteUserAsync(userId);
+        if (error != null)
+        {
+            errorMessage = error;
+            ToastService.ShowToast(errorMessage, "error");
+            return;
+        }
+        errorMessage = null;
         users = (await AdminService.GetUsersAsync()).ToList();
     }
 

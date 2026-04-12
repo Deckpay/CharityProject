@@ -12,11 +12,15 @@ namespace Application.Services
     public class AdminService : IAdminService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ICurrentUserService _currentUserService;
 
-        public AdminService(IUnitOfWork unitOfWork)
+        public AdminService(IUnitOfWork unitOfWork, ICurrentUserService currentUserService)
         {
             _unitOfWork = unitOfWork;
+            _currentUserService = currentUserService;
         }
+
+        private static readonly UserStatus[] AllowedStatuses = { UserStatus.Active};
 
         public async Task<IEnumerable<UserDto>> GetUsersAsync()
         {
@@ -35,6 +39,9 @@ namespace Application.Services
         }
         public async Task BanUserAsync(int id)
         {
+            if (id == _currentUserService.UserId)
+                throw new InvalidOperationException("Saját magadat nem tilthatod le.");
+
             var user = await _unitOfWork.Users.GetByIdAsync(id);
 
             if (user == null)
@@ -51,6 +58,9 @@ namespace Application.Services
         }
         public async Task DeleteUserAsync(int id)
         {
+            if (id == _currentUserService.UserId)
+                throw new InvalidOperationException("Saját magadat nem tilthatod/törölheted.");
+
             var user = await _unitOfWork.Users.GetByIdAsync(id);
 
             if (user == null)
@@ -68,6 +78,9 @@ namespace Application.Services
 
         public async Task UpdateUserAsync(UserDto userDto)
         {
+            if (!AllowedStatuses.Contains(userDto.UserStatus))
+                throw new InvalidOperationException("Ez a státusz nem állítható be manuálisan.");
+
             var user = await _unitOfWork.Users.GetByIdAsync(userDto.UserId);
 
             if (user == null) throw new Exception("A felhasználó nem található");

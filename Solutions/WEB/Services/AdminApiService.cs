@@ -34,16 +34,26 @@ namespace WEB.Services
             return result ?? new List<UserDto>();
         }
 
-        public async Task BanUserAsync(int id)
+        public async Task<string?> BanUserAsync(int id)
         {
             SetAuthHeader();
-            await _httpClient.PutAsync($"admin/ban-user/{id}", null);
+            var response = await _httpClient.PutAsync($"admin/ban-user/{id}", null);
+
+            if (!response.IsSuccessStatusCode)
+                return await response.Content.ReadAsStringAsync();
+
+            return null;
         }
 
-        public async Task DeleteUserAsync(int id)
+        public async Task<string?> DeleteUserAsync(int id)
         {
             SetAuthHeader();
-            await _httpClient.DeleteAsync($"admin/delete-user/{id}");
+            var response = await _httpClient.DeleteAsync($"admin/delete-user/{id}");
+
+            if (!response.IsSuccessStatusCode)
+                return await response.Content.ReadAsStringAsync();
+
+            return null;
         }
 
         public async Task UpdateUserAsync(UserDto userDto)

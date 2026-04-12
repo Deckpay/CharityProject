@@ -150,7 +150,7 @@
                 requests = (await ProductRequestService.GetMyRequestsAsync(token)).ToList();
                 await InvokeAsync(StateHasChanged);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return;
             }

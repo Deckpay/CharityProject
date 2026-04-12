@@ -53,9 +53,6 @@ namespace Application.Services
             if (user.UserStatus == UserStatus.Banned)
                 return new LoginResponseDto { ErrorMessage = "Ez a fiók le van tiltva." };
 
-            if (user.UserStatus == UserStatus.Suspended)
-                return new LoginResponseDto { ErrorMessage = "Ez a fiók fel lett függesztve." };
-
             if (user.UserStatus == UserStatus.Deleted)
                 return new LoginResponseDto { ErrorMessage = "Ez a fiók törölve lett." };
 
