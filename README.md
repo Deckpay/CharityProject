@@ -81,4 +81,4 @@ Az alkalmazás a **Clean Architecture** elveit követi, öt fő rétegre bontva:
 
 ---
 
-*Budapest, 2025*
+*Budapest, 2026*
