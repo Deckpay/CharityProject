@@ -164,7 +164,7 @@ namespace Application.Services
             } 
 
             var unread = (await _unitOfWork.ChatMessages.FindAsync(m => 
-                m.ChatId == chat.ChatId && m.SenderId != currentUserId && !m.IsRead));            var unread = allMessages
+                m.ChatId == chat.ChatId && m.SenderId != currentUserId && !m.IsRead));
 
             if (!unread.Any()) return;
 
