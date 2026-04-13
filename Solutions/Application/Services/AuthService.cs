@@ -20,11 +20,11 @@ namespace Application.Services
 
         public async Task<bool> RegisterAsync(RegisterDto registerDto)
         {
-            var existingUsers = await _unitOfWork.Users.GetAllAsync();
-            if (existingUsers.Any(u => u.Email == registerDto.Email || u.UserName == registerDto.UserName))
-            {
+            var existingUsers = await _unitOfWork.Users.FindAsync(u => 
+                u.Email == registerDto.Email || u.UserName == registerDto.UserName);
+
+            if (existingUsers.Any())
                 return false;
-            }
 
             var newUser = new User
             {
@@ -44,8 +44,7 @@ namespace Application.Services
 
         public async Task<LoginResponseDto?> LoginAsync(string emailOrUserName, string password)
         {
-            var users = await _unitOfWork.Users.GetAllAsync();
-            var user = users.FirstOrDefault(u => u.Email == emailOrUserName || u.UserName == emailOrUserName);
+            var user = (await _unitOfWork.Users.FindAsync(u => u.Email == emailOrUserName || u.UserName == emailOrUserName)).FirstOrDefault();
 
             if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
                 return new LoginResponseDto { ErrorMessage = "Hibás e-mail cím vagy jelszó." };
@@ -74,11 +73,9 @@ namespace Application.Services
             user.UserStatus = UserStatus.Deleted;
             user.UpdatedAt = DateTime.UtcNow;
 
-            var allPorducts = await _unitOfWork.Products.GetAllAsync();
-            var userProducts = allPorducts.Where(p => p.SenderId == userId).ToList();
+            var userProducts = await _unitOfWork.Products.FindAsync(p => p.SenderId == userId);
 
-            var allRequests = await _unitOfWork.ProductRequests.GetAllAsync();
-            var userRequests = allRequests.Where(r => r.RequesterId == userId).ToList();
+            var userRequests = await _unitOfWork.ProductRequests.FindAsync(r => r.RequesterId == userId);
 
             if (userProducts.Any())
             {
@@ -87,17 +84,13 @@ namespace Application.Services
                     product.ProductStatus = ProductStatus.Deleted;
                     product.UpdatedAt = DateTime.UtcNow;
 
-                    var relatedRequests = allRequests
-                        .Where(r => r.ProductId == product.ProductId)
-                        .ToList();
+                    var relatedRequests = await _unitOfWork.ProductRequests.FindAsync(
+                        r => r.ProductId == product.ProductId && r.RequestStatus == RequestStatus.Pending);
 
                     foreach (var request in relatedRequests)
                     {
-                        if (request.RequestStatus == RequestStatus.Pending)
-                        {
-                            request.RequestStatus = RequestStatus.Failed;
-                            request.ProcessedAt = DateTime.UtcNow;
-                        }
+                        request.RequestStatus = RequestStatus.Failed;
+                        request.ProcessedAt = DateTime.UtcNow;
                     }
                 }
             }
@@ -112,7 +105,7 @@ namespace Application.Services
                     request.RequestStatus = RequestStatus.Failed;
                     request.ProcessedAt = DateTime.UtcNow;
 
-                    var relatedProduct = allPorducts.FirstOrDefault(p => p.ProductId == request.ProductId);
+                    var relatedProduct = await _unitOfWork.Products.GetByIdAsync(request.ProductId);
 
                     if (relatedProduct != null && relatedProduct.ProductStatus == ProductStatus.Pending)
                     {

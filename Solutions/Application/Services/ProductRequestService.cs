@@ -2,6 +2,8 @@
 using Application.Interfaces;
 using Domain.Entities;
 using Domain.Enums;
+using System.Transactions;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Application.Services
 {
@@ -45,8 +47,8 @@ namespace Application.Services
                 if (!consumed)
                     return new ClaimResultDto { Success = false, Message = "Elérted az igénylési limitet." };
 
-                var allRequests = await _unitOfWork.ProductRequests.GetAllAsync();
-                if (allRequests.Any(r => r.ProductId == productId && r.RequestStatus == RequestStatus.Pending))
+                var pending = await _unitOfWork.ProductRequests.FindAsync(r => r.ProductId == productId && r.RequestStatus == RequestStatus.Pending);
+                if (pending.Any())
                     return new ClaimResultDto { Success = false, Message = "A termék már foglalt." };
 
                 var newRequest = new ProductRequest
@@ -73,14 +75,10 @@ namespace Application.Services
         }
         public async Task<IEnumerable<ProductRequestDto>> GetMyRequestsAsync(int userId)
         {
-            var requests = await _unitOfWork.ProductRequests.GetAllAsync();
+            var requests = await _unitOfWork.ProductRequests.FindAsync(r => r.RequesterId == userId && r.RequestStatus == RequestStatus.Pending);
             var dtos = new List<ProductRequestDto>();
 
-            var activeRequests = requests
-                .Where(r => r.RequesterId == userId && r.RequestStatus == RequestStatus.Pending)
-                .ToList();
-
-            foreach (var r in activeRequests)
+            foreach (var r in requests)
             {
                 dtos.Add(await MapToDtoAsync(r));
             }
@@ -90,36 +88,44 @@ namespace Application.Services
 
         public async Task<bool> DeleteRequestAsync(int requestId, int userId)
         {
-            var request = await _unitOfWork.ProductRequests.GetByIdAsync(requestId);
-            if (request == null || request.RequesterId != userId) return false;
+            using var transaction = await _unitOfWork.BeginTransactionAsync();
 
-            request.RequestStatus = RequestStatus.Failed;
-            request.ProcessedAt = DateTime.UtcNow;
-
-            var product = await _unitOfWork.Products.GetByIdAsync(request.ProductId);
-            if (product != null)
+            try
             {
-                product.ProductStatus = ProductStatus.Active;
-                product.UpdatedAt = DateTime.UtcNow;
-                await _limitService.DecreaseLimitUsage(request.RequesterId, product.ProductCategoryId);
-            }
+                var request = await _unitOfWork.ProductRequests.GetByIdAsync(requestId);
+                if (request == null || request.RequesterId != userId) return false;
 
-            return await _unitOfWork.CompleteAsync() > 0;
+                request.RequestStatus = RequestStatus.Failed;
+                request.ProcessedAt = DateTime.UtcNow;
+
+                var product = await _unitOfWork.Products.GetByIdAsync(request.ProductId);
+                if (product != null)
+                {
+                    product.ProductStatus = ProductStatus.Active;
+                    product.UpdatedAt = DateTime.UtcNow;
+                    await _limitService.DecreaseLimitUsage(request.RequesterId, product.ProductCategoryId);
+                }
+
+                var result = await _unitOfWork.CompleteAsync() > 0;
+                await transaction.CommitAsync();
+                return result;
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
 
         public async Task<IEnumerable<ProductRequestDto>> GetSenderRequestsAsync(int userId)
         {
-            var myProducts = await _unitOfWork.Products.GetAllAsync();
+            var myProducts = await _unitOfWork.Products.FindAsync(p => p.ProductStatus == ProductStatus.Active || p.ProductStatus == ProductStatus.Pending);
             var myProductIds = myProducts
-                .Where(p => p.SenderId == userId &&
-                    (p.ProductStatus == ProductStatus.Active || p.ProductStatus == ProductStatus.Pending))
                 .Select(p => p.ProductId)
                 .ToHashSet();
 
-            var requests = await _unitOfWork.ProductRequests.GetAllAsync();
-            var filteredRequests = requests
-                .Where(r => myProductIds.Contains(r.ProductId) && r.RequestStatus == RequestStatus.Pending)
-                .ToList();
+            var filteredRequests = await _unitOfWork.ProductRequests.FindAsync(r =>
+                myProductIds.Contains(r.ProductId) && r.RequestStatus == RequestStatus.Pending);
 
             var dtos = new List<ProductRequestDto>();
             foreach (var r in filteredRequests)
@@ -131,47 +137,60 @@ namespace Application.Services
         }
         public async Task<bool> CompleteRequestAsync(int requestId, int userId, bool success)
         {
-            var request = await _unitOfWork.ProductRequests.GetByIdAsync(requestId);
-            if (request == null) return false;
+            using var transaction = await _unitOfWork.BeginTransactionAsync();
 
-            var product = await _unitOfWork.Products.GetByIdAsync(request.ProductId);
-            if (product == null || product.SenderId != userId) return false;
-
-            if (success)
+            try
             {
-                request.RequestStatus = RequestStatus.Completed;
-                request.ProcessedAt = DateTime.UtcNow;
-                product.ProductStatus = ProductStatus.Completed;
-                product.UpdatedAt = DateTime.UtcNow;
-            }
-            else
-            {
-                request.RequestStatus = RequestStatus.Failed;
-                request.ProcessedAt = DateTime.UtcNow;
-                product.ProductStatus = ProductStatus.Active;
-                product.UpdatedAt = DateTime.UtcNow;
-                await _limitService.DecreaseLimitUsage(request.RequesterId, product.ProductCategoryId);
-            }
+                var request = await _unitOfWork.ProductRequests.GetByIdAsync(requestId);
+                if (request == null) return false;
 
-            return await _unitOfWork.CompleteAsync() > 0;
+                var product = await _unitOfWork.Products.GetByIdAsync(request.ProductId);
+                if (product == null || product.SenderId != userId) return false;
+
+                if (success)
+                {
+                    request.RequestStatus = RequestStatus.Completed;
+                    request.ProcessedAt = DateTime.UtcNow;
+                    product.ProductStatus = ProductStatus.Completed;
+                    product.UpdatedAt = DateTime.UtcNow;
+                }
+                else
+                {
+                    request.RequestStatus = RequestStatus.Failed;
+                    request.ProcessedAt = DateTime.UtcNow;
+                    product.ProductStatus = ProductStatus.Active;
+                    product.UpdatedAt = DateTime.UtcNow;
+                    await _limitService.DecreaseLimitUsage(request.RequesterId, product.ProductCategoryId);
+                }
+
+                var result = await _unitOfWork.CompleteAsync() > 0;
+                await transaction.CommitAsync();
+                return result;
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
 
         public async Task<int?> GetActiveRequestIdForProductAsync(int productId, int userId)
         {
-            var allRequests = await _unitOfWork.ProductRequests.GetAllAsync();
-            var found = allRequests.FirstOrDefault(r =>
+            var found = (await _unitOfWork.ProductRequests.FindAsync(r =>
                 r.ProductId == productId &&
                 r.RequesterId == userId &&
-                r.RequestStatus == RequestStatus.Pending);
+                r.RequestStatus == RequestStatus.Pending)).FirstOrDefault();
+
             return found?.ProductRequestId;
         }
 
         public async Task<bool> IsProductClaimedAsync(int productId)
         {
-            var allRequests = await _unitOfWork.ProductRequests.GetAllAsync();
-            return allRequests.Any(r =>
+            var allRequests = await _unitOfWork.ProductRequests.FindAsync(r =>
                 r.ProductId == productId &&
                 r.RequestStatus == RequestStatus.Pending);
+
+            return allRequests.Any();
         }
 
         private async Task<ProductRequestDto> MapToDtoAsync(ProductRequest r)

@@ -32,8 +32,7 @@ namespace Application.Services
             if (product == null)
                 throw new Exception($"A termék nem található (ID: {request.ProductId}).");
 
-            var allChats = await _unitOfWork.Chats.GetAllAsync();
-            var chat = allChats.FirstOrDefault(c => c.ProductRequestId == dto.RequestId);
+            var chat = (await _unitOfWork.Chats.FindAsync(c => c.ProductRequestId == dto.RequestId)).FirstOrDefault();
 
             if (chat == null)
             {
@@ -64,8 +63,7 @@ namespace Application.Services
 
         public async Task<List<ChatMessageResponseDto>> GetChatHistoryAsync(int requestId, int currentUserId)
         {
-            var allChats = await _unitOfWork.Chats.GetAllAsync();
-            var chat = allChats.FirstOrDefault(c => c.ProductRequestId == requestId);
+            var chat = (await _unitOfWork.Chats.FindAsync(c => c.ProductRequestId == requestId)).FirstOrDefault();
 
             if (chat == null)
                 return new List<ChatMessageResponseDto>();
@@ -159,25 +157,19 @@ namespace Application.Services
 
         public async Task MarkAsAllReadAsync(int requestId, int currentUserId)
         {
-            var allChats = await _unitOfWork.Chats.GetAllAsync();
-            var chat = allChats.FirstOrDefault(c => c.ProductRequestId == requestId);
+            var chat = (await _unitOfWork.Chats.FindAsync(c => c.ProductRequestId == requestId)).FirstOrDefault();
             if (chat == null)
             {
                 return;
             } 
 
-            var allMessages = await _unitOfWork.ChatMessages.GetAllAsync();
-            var unread = allMessages
-                .Where(m => m.ChatId == chat.ChatId && m.SenderId != currentUserId && !m.IsRead)
-                .Select(m=> m.ChatMessageId)
-                .ToList();
+            var unread = (await _unitOfWork.ChatMessages.FindAsync(m => 
+                m.ChatId == chat.ChatId && m.SenderId != currentUserId && !m.IsRead));            var unread = allMessages
 
             if (!unread.Any()) return;
 
-            foreach (var id in unread)
+            foreach (var msg in unread)
             {
-                var msg = await _unitOfWork.ChatMessages.GetByIdAsync(id);
-                if (msg == null) continue;
                 msg.IsRead = true;
                 msg.ReadAt = DateTime.UtcNow;
                 _unitOfWork.ChatMessages.Update(msg);

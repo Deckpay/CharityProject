@@ -17,19 +17,17 @@ namespace Application.Services
 
         public async Task<bool> CanUserRequestProduct(int userId, int categoryId)
         {
-            var allRules = await _unitOfWork.RequesterLimitRules.GetAllAsync();
-            var rule = allRules.FirstOrDefault(r => r.RequesterLimitRuleCategoryId == categoryId && r.IsActive);
+            var rule = (await _unitOfWork.RequesterLimitRules.FindAsync(r => r.RequesterLimitRuleCategoryId == categoryId && r.IsActive)).FirstOrDefault();
 
             if (rule == null)
                 return true;
 
             var (start, end) = GetPeriod(DateTime.UtcNow, rule.PeriodType);
 
-            var allUsages = await _unitOfWork.RequesterLimitUsages.GetAllAsync();
-            var usage = allUsages.FirstOrDefault(u =>
+            var usage = (await _unitOfWork.RequesterLimitUsages.FindAsync(u =>
                 u.RequesterId == userId &&
                 u.RuleId == rule.RequesterLimitRuleId &&
-                u.PeriodStart == start);
+                u.PeriodStart == start)).FirstOrDefault();
 
             if (usage == null)
                 return true;
@@ -47,19 +45,17 @@ namespace Application.Services
 
         public async Task<bool> TryConsumeLimit(int userId, int categoryId, int quantity = 1)
         {
-            var allRules = await _unitOfWork.RequesterLimitRules.GetAllAsync();
-            var rule = allRules.FirstOrDefault(r => r.RequesterLimitRuleCategoryId == categoryId && r.IsActive);
+            var rule = (await _unitOfWork.RequesterLimitRules.FindAsync(r => r.RequesterLimitRuleCategoryId == categoryId && r.IsActive)).FirstOrDefault();
 
             if (rule == null)
                 return true;
 
             var (start, end) = GetPeriod(DateTime.UtcNow, rule.PeriodType);
 
-            var allUsages = await _unitOfWork.RequesterLimitUsages.GetAllAsync();
-            var usage = allUsages.FirstOrDefault(u =>
+            var usage = (await _unitOfWork.RequesterLimitUsages.FindAsync(u =>
                 u.RequesterId == userId &&
                 u.RuleId == rule.RequesterLimitRuleId &&
-                u.PeriodStart == start);
+                u.PeriodStart == start)).FirstOrDefault();
 
             if (usage == null)
             {
@@ -112,11 +108,18 @@ namespace Application.Services
                     new DateTime(now.Year, now.Month, 1).AddMonths(1)
                 ),
 
-                "daily" => (
-                    now.Date,
-                    now.Date.AddDays(1)
+                "quarterly" => (
+                    new DateTime(now.Year, ((now.Month - 1) / 3) * 3 + 1, 1),
+                    new DateTime(now.Year, ((now.Month - 1) / 3) * 3 + 1, 1).AddMonths(3)
                 ),
-
+                "semiannual" => (
+                    now.Month <= 6
+                        ? new DateTime(now.Year, 1, 1)
+                        : new DateTime(now.Year, 7, 1),
+                    now.Month <= 6
+                        ? new DateTime(now.Year, 7, 1)
+                        : new DateTime(now.Year + 1, 1, 1)
+                ),
                 _ => (
                     new DateTime(now.Year, now.Month, 1),
                     new DateTime(now.Year, now.Month, 1).AddMonths(1)
@@ -126,21 +129,17 @@ namespace Application.Services
 
         public async Task<bool> DecreaseLimitUsage(int userId, int categoryId)
         {
-            var allRules = await _unitOfWork.RequesterLimitRules.GetAllAsync();
-            var rule = allRules.FirstOrDefault(r => r.RequesterLimitRuleCategoryId == categoryId && r.IsActive);
+            var rule = (await _unitOfWork.RequesterLimitRules.FindAsync(r => r.RequesterLimitRuleCategoryId == categoryId && r.IsActive)).FirstOrDefault();
 
             if (rule == null) return false;
 
             var now = DateTime.UtcNow;
 
-            var allUsage = await _unitOfWork.RequesterLimitUsages.GetAllAsync();
-
-            var usage = allUsage
-                .FirstOrDefault(x =>
+            var usage = (await _unitOfWork.RequesterLimitUsages.FindAsync(x =>
                     x.RequesterId == userId &&
                     x.RuleId == rule.RequesterLimitRuleId &&
                     x.PeriodStart <= now &&
-                    x.PeriodEnd > now);
+                    x.PeriodEnd > now)).FirstOrDefault();
 
             if (usage == null) return false;
 

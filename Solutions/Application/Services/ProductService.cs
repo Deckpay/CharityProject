@@ -20,18 +20,16 @@ namespace Application.Services
 
         public async Task<IEnumerable<ProductDto>> GetProductsAsync()
         {
-            var products = await _unitOfWork.Products.GetAllAsync();
-            return products.Where(p => p.ProductStatus == ProductStatus.Active)
-                           .Select(MapToDto);
+            var products = await _unitOfWork.Products.FindAsync(p => p.ProductStatus == ProductStatus.Active);
+            return products.Select(MapToDto);
         }
 
         public async Task<IEnumerable<ProductDto>> GetProductsBySenderAsync(int userId)
         {
-            var products = await _unitOfWork.Products.GetAllAsync();
-            return products.Where(p => p.SenderId == userId 
+            var products = await _unitOfWork.Products.FindAsync(p => p.SenderId == userId
                 && p.ProductStatus != ProductStatus.Deleted
-                && p.ProductStatus != ProductStatus.Completed)
-                           .Select(MapToDto);
+                && p.ProductStatus != ProductStatus.Completed);
+            return products.Select(MapToDto);
         }
 
         public async Task<bool> CreateProductAsync(ProductDto dto, int userId, IFormFile imageFile)

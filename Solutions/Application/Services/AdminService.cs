@@ -296,8 +296,8 @@ namespace Application.Services
         }
         private async Task SyncRequestWithProductAsync(Product product)
         {
-            var allRequests = await _unitOfWork.ProductRequests.GetAllAsync();
-            var request = allRequests.FirstOrDefault(r => r.ProductId == product.ProductId);
+            var requests = await _unitOfWork.ProductRequests.FindAsync(r => r.ProductId == product.ProductId);
+            var request = requests.FirstOrDefault();
 
             if (request == null)
                 return;
@@ -330,8 +330,7 @@ namespace Application.Services
         }
         private async Task SyncProductsWithUserAsync(User user)
         {
-            var allProducts = await _unitOfWork.Products.GetAllAsync();
-            var products = allProducts.Where(p => p.SenderId == user.UserId).ToList();
+            var products = await _unitOfWork.Products.FindAsync(p => p.SenderId == user.UserId);
 
             if (!products.Any())
                 return;
@@ -352,10 +351,7 @@ namespace Application.Services
 
         private async Task SyncRequestsWithRequesterAsync(User user)
         {
-            var allRequests = await _unitOfWork.ProductRequests.GetAllAsync();
-            var requesterRequests = allRequests
-                .Where(r => r.RequesterId == user.UserId)
-                .ToList();
+            var requesterRequests = await _unitOfWork.ProductRequests.FindAsync(r => r.RequesterId == user.UserId);
 
             var allProducts = await _unitOfWork.Products.GetAllAsync();
 
