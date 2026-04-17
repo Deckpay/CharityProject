@@ -49,6 +49,52 @@ Az alkalmazás a **Clean Architecture** elveit követi, öt fő rétegre bontva:
 
 ---
 
+## 🧪 Tesztfelhasználók
+
+A rendszer gyors kipróbálásához az alábbi előre létrehozott tesztfelhasználók használhatók:
+
+### 👤 Adományozó
+
+| Mező | Érték |
+|---|---|
+| **Email** | donor@ertekmento.hu |
+| **Jelszó** | Test123! |
+
+**Funkciók:**
+- Adományok feltöltése
+- Saját felajánlások kezelése
+- Kapcsolattartás az igénylőkkel
+
+---
+
+### 🤝 Igénylő
+
+| Mező | Érték |
+|---|---|
+| **Email** | igenylo@ertekmento.hu |
+| **Jelszó** | Test123! |
+
+**Funkciók:**
+- Adományok böngészése
+- Jelentkezés tárgyakra
+- Kommunikáció az adományozókkal
+
+---
+
+### 🛡️ Admin
+
+| Mező | Érték |
+|---|---|
+| **Email** | admin@ertekmento.hu |
+| **Jelszó** | Admin123! |
+
+**Funkciók:**
+- Felhasználók kezelése
+- Tartalmak moderálása
+- Rendszer felügyelet
+
+---
+
 ## 🔨 Munkamegosztás
 
 | Feladat | Kemény Benedek | Papp Bence |
