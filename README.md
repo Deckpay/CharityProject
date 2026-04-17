@@ -57,8 +57,9 @@ A rendszer gyors kipróbálásához az alábbi előre létrehozott tesztfelhaszn
 
 | Mező | Érték |
 |---|---|
-| **Email** | donor@ertekmento.hu |
-| **Jelszó** | Test123! |
+| **Felhasználónév** | Felado |
+| **Email** | userSender@teszt.com |
+| **Jelszó** | 123123 |
 
 **Funkciók:**
 - Adományok feltöltése
@@ -71,8 +72,9 @@ A rendszer gyors kipróbálásához az alábbi előre létrehozott tesztfelhaszn
 
 | Mező | Érték |
 |---|---|
-| **Email** | igenylo@ertekmento.hu |
-| **Jelszó** | Test123! |
+| **Felhasználónév** | Igenylo |
+| **Email** | userRequester@teszt.com |
+| **Jelszó** | 123123 |
 
 **Funkciók:**
 - Adományok böngészése
@@ -85,8 +87,9 @@ A rendszer gyors kipróbálásához az alábbi előre létrehozott tesztfelhaszn
 
 | Mező | Érték |
 |---|---|
-| **Email** | admin@ertekmento.hu |
-| **Jelszó** | Admin123! |
+| **Felhasználónév** | Admin |
+| **Email** | useradmin@teszt.com |
+| **Jelszó** | 123123 |
 
 **Funkciók:**
 - Felhasználók kezelése
